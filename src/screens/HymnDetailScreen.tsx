@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
-import { Hymn, ThemeMode, Setlist } from '../types/hymn';
+import { Hymn, ThemeMode, Setlist, Stanza } from '../types/hymn';
 import { ThemeColors } from '../constants/theme';
 import { getHymnById, getSurroundingHymns } from '../services/hymnService';
 import { AddToSetlistModal } from '../components/AddToSetlistModal';
@@ -58,6 +58,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   const scrollViewRef = useRef<any>(null);
   const [showFontControls, setShowFontControls] = useState(false);
   const [showSetlistModal, setShowSetlistModal] = useState(false);
+  const [copiedStanza, setCopiedStanza] = useState<string | null>(null);
 
   if (!hymn) {
     return (
@@ -105,6 +106,42 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
       const text = getShareableText();
       await Clipboard.setStringAsync(text);
       Alert.alert('Copied', 'Hymn lyrics copied to clipboard!');
+    } catch {}
+  };
+
+  // Format single stanza for sharing / copying
+  const getStanzaShareableText = (stanza: Stanza) => {
+    let output = `${hymn.hymn_number}: ${hymn.title}\n`;
+    output += `Verse ${stanza.number}\n\n`;
+    output += `${stanza.text}\n`;
+    if (stanza.chorus) {
+      output += `\nEgbe:\n${stanza.chorus}\n`;
+    }
+    output += `\n— Shared from C&S Hymn Book\nDownload: ${STORE_URL}`;
+    return output;
+  };
+
+  const handleCopyStanza = async (stanza: Stanza) => {
+    try {
+      const text = getStanzaShareableText(stanza);
+      await Clipboard.setStringAsync(text);
+      setCopiedStanza(stanza.number);
+      setTimeout(() => {
+        setCopiedStanza((curr) => (curr === stanza.number ? null : curr));
+      }, 2000);
+      if (Platform.OS !== 'web') {
+        Alert.alert('Verse Copied', `Verse ${stanza.number} copied to clipboard!`);
+      }
+    } catch {}
+  };
+
+  const handleShareStanza = async (stanza: Stanza) => {
+    try {
+      const text = getStanzaShareableText(stanza);
+      await Share.share({
+        message: text,
+        title: `${hymn.hymn_number} - Verse ${stanza.number}`,
+      });
     } catch {}
   };
 
@@ -263,6 +300,44 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                   <Text style={[styles.stanzaBadgeText, { color: theme.primary }]}>
                     {stanza.number}
                   </Text>
+                </View>
+
+                <View style={styles.stanzaActions}>
+                  <TouchableOpacity
+                    onPress={() => handleCopyStanza(stanza)}
+                    style={[
+                      styles.stanzaActionBtn,
+                      {
+                        backgroundColor: copiedStanza === stanza.number ? '#10B98118' : theme.surface,
+                        borderColor: copiedStanza === stanza.number ? '#10B981' : theme.border,
+                      },
+                    ]}
+                    hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                    accessibilityLabel={`Copy verse ${stanza.number}`}
+                  >
+                    <Ionicons
+                      name={copiedStanza === stanza.number ? 'checkmark' : 'copy-outline'}
+                      size={12}
+                      color={copiedStanza === stanza.number ? '#059669' : theme.textSecondary}
+                    />
+                    <Text
+                      style={[
+                        styles.stanzaActionText,
+                        { color: copiedStanza === stanza.number ? '#059669' : theme.textSecondary },
+                      ]}
+                    >
+                      {copiedStanza === stanza.number ? 'Copied' : 'Copy'}
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => handleShareStanza(stanza)}
+                    style={[styles.stanzaActionBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                    hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                    accessibilityLabel={`Share verse ${stanza.number}`}
+                  >
+                    <Ionicons name="share-social-outline" size={12} color={theme.textSecondary} />
+                  </TouchableOpacity>
                 </View>
               </View>
 
@@ -525,6 +600,7 @@ const styles = StyleSheet.create({
   stanzaHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 10,
   },
   stanzaBadge: {
@@ -535,6 +611,24 @@ const styles = StyleSheet.create({
   stanzaBadgeText: {
     fontSize: 12,
     fontWeight: '800',
+  },
+  stanzaActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  stanzaActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1,
+    gap: 4,
+  },
+  stanzaActionText: {
+    fontSize: 11,
+    fontWeight: '600',
   },
   stanzaText: {
     fontWeight: '500',
