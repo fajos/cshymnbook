@@ -32,6 +32,12 @@ interface HymnDetailScreenProps {
   onCreateAndAddSetlist: (name: string, description?: string, hymnId?: number) => Promise<void>;
 }
 
+const STORE_URL = Platform.select({
+  ios: 'https://apps.apple.com/app/id6829350908',
+  android: 'https://play.google.com/store/apps/details?id=com.fajostech.cshymnbook',
+  default: 'https://apps.apple.com/app/id6829350908',
+});
+
 export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   hymnId,
   theme,
@@ -80,7 +86,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
       output += `${hymn.amen}\n`;
     }
 
-    output += `\n— Shared from C&S Hymn Book`;
+    output += `\n— Shared from C&S Hymn Book\nDownload: ${STORE_URL}`;
     return output;
   };
 

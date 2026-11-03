@@ -173,6 +173,14 @@ export const AboutModal: React.FC<AboutModalProps> = ({
                 <Text style={[styles.sectionHeading, { color: theme.text }]}>Online Documentation &amp; Source</Text>
                 <TouchableOpacity
                   style={[styles.linkButton, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}
+                  onPress={() => openUrl('https://apps.apple.com/app/id6829350908')}
+                >
+                  <Ionicons name="logo-apple" size={18} color={theme.accentGold} />
+                  <Text style={[styles.linkButtonText, { color: theme.text }]}>Rate &amp; Review on App Store</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.linkButton, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}
                   onPress={() => openUrl('https://fajos.github.io/cshymnbook/')}
                 >
                   <Ionicons name="globe-outline" size={18} color={theme.accentGold} />
