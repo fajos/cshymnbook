@@ -4,7 +4,7 @@
 **Effective Date:** November 3, 2026  
 **Application:** C&S Hymn Book (*Orin Mímọ́ Kérúbù àti Séráfù*)  
 **Package Name:** `com.fajostech.cshymnbook`  
-**Developer:** FajosTech ([orjidom@yahoo.com](mailto:orjidom@yahoo.com))  
+**Developer:** Fajostech ([fajostech@gmail.com](mailto:fajostech@gmail.com))  
 **Repository:** [https://github.com/fajos/cshymnbook](https://github.com/fajos/cshymnbook)
 
 ---
@@ -13,7 +13,7 @@
 
 By downloading, installing, accessing, or using the **C&S Hymn Book** mobile or web application (the "App"), you agree to be bound by these Terms of Use ("Terms"). If you do not agree to these Terms, please do not download, install, or use the App.
 
-These Terms constitute a legally binding agreement between you ("User" or "you") and **FajosTech** ("Developer", "we", "our", or "us").
+These Terms constitute a legally binding agreement between you ("User" or "you") and **Fajostech** ("Developer", "we", "our", or "us").
 
 ---
 
@@ -23,7 +23,7 @@ These Terms constitute a legally binding agreement between you ("User" or "you")
 The C&S Hymn Book is an electronic spiritual hymnal designed to facilitate worship, singing, meditation, prayer, and Christian devotion within the **Cherubim and Seraphim Church worldwide**, the broader Aladura movement, and the global Body of Christ.
 
 ### 2.2 License Grant
-Subject to your compliance with these Terms, FajosTech grants you a personal, non-exclusive, non-transferable, revocable, and royalty-free license to download, install, and use the App on mobile, tablet, and desktop devices solely for your personal, educational, devotional, and church congregational use.
+Subject to your compliance with these Terms, Fajostech grants you a personal, non-exclusive, non-transferable, revocable, and royalty-free license to download, install, and use the App on mobile, tablet, and desktop devices solely for your personal, educational, devotional, and church congregational use.
 
 ---
 
@@ -89,7 +89,7 @@ These Terms shall be governed by and construed in accordance with the laws appli
 
 We welcome feedback, theological corrections, and errata reports from church leaders, choirmasters, hymnologists, and members worldwide:
 
-- **Developer:** FajosTech
-- **Email:** [orjidom@yahoo.com](mailto:orjidom@yahoo.com)
+- **Developer:** Fajostech
+- **Email:** [fajostech@gmail.com](mailto:fajostech@gmail.com)
 - **Repository Issues:** [https://github.com/fajos/cshymnbook/issues](https://github.com/fajos/cshymnbook/issues)
 - **Official Repository:** [https://github.com/fajos/cshymnbook](https://github.com/fajos/cshymnbook)

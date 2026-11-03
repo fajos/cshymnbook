@@ -143,4 +143,4 @@ C&S Hymn Book is built with a deep commitment to user privacy, offline reliabili
 
 ## ⚖️ License & Heritage
 
-Liturgical texts, prayers, and sacred hymns belong to the ecclesiastical heritage of the **Eternal Sacred Order of the Cherubim & Seraphim Church worldwide**. This software application and UI are maintained by **FajosTech** for spiritual worship, educational study, and devotions.
+Liturgical texts, prayers, and sacred hymns belong to the ecclesiastical heritage of the **Eternal Sacred Order of the Cherubim & Seraphim Church worldwide**. This software application and UI are maintained by **Fajostech** for spiritual worship, educational study, and devotions.

@@ -188,7 +188,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({
                 </TouchableOpacity>
 
                 <Text style={[styles.footerNotice, { color: theme.textSecondary }]}>
-                  Published by FajosTech &bull; Developer: orjidom@yahoo.com
+                  Published by Fajostech &bull; Developer: fajostech@gmail.com
                 </Text>
               </View>
             )}
@@ -207,7 +207,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({
 
                 <Text style={[styles.sectionHeading, { color: theme.text }]}>1. Overview</Text>
                 <Text style={[styles.paragraph, { color: theme.textSecondary }]}>
-                  FajosTech built the C&amp;S Hymn Book application as an offline-first worship utility. This service is provided at no cost and is intended for use as is. Your privacy is a sacred trust.
+                  Fajostech built the C&amp;S Hymn Book application as an offline-first worship utility. This service is provided at no cost and is intended for use as is. Your privacy is a sacred trust.
                 </Text>
 
                 <Text style={[styles.sectionHeading, { color: theme.text }]}>2. Information Collection &amp; Use</Text>
@@ -250,7 +250,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({
 
                 <Text style={[styles.sectionHeading, { color: theme.text }]}>2. License Grant</Text>
                 <Text style={[styles.paragraph, { color: theme.textSecondary }]}>
-                  FajosTech grants you a personal, non-exclusive, non-transferable, revocable license to use the application on compatible devices solely for personal worship, religious study, fellowship, and congregational services.
+                  Fajostech grants you a personal, non-exclusive, non-transferable, revocable license to use the application on compatible devices solely for personal worship, religious study, fellowship, and congregational services.
                 </Text>
 
                 <Text style={[styles.sectionHeading, { color: theme.text }]}>3. Liturgical Heritage &amp; Intellectual Property</Text>
@@ -260,7 +260,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({
 
                 <Text style={[styles.sectionHeading, { color: theme.text }]}>4. Limitation of Liability</Text>
                 <Text style={[styles.paragraph, { color: theme.textSecondary }]}>
-                  The application is provided &ldquo;as is&rdquo; without warranties of any kind. FajosTech shall not be liable for any indirect, incidental, or consequential damages arising from your use or inability to use the application.
+                  The application is provided &ldquo;as is&rdquo; without warranties of any kind. Fajostech shall not be liable for any indirect, incidental, or consequential damages arising from your use or inability to use the application.
                 </Text>
 
                 <Text style={[styles.sectionHeading, { color: theme.text }]}>5. Contact &amp; Full Terms</Text>
