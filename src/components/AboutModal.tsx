@@ -8,9 +8,11 @@ import {
   ScrollView,
   Linking,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemeColors } from '../constants/theme';
+import { updateService } from '../services/updateService';
 
 interface AboutModalProps {
   visible: boolean;
@@ -26,6 +28,16 @@ export const AboutModal: React.FC<AboutModalProps> = ({
   onClose,
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('about');
+  const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
+
+  const handleCheckForUpdates = async () => {
+    setIsCheckingUpdate(true);
+    try {
+      await updateService.checkAndApplyUpdate(true);
+    } finally {
+      setIsCheckingUpdate(false);
+    }
+  };
 
   const openUrl = async (url: string) => {
     try {
@@ -169,6 +181,22 @@ export const AboutModal: React.FC<AboutModalProps> = ({
                     &bull; <Text style={styles.boldText}>Instant Dial Pad:</Text> Quick-jump directly to any hymn announced during worship.
                   </Text>
                 </View>
+
+                <Text style={[styles.sectionHeading, { color: theme.text }]}>Updates &amp; Maintenance</Text>
+                <TouchableOpacity
+                  style={[styles.linkButton, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}
+                  onPress={handleCheckForUpdates}
+                  disabled={isCheckingUpdate}
+                >
+                  {isCheckingUpdate ? (
+                    <ActivityIndicator size="small" color={theme.accentGold} />
+                  ) : (
+                    <Ionicons name="cloud-download-outline" size={18} color={theme.accentGold} />
+                  )}
+                  <Text style={[styles.linkButtonText, { color: theme.text }]}>
+                    {isCheckingUpdate ? 'Checking for Updates...' : 'Check for Hymnal Updates'}
+                  </Text>
+                </TouchableOpacity>
 
                 <Text style={[styles.sectionHeading, { color: theme.text }]}>Online Documentation &amp; Source</Text>
                 <TouchableOpacity
