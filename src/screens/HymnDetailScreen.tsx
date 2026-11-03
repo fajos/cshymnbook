@@ -32,11 +32,18 @@ interface HymnDetailScreenProps {
   onCreateAndAddSetlist: (name: string, description?: string, hymnId?: number) => Promise<void>;
 }
 
-const STORE_URL = Platform.select({
-  ios: 'https://apps.apple.com/app/id6829350908',
-  android: 'https://play.google.com/store/apps/details?id=com.fajostech.cshymnbook',
-  default: 'https://apps.apple.com/app/id6829350908',
-});
+const IOS_STORE_URL = 'https://apps.apple.com/app/id6829350908';
+const ANDROID_STORE_URL = 'https://play.google.com/store/apps/details?id=com.fajostech.cshymnbook';
+
+const getStoreShareFooter = () => {
+  if (Platform.OS === 'ios') {
+    return `— Shared from C&S Hymn Book\nDownload on App Store: ${IOS_STORE_URL}`;
+  }
+  if (Platform.OS === 'android') {
+    return `— Shared from C&S Hymn Book\nDownload on Google Play: ${ANDROID_STORE_URL}`;
+  }
+  return `— Shared from C&S Hymn Book\nDownload on App Store: ${IOS_STORE_URL}\nDownload on Google Play: ${ANDROID_STORE_URL}`;
+};
 
 export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   hymnId,
@@ -87,7 +94,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
       output += `${hymn.amen}\n`;
     }
 
-    output += `\n— Shared from C&S Hymn Book\nDownload: ${STORE_URL}`;
+    output += `\n${getStoreShareFooter()}`;
     return output;
   };
 
@@ -117,7 +124,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     if (stanza.chorus) {
       output += `\nEgbe:\n${stanza.chorus}\n`;
     }
-    output += `\n— Shared from C&S Hymn Book\nDownload: ${STORE_URL}`;
+    output += `\n${getStoreShareFooter()}`;
     return output;
   };
 
