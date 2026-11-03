@@ -121,3 +121,26 @@ The original mobile application (`seraph+hymn_1.0_APKPure.apk` / `com.hymnals.so
 - A secondary switch statement in `HymnSearchIndex` (14,611 Dalvik instructions) mapped indices 0–912 to the hymn classes.
 - Additional packages contained 49 Isoji hymns, 9 Psalms, the Lord's Prayer, and 8 Creed/Catechism texts.
 - All 980 entries were extracted and preserved with pristine Yoruba diacritics.
+
+---
+
+## 🛡️ Legal, Privacy Policy & Terms of Use
+
+C&S Hymn Book is built with a deep commitment to user privacy, offline reliability, and preservation of sacred church tradition:
+
+- **100% Offline by Design**: Operates entirely without network requirements. Zero telemetry, zero analytics, zero data harvesting.
+- **Zero Advertising**: Completely ad-free to maintain a solemn, reverent atmosphere during worship.
+- **COPPA & GDPR Compliant**: Safe for congregants, children, and families of all ages.
+- **Package Name**: `com.fajostech.cshymnbook`
+
+### Policy Documents & Live Links
+
+- **Privacy Policy**: [PRIVACY_POLICY.md](PRIVACY_POLICY.md) | Web URL: [https://fajos.github.io/cshymnbook/privacy-policy.html](https://fajos.github.io/cshymnbook/privacy-policy.html)
+- **Terms of Use**: [TERMS_OF_USE.md](TERMS_OF_USE.md) | Web URL: [https://fajos.github.io/cshymnbook/terms-of-use.html](https://fajos.github.io/cshymnbook/terms-of-use.html)
+- **Official Documentation Portal**: [https://fajos.github.io/cshymnbook/](https://fajos.github.io/cshymnbook/)
+
+---
+
+## ⚖️ License & Heritage
+
+Liturgical texts, prayers, and sacred hymns belong to the ecclesiastical heritage of the **Eternal Sacred Order of the Cherubim & Seraphim Church worldwide**. This software application and UI are maintained by **FajosTech** for spiritual worship, educational study, and devotions.

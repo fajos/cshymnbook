@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C&amp;S Hymn Book - Official App &amp; Legal Documentation</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <meta name="description" content="Official Legal Documentation, Privacy Policy, Terms of Use, and Overview for C&amp;S Hymn Book (Cherubim and Seraphim Church).">
+  <style>
+    :root {
+      --primary: #0B1B3D;
+      --primary-light: #152B5B;
+      --accent: #D4AF37;
+      --accent-hover: #F0C420;
+      --bg: #F8F9FC;
+      --card-bg: #FFFFFF;
+      --text: #1F2937;
+      --text-muted: #6B7280;
+      --border: #E5E7EB;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #FFFFFF;
+      padding: 60px 24px 44px;
+      text-align: center;
+      border-bottom: 3px solid var(--accent);
+    }
+    .header-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .app-icon {
+      width: 96px;
+      height: 96px;
+      border-radius: 22px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+      margin-bottom: 20px;
+      border: 3px solid var(--accent);
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .subtitle {
+      font-size: 17px;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 8px;
+    }
+    .meta-tag {
+      display: inline-block;
+      background: rgba(212, 175, 55, 0.2);
+      border: 1px solid var(--accent);
+      color: #F0C420;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    main {
+      max-width: 860px;
+      margin: -24px auto 60px;
+      padding: 0 20px;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 36px 40px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      margin: 24px 0 12px;
+    }
+    .nav-card {
+      background: #FFFFFF;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .nav-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(212, 175, 55, 0.18);
+    }
+    .nav-card h3 {
+      font-size: 19px;
+      color: var(--primary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+    .nav-link {
+      font-weight: 700;
+      font-size: 14px;
+      color: #0E6251;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .feature-item {
+      padding: 16px;
+      background: #F3F4F6;
+      border-radius: 10px;
+      border-left: 4px solid var(--primary);
+    }
+    .feature-item strong {
+      display: block;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    .feature-item span {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--text-muted);
+      font-size: 14px;
+      border-top: 1px solid var(--border);
+      background: #FFFFFF;
+    }
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-content">
+      <img 
+        src="assets/playstore-icon.png" 
+        alt="C&amp;S Hymn Book Logo" 
+        class="app-icon"
+        onerror="this.src='https://raw.githubusercontent.com/fajos/cshymnbook/main/assets/playstore-icon.png'"
+      >
+      <h1>C&amp;S Hymn Book</h1>
+      <div class="subtitle">Cherubim &amp; Seraphim Church Hymnal &amp; Liturgy</div>
+      <div class="meta-tag">Package: com.fajostech.cshymnbook &bull; 100% Offline</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="card">
+      <h2 style="color: var(--primary); margin-bottom: 12px;">Official App &amp; Legal Documentation</h2>
+      <p style="color: var(--text-muted); font-size: 15px;">
+        Welcome to the official legal and informational documentation portal for <strong>C&amp;S Hymn Book</strong>, published by <strong>FajosTech</strong>. Use the links below to access our Privacy Policy, Terms of Use, and GitHub source repository.
+      </p>
+
+      <div class="nav-grid">
+        <a class="nav-card" href="privacy-policy.html">
+          <div>
+            <h3>🛡️ Privacy Policy</h3>
+            <p>Our commitment to privacy. 100% offline app with zero personal data collection, zero trackers, zero advertisements, and full COPPA &amp; GDPR compliance.</p>
+          </div>
+          <span class="nav-link">Read Privacy Policy &rarr;</span>
+        </a>
+
+        <a class="nav-card" href="terms-of-use.html">
+          <div>
+            <h3>📜 Terms of Use</h3>
+            <p>Terms governing your use of the app, spiritual worship license, liturgical heritage protection, and limitation of liability.</p>
+          </div>
+          <span class="nav-link">Read Terms of Use &rarr;</span>
+        </a>
+
+        <a class="nav-card" href="https://github.com/fajos/cshymnbook" target="_blank" rel="noopener">
+          <div>
+            <h3>💻 GitHub Repository</h3>
+            <p>View open source documentation, release notes, bug reports, and issue tracker on GitHub.</p>
+          </div>
+          <span class="nav-link">Visit GitHub &rarr;</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="color: var(--primary); margin-bottom: 12px;">About the Application</h2>
+      <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 16px;">
+        C&amp;S Hymn Book is built to faithfully preserve and celebrate the divine heritage of the Eternal Sacred Order of the Cherubim &amp; Seraphim Church worldwide.
+      </p>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <strong>980 Total Hymns</strong>
+          <span>Complete Yoruba &amp; English translations, knelt-down prayers (Akúnlẹkọ), and revival songs (Ìsọjí).</span>
+        </div>
+        <div class="feature-item">
+          <strong>Heritage Preservation</strong>
+          <span>Restores original liturgical designations: <em>Ẹgbẹ Kérúbù</em>, <em>Ẹgbẹ Séráfù</em>, and <em>Ẹgbẹ Aladura</em>.</span>
+        </div>
+        <div class="feature-item">
+          <strong>Zero Permissions</strong>
+          <span>Completely offline with no device permissions required, no internet needed, and no account signup.</span>
+        </div>
+        <div class="feature-item">
+          <strong>Service Sets &amp; Favorites</strong>
+          <span>Create and order custom Sunday service sets, bookmark favorite hymns, and quick-search by number or title.</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 FajosTech &bull; C&amp;S Hymn Book &bull; <a href="privacy-policy.html">Privacy Policy</a> &bull; <a href="terms-of-use.html">Terms of Use</a> &bull; <a href="https://github.com/fajos/cshymnbook">GitHub</a>
+  </footer>
+
+</body>
+</html>

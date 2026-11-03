@@ -20,6 +20,7 @@ import { CategoryDetailScreen } from './src/screens/CategoryDetailScreen';
 import { HymnDetailScreen } from './src/screens/HymnDetailScreen';
 import { FavoritesScreen } from './src/screens/FavoritesScreen';
 import { SpecialLiturgyScreen } from './src/screens/SpecialLiturgyScreen';
+import { AboutModal } from './src/components/AboutModal';
 
 type Tab = 'hymns' | 'categories' | 'liturgy' | 'favorites';
 
@@ -33,6 +34,7 @@ export default function App() {
   // Navigation stack states
   const [selectedHymnId, setSelectedHymnId] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [showAboutModal, setShowAboutModal] = useState(false);
 
   // Load saved preferences
   useEffect(() => {
@@ -156,6 +158,11 @@ export default function App() {
                   const nextIdx = (cycle.indexOf(themeMode) + 1) % cycle.length;
                   handleChangeTheme(cycle[nextIdx]);
                 },
+                color: theme.accentGold,
+              },
+              {
+                icon: 'information-circle-outline',
+                onPress: () => setShowAboutModal(true),
                 color: theme.accentGold,
               },
             ]}
@@ -356,6 +363,13 @@ export default function App() {
             </TouchableOpacity>
           </View>
         )}
+
+        {/* In-App About, Privacy Policy & Terms Modal */}
+        <AboutModal
+          visible={showAboutModal}
+          theme={theme}
+          onClose={() => setShowAboutModal(false)}
+        />
       </SafeAreaView>
     </SafeAreaProvider>
   );
