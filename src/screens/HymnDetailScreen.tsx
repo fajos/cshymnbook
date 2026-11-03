@@ -35,9 +35,15 @@ interface HymnDetailScreenProps {
 const IOS_STORE_URL = 'https://apps.apple.com/app/id6829350908';
 const ANDROID_STORE_URL = 'https://play.google.com/store/apps/details?id=com.fajostech.cshymnbook';
 
-const getStoreShareFooter = () => {
+const getStoreShareFooter = (isCopy: boolean = false) => {
   if (Platform.OS === 'ios') {
-    return `— Shared from C&S Hymn Book\nDownload on App Store: ${IOS_STORE_URL}`;
+    // On iOS, having 'https://' inside the share message causes UIActivityViewController
+    // and receiving share extensions (WhatsApp, Messages, etc.) to treat the payload as
+    // an App Store URL attachment, which strips away the entire hymn lyrics text!
+    // Using 'apps.apple.com/app/id6829350908' on iOS prevents the text from being dropped,
+    // while remaining fully clickable as a link in WhatsApp, iMessage, and other chat apps.
+    const storeLink = isCopy ? IOS_STORE_URL : 'apps.apple.com/app/id6829350908';
+    return `— Shared from C&S Hymn Book\nDownload on App Store: ${storeLink}`;
   }
   if (Platform.OS === 'android') {
     return `— Shared from C&S Hymn Book\nDownload on Google Play: ${ANDROID_STORE_URL}`;
@@ -76,7 +82,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   }
 
   // Format hymn text for sharing / copying
-  const getShareableText = () => {
+  const getShareableText = (isCopy: boolean = false) => {
     let output = `${hymn.hymn_number}: ${hymn.title}\n`;
     output += `Category: ${hymn.category_name}\n`;
     if (hymn.meter) output += `Tune/Meter: ${hymn.meter}\n`;
@@ -94,43 +100,44 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
       output += `${hymn.amen}\n`;
     }
 
-    output += `\n${getStoreShareFooter()}`;
+    output += `\n${getStoreShareFooter(isCopy)}`;
     return output;
   };
 
   const handleShare = async () => {
     try {
-      const text = getShareableText();
-      await Share.share({
-        message: text,
-        title: `${hymn.hymn_number}: ${hymn.title}`,
-      });
+      const text = getShareableText(false);
+      await Share.share(
+        Platform.OS === 'ios'
+          ? { message: text }
+          : { message: text, title: `${hymn.hymn_number}: ${hymn.title}` }
+      );
     } catch {}
   };
 
   const handleCopy = async () => {
     try {
-      const text = getShareableText();
+      const text = getShareableText(true);
       await Clipboard.setStringAsync(text);
       Alert.alert('Copied', 'Hymn lyrics copied to clipboard!');
     } catch {}
   };
 
   // Format single stanza for sharing / copying
-  const getStanzaShareableText = (stanza: Stanza) => {
+  const getStanzaShareableText = (stanza: Stanza, isCopy: boolean = false) => {
     let output = `${hymn.hymn_number}: ${hymn.title}\n`;
     output += `Verse ${stanza.number}\n\n`;
     output += `${stanza.text}\n`;
     if (stanza.chorus) {
       output += `\nEgbe:\n${stanza.chorus}\n`;
     }
-    output += `\n${getStoreShareFooter()}`;
+    output += `\n${getStoreShareFooter(isCopy)}`;
     return output;
   };
 
   const handleCopyStanza = async (stanza: Stanza) => {
     try {
-      const text = getStanzaShareableText(stanza);
+      const text = getStanzaShareableText(stanza, true);
       await Clipboard.setStringAsync(text);
       setCopiedStanza(stanza.number);
       setTimeout(() => {
@@ -144,11 +151,12 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
 
   const handleShareStanza = async (stanza: Stanza) => {
     try {
-      const text = getStanzaShareableText(stanza);
-      await Share.share({
-        message: text,
-        title: `${hymn.hymn_number} - Verse ${stanza.number}`,
-      });
+      const text = getStanzaShareableText(stanza, false);
+      await Share.share(
+        Platform.OS === 'ios'
+          ? { message: text }
+          : { message: text, title: `${hymn.hymn_number} - Verse ${stanza.number}` }
+      );
     } catch {}
   };
 
