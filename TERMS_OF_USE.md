@@ -4,7 +4,7 @@
 **Effective Date:** November 3, 2026  
 **Application:** C&S Hymn Book (*Orin Mímọ́ Kérúbù àti Séráfù*)  
 **Package Name:** `com.fajostech.cshymnbook`  
-**Developer:** Fajostech ([fajostech@gmail.com](mailto:fajostech@gmail.com))  
+**Developer:** Fajostech / Femi Adeyemi ([fajostech@gmail.com](mailto:fajostech@gmail.com))  
 **Repository:** [https://github.com/fajos/cshymnbook](https://github.com/fajos/cshymnbook)
 
 ---
@@ -13,7 +13,7 @@
 
 By downloading, installing, accessing, or using the **C&S Hymn Book** mobile or web application (the "App"), you agree to be bound by these Terms of Use ("Terms"). If you do not agree to these Terms, please do not download, install, or use the App.
 
-These Terms constitute a legally binding agreement between you ("User" or "you") and **Fajostech** ("Developer", "we", "our", or "us").
+These Terms constitute a legally binding agreement between you ("User" or "you") and **Fajostech / Femi Adeyemi** ("Developer", "we", "our", or "us").
 
 ---
 
@@ -23,7 +23,7 @@ These Terms constitute a legally binding agreement between you ("User" or "you")
 The C&S Hymn Book is an electronic spiritual hymnal designed to facilitate worship, singing, meditation, prayer, and Christian devotion within the **Cherubim and Seraphim Church worldwide**, the broader Aladura movement, and the global Body of Christ.
 
 ### 2.2 License Grant
-Subject to your compliance with these Terms, Fajostech grants you a personal, non-exclusive, non-transferable, revocable, and royalty-free license to download, install, and use the App on mobile, tablet, and desktop devices solely for your personal, educational, devotional, and church congregational use.
+Subject to your compliance with these Terms, Fajostech / Femi Adeyemi grants you a personal, non-exclusive, non-transferable, revocable, and royalty-free license to download, install, and use the App on mobile, tablet, and desktop devices solely for your personal, educational, devotional, and church congregational use.
 
 ---
 
@@ -68,7 +68,7 @@ While meticulous care has been taken to ensure liturgical accuracy, textual corr
 
 ## 7. Limitation of Liability
 
-TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL FAJOSTECH, ITS DEVELOPERS, CONTRIBUTORS, OR AFFILIATES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, LOSS OF DATA OR INTERRUPTION OF USE) ARISING OUT OF OR IN CONNECTION WITH THE USE OR INABILITY TO USE THE APPLICATION, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL FAJOSTECH / FEMI ADEYEMI, ITS DEVELOPERS, CONTRIBUTORS, OR AFFILIATES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, LOSS OF DATA OR INTERRUPTION OF USE) ARISING OUT OF OR IN CONNECTION WITH THE USE OR INABILITY TO USE THE APPLICATION, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---
 
@@ -89,7 +89,7 @@ These Terms shall be governed by and construed in accordance with the laws appli
 
 We welcome feedback, theological corrections, and errata reports from church leaders, choirmasters, hymnologists, and members worldwide:
 
-- **Developer:** Fajostech
+- **Developer:** Fajostech / Femi Adeyemi
 - **Email:** [fajostech@gmail.com](mailto:fajostech@gmail.com)
 - **Repository Issues:** [https://github.com/fajos/cshymnbook/issues](https://github.com/fajos/cshymnbook/issues)
 - **Official Repository:** [https://github.com/fajos/cshymnbook](https://github.com/fajos/cshymnbook)

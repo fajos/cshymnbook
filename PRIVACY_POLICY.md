@@ -4,14 +4,14 @@
 **Effective Date:** November 3, 2026  
 **Application:** C&S Hymn Book (*Orin Mímọ́ Kérúbù àti Séráfù*)  
 **Package Name:** `com.fajostech.cshymnbook`  
-**Developer:** Fajostech ([fajostech@gmail.com](mailto:fajostech@gmail.com))  
+**Developer:** Fajostech / Femi Adeyemi ([fajostech@gmail.com](mailto:fajostech@gmail.com))  
 **Repository:** [https://github.com/fajos/cshymnbook](https://github.com/fajos/cshymnbook)
 
 ---
 
 ## 1. Introduction
 
-Welcome to **C&S Hymn Book**, developed by **Fajostech** ("we", "our", or "us"). We are deeply committed to respecting and protecting the privacy of our users. 
+Welcome to **C&S Hymn Book**, developed by **Fajostech / Femi Adeyemi** ("we", "our", or "us"). We are deeply committed to respecting and protecting the privacy of our users. 
 
 This Privacy Policy explains how our mobile application handles user information. **In short: We do not collect, store, transmit, or share any of your personal data.** The app is designed for spiritual devotion and church worship and operates completely offline.
 
@@ -84,7 +84,7 @@ We may occasionally update this Privacy Policy to reflect app enhancements or le
 
 If you have any questions, concerns, or suggestions regarding this Privacy Policy or the C&S Hymn Book application, please contact:
 
-- **Developer:** Fajostech
+- **Developer:** Fajostech / Femi Adeyemi
 - **Email:** [fajostech@gmail.com](mailto:fajostech@gmail.com)
 - **GitHub Issues:** [https://github.com/fajos/cshymnbook/issues](https://github.com/fajos/cshymnbook/issues)
 - **Project URL:** [https://github.com/fajos/cshymnbook](https://github.com/fajos/cshymnbook)
