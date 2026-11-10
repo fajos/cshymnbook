@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   StyleSheet,
   View,
@@ -76,12 +76,12 @@ export default function App() {
 
   const theme = THEMES[themeMode];
 
-  const handleToggleFavorite = async (hymnId: number) => {
+  const handleToggleFavorite = useCallback(async (hymnId: number) => {
     const isNowFav = await storageService.toggleFavorite(hymnId);
     setFavorites((prev) =>
       isNowFav ? [...prev, hymnId] : prev.filter((id) => id !== hymnId)
     );
-  };
+  }, []);
 
   const handleChangeTheme = async (newTheme: ThemeMode) => {
     setThemeMode(newTheme);
@@ -93,10 +93,10 @@ export default function App() {
     await storageService.setFontSize(newSize);
   };
 
-  const handleSelectHymn = async (hymnId: number) => {
+  const handleSelectHymn = useCallback(async (hymnId: number) => {
     setSelectedHymnId(hymnId);
     await storageService.addRecent(hymnId);
-  };
+  }, []);
 
   // Setlist operations
   const handleCreateSetlist = async (name: string, description?: string) => {

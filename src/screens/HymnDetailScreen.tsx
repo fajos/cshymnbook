@@ -94,12 +94,13 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   const layoutHeightRef = useRef<number>(0);
   const autoScrollTimerRef = useRef<any>(null);
 
-  // Stop and reset auto-scroll when changing hymns
+  // Stop and reset auto-scroll and scroll to top when changing hymns
   useEffect(() => {
     setIsAutoScrollPlaying(false);
     setIsAutoScrollActive(false);
     setShowChoirMode(false);
     scrollYRef.current = 0;
+    scrollViewRef.current?.scrollTo({ y: 0, animated: false });
   }, [hymnId]);
 
   // Audio Player State & Setup (Modern expo-audio for New Architecture & iOS)
@@ -108,7 +109,6 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   const [selectedInstrument, setSelectedInstrument] = useState<'organ' | 'piano'>('organ');
   const [selectedTuneIdx, setSelectedTuneIdx] = useState<number>(0);
   const [isLoopingAudio, setIsLoopingAudio] = useState(false);
-  const [cacheVersion, setCacheVersion] = useState(0);
   const [isPreparingAudio, setIsPreparingAudio] = useState(false);
 
   // Active tune file (defaults to index 0 which is the authentic C&S tune)
@@ -120,17 +120,28 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   }, [hymnTune, selectedTuneIdx]);
 
   // Synchronously check if locally cached on device storage
-  const cachedLocalUri = React.useMemo(() => {
-    if (!currentTuneFile) return null;
-    return getLocalTuneUri(currentTuneFile, selectedInstrument);
-  }, [currentTuneFile, selectedInstrument, cacheVersion]);
+  const [isLocallySaved, setIsLocallySaved] = useState<boolean>(() => {
+    if (!currentTuneFile) return false;
+    return !!getLocalTuneUri(currentTuneFile, selectedInstrument);
+  });
+
+  // Keep isLocallySaved in sync when hymn, tune file or instrument changes
+  useEffect(() => {
+    if (currentTuneFile) {
+      setIsLocallySaved(!!getLocalTuneUri(currentTuneFile, selectedInstrument));
+    } else {
+      setIsLocallySaved(false);
+    }
+  }, [currentTuneFile, selectedInstrument]);
 
   // Active audio source URI (prioritizes local file://, falls back to Cloudflare R2 streaming URL)
+  // Stable for currentTuneFile + selectedInstrument to prevent recreating useAudioPlayer
   const activeAudioUri = React.useMemo(() => {
-    if (cachedLocalUri) return cachedLocalUri;
     if (!currentTuneFile) return null;
+    const localUri = getLocalTuneUri(currentTuneFile, selectedInstrument);
+    if (localUri) return localUri;
     return getAudioStreamUrl(currentTuneFile, selectedInstrument);
-  }, [cachedLocalUri, currentTuneFile, selectedInstrument]);
+  }, [currentTuneFile, selectedInstrument]);
 
   const player = useAudioPlayer(activeAudioUri ? { uri: activeAudioUri } : null, {
     updateInterval: 250,
@@ -139,16 +150,14 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
 
   // Background pre-fetch: quietly download in background as soon as hymn is opened
   useEffect(() => {
-    if (!currentTuneFile || cachedLocalUri) return;
+    if (!currentTuneFile || isLocallySaved) return;
 
     let isMounted = true;
     downloadAndCacheTune(currentTuneFile, selectedInstrument)
       .then((localPath) => {
         if (isMounted && localPath && localPath.startsWith('file://')) {
-          // Never disrupt currently playing audio; only refresh cache version if paused
-          if (!audioStatus.playing) {
-            setCacheVersion((v) => v + 1);
-          }
+          // Update the UI offline indicator badge only without re-initializing the audio player
+          setIsLocallySaved(true);
         }
       })
       .catch(() => {});
@@ -156,7 +165,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [currentTuneFile, selectedInstrument, cachedLocalUri, audioStatus.playing]);
+  }, [currentTuneFile, selectedInstrument, isLocallySaved]);
 
   // Set audio mode for silent mode & background audio
   useEffect(() => {
@@ -204,12 +213,12 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     }
 
     // If not yet cached on disk, download before playing so audio NEVER cuts off mid-song
-    if (!cachedLocalUri && currentTuneFile) {
+    if (!isLocallySaved && currentTuneFile) {
       try {
         setIsPreparingAudio(true);
         const localUri = await downloadAndCacheTune(currentTuneFile, selectedInstrument);
         setIsPreparingAudio(false);
-        setCacheVersion((v) => v + 1);
+        setIsLocallySaved(true);
         player.replace({ uri: localUri });
         player.play();
         return;
@@ -231,8 +240,8 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
         setIsPreparingAudio(true);
         local = await downloadAndCacheTune(currentTuneFile, inst);
         setIsPreparingAudio(false);
-        setCacheVersion((v) => v + 1);
       }
+      setIsLocallySaved(true);
       player.replace({ uri: local });
       if (wasPlaying) {
         player.play();
@@ -251,8 +260,8 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
         setIsPreparingAudio(true);
         local = await downloadAndCacheTune(newFile, selectedInstrument);
         setIsPreparingAudio(false);
-        setCacheVersion((v) => v + 1);
       }
+      setIsLocallySaved(true);
       player.replace({ uri: local });
       if (wasPlaying) {
         player.play();
@@ -664,7 +673,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                             ? hymnTune.allTunes[selectedTuneIdx].composer
                             : hymnTune.composer}
                         </Text>
-                        {cachedLocalUri ? (
+                        {isLocallySaved ? (
                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
                             <Ionicons name="checkmark-circle" size={11} color="#4CAF50" />
                             <Text style={{ fontSize: 10, color: '#4CAF50', fontWeight: '700' }}>Saved Offline</Text>

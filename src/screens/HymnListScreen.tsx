@@ -23,13 +23,14 @@ interface HymnListScreenProps {
   onToggleFavorite: (hymnId: number) => void;
 }
 
-export const HymnListScreen: React.FC<HymnListScreenProps> = ({
+export const HymnListScreen: React.FC<HymnListScreenProps> = React.memo(({
   theme,
   favorites,
   onSelectHymn,
   onToggleFavorite,
 }) => {
   const flatListRef = useRef<FlatList<Hymn>>(null);
+  const isFirstRender = useRef(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCatId, setSelectedCatId] = useState<number | null>(null);
   const [keypadVisible, setKeypadVisible] = useState(false);
@@ -45,8 +46,12 @@ export const HymnListScreen: React.FC<HymnListScreenProps> = ({
     return selectedCatId !== null ? categories.find((c) => c.id === selectedCatId) : null;
   }, [selectedCatId]);
 
-  // Scroll to top when search query or category filter changes
+  // Scroll to top ONLY when search query or category filter changes (not on initial mount or re-render)
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
     setShowScrollTop(false);
   }, [searchQuery, selectedCatId]);
@@ -166,7 +171,7 @@ export const HymnListScreen: React.FC<HymnListScreenProps> = ({
         initialNumToRender={15}
         maxToRenderPerBatch={20}
         windowSize={10}
-        removeClippedSubviews
+        removeClippedSubviews={false}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="musical-notes-outline" size={48} color={theme.textMuted} />
@@ -201,7 +206,7 @@ export const HymnListScreen: React.FC<HymnListScreenProps> = ({
       />
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
