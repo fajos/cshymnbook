@@ -8,15 +8,18 @@ import {
   Share,
   Platform,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
+import { Audio, AVPlaybackStatus } from 'expo-av';
 import { Hymn, ThemeMode, Setlist, Stanza } from '../types/hymn';
 import { ThemeColors } from '../constants/theme';
 import { getHymnById, getSurroundingHymns } from '../services/hymnService';
 import { AddToSetlistModal } from '../components/AddToSetlistModal';
 import { parseMeterString, getVerifiedHymnSolfa } from '../services/musicService';
 import { getEnglishHymn } from '../constants/englishHymns';
+import { getHymnTune, getAudioStreamUrl, HymnTuneInfo } from '../services/tuneService';
 
 interface HymnDetailScreenProps {
   hymnId: number;
@@ -92,6 +95,140 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     setShowChoirMode(false);
     scrollYRef.current = 0;
   }, [hymnId]);
+
+  // Audio Player State & Setup
+  const hymnTune = React.useMemo(() => (hymn ? getHymnTune(hymn.id) : null), [hymn?.id]);
+  const [showAudioPlayer, setShowAudioPlayer] = useState(false);
+  const [selectedInstrument, setSelectedInstrument] = useState<'organ' | 'piano'>('organ');
+  const [selectedTuneIdx, setSelectedTuneIdx] = useState<number>(0);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [isAudioBuffering, setIsAudioBuffering] = useState(false);
+  const [audioPosition, setAudioPosition] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(0);
+  const [isLoopingAudio, setIsLoopingAudio] = useState(false);
+  const soundRef = useRef<Audio.Sound | null>(null);
+
+  // Stop, unload sound, and reset audio when changing hymns
+  useEffect(() => {
+    if (soundRef.current) {
+      soundRef.current.unloadAsync().catch(() => {});
+      soundRef.current = null;
+    }
+    setIsPlayingAudio(false);
+    setIsAudioBuffering(false);
+    setAudioPosition(0);
+    setAudioDuration(0);
+    setShowAudioPlayer(false);
+    setSelectedTuneIdx(0);
+  }, [hymnId]);
+
+  // Cleanup sound on component unmount
+  useEffect(() => {
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.unloadAsync().catch(() => {});
+        soundRef.current = null;
+      }
+    };
+  }, []);
+
+  const formatAudioTime = (millis: number) => {
+    if (!millis || isNaN(millis) || millis < 0) return '0:00';
+    const totalSec = Math.floor(millis / 1000);
+    const min = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
+    return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+  };
+
+  const handleTogglePlayTune = async () => {
+    if (!hymnTune) return;
+
+    if (!showAudioPlayer) {
+      setShowAudioPlayer(true);
+    }
+
+    const currentTuneFile =
+      hymnTune.allTunes && hymnTune.allTunes[selectedTuneIdx]
+        ? hymnTune.allTunes[selectedTuneIdx].fileName
+        : hymnTune.selectedFileName;
+
+    const streamUrl = getAudioStreamUrl(currentTuneFile, selectedInstrument);
+
+    if (soundRef.current) {
+      if (isPlayingAudio) {
+        await soundRef.current.pauseAsync().catch(() => {});
+        setIsPlayingAudio(false);
+      } else {
+        await soundRef.current.playAsync().catch(() => {});
+        setIsPlayingAudio(true);
+      }
+      return;
+    }
+
+    try {
+      setIsAudioBuffering(true);
+      await Audio.setAudioModeAsync({
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: true,
+        shouldDuckAndroid: true,
+      });
+
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        { uri: streamUrl },
+        { shouldPlay: true, isLooping: isLoopingAudio },
+        (status: AVPlaybackStatus) => {
+          if (status.isLoaded) {
+            setAudioPosition(status.positionMillis);
+            setAudioDuration(status.durationMillis || 0);
+            setIsPlayingAudio(status.isPlaying);
+            setIsAudioBuffering(status.isBuffering);
+            if (status.didJustFinish && !status.isLooping) {
+              setIsPlayingAudio(false);
+              setAudioPosition(0);
+            }
+          } else if (status.error) {
+            setIsPlayingAudio(false);
+            setIsAudioBuffering(false);
+          }
+        }
+      );
+      soundRef.current = newSound;
+      setIsAudioBuffering(false);
+    } catch (err) {
+      setIsAudioBuffering(false);
+      Alert.alert('Playback Notice', 'Unable to stream audio accompaniment. Please verify your connection.');
+    }
+  };
+
+  const handleChangeInstrument = async (inst: 'organ' | 'piano') => {
+    if (selectedInstrument === inst) return;
+    setSelectedInstrument(inst);
+    if (soundRef.current) {
+      await soundRef.current.unloadAsync().catch(() => {});
+      soundRef.current = null;
+      setIsPlayingAudio(false);
+      setAudioPosition(0);
+    }
+  };
+
+  const handleChangeTuneIdx = async (idx: number) => {
+    if (selectedTuneIdx === idx) return;
+    setSelectedTuneIdx(idx);
+    if (soundRef.current) {
+      await soundRef.current.unloadAsync().catch(() => {});
+      soundRef.current = null;
+      setIsPlayingAudio(false);
+      setAudioPosition(0);
+    }
+  };
+
+  const handleToggleLoop = async () => {
+    const next = !isLoopingAudio;
+    setIsLoopingAudio(next);
+    if (soundRef.current) {
+      await soundRef.current.setIsLoopingAsync(next).catch(() => {});
+    }
+  };
 
   // Choir Mode & Musical Meter Analysis
   const [showChoirMode, setShowChoirMode] = useState(false);
@@ -412,29 +549,230 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                     {hymn.meter}
                   </Text>
                 </View>
-                {verifiedSolfa ? (
-                  <TouchableOpacity
-                    onPress={() => setShowChoirMode(!showChoirMode)}
-                    style={[
-                      styles.choirModeChip,
-                      {
-                        backgroundColor: showChoirMode ? theme.accentGold : theme.surface,
-                        borderColor: theme.accentGold,
-                      },
-                    ]}
-                  >
-                    <Ionicons name="musical-note" size={12} color={showChoirMode ? '#000000' : theme.accentGold} />
-                    <Text
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  {hymnTune ? (
+                    <TouchableOpacity
+                      onPress={handleTogglePlayTune}
                       style={[
-                        styles.choirModeChipText,
-                        { color: showChoirMode ? '#000000' : theme.accentGold },
+                        styles.choirModeChip,
+                        {
+                          backgroundColor: isPlayingAudio ? theme.accentGold : theme.surface,
+                          borderColor: theme.accentGold,
+                        },
                       ]}
                     >
-                      {showChoirMode ? 'Hide Sol-fa' : 'Choir Sol-fa'}
-                    </Text>
-                  </TouchableOpacity>
-                ) : null}
+                      {isAudioBuffering ? (
+                        <ActivityIndicator size="small" color={isPlayingAudio ? '#000000' : theme.accentGold} />
+                      ) : (
+                        <Ionicons
+                          name={isPlayingAudio ? 'pause' : 'play'}
+                          size={12}
+                          color={isPlayingAudio ? '#000000' : theme.accentGold}
+                        />
+                      )}
+                      <Text
+                        style={[
+                          styles.choirModeChipText,
+                          { color: isPlayingAudio ? '#000000' : theme.accentGold },
+                        ]}
+                      >
+                        {isPlayingAudio ? 'Pause' : 'Play Tune'}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : null}
+
+                  {verifiedSolfa ? (
+                    <TouchableOpacity
+                      onPress={() => setShowChoirMode(!showChoirMode)}
+                      style={[
+                        styles.choirModeChip,
+                        {
+                          backgroundColor: showChoirMode ? theme.accentGold : theme.surface,
+                          borderColor: theme.accentGold,
+                        },
+                      ]}
+                    >
+                      <Ionicons name="musical-notes" size={12} color={showChoirMode ? '#000000' : theme.accentGold} />
+                      <Text
+                        style={[
+                          styles.choirModeChipText,
+                          { color: showChoirMode ? '#000000' : theme.accentGold },
+                        ]}
+                      >
+                        {showChoirMode ? 'Hide Sol-fa' : 'Choir Sol-fa'}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : null}
+                </View>
               </View>
+
+              {/* In-App Audio Accompaniment Player */}
+              {showAudioPlayer && hymnTune ? (
+                <View style={[styles.audioPlayerCard, { borderColor: theme.border, backgroundColor: theme.surfaceCard }]}>
+                  {/* Top Bar: Title & Instrument Selector */}
+                  <View style={styles.audioPlayerHeader}>
+                    <View style={{ flex: 1, marginRight: 8 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                        <Ionicons name="musical-notes-outline" size={14} color={theme.accentGold} />
+                        <Text style={[styles.audioPlayerTuneTitle, { color: theme.text }]} numberOfLines={1}>
+                          {hymnTune.allTunes && hymnTune.allTunes[selectedTuneIdx]
+                            ? hymnTune.allTunes[selectedTuneIdx].tuneName
+                            : hymnTune.tuneName}
+                        </Text>
+                      </View>
+                      <Text style={[styles.audioPlayerComposer, { color: theme.textSecondary }]} numberOfLines={1}>
+                        {hymnTune.allTunes && hymnTune.allTunes[selectedTuneIdx]
+                          ? hymnTune.allTunes[selectedTuneIdx].composer
+                          : hymnTune.composer}
+                      </Text>
+                    </View>
+
+                    {/* Instrument Selector Pill: Organ vs Piano */}
+                    <View style={[styles.instrumentSelector, { backgroundColor: theme.background, borderColor: theme.border }]}>
+                      <TouchableOpacity
+                        onPress={() => handleChangeInstrument('organ')}
+                        style={[
+                          styles.instrumentBtn,
+                          selectedInstrument === 'organ' && [styles.activeInstrumentBtn, { backgroundColor: theme.primary }],
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.instrumentBtnText,
+                            { color: selectedInstrument === 'organ' ? '#FFFFFF' : theme.textSecondary },
+                          ]}
+                        >
+                          Organ 🎹
+                        </Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        onPress={() => handleChangeInstrument('piano')}
+                        style={[
+                          styles.instrumentBtn,
+                          selectedInstrument === 'piano' && [styles.activeInstrumentBtn, { backgroundColor: theme.primary }],
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.instrumentBtnText,
+                            { color: selectedInstrument === 'piano' ? '#FFFFFF' : theme.textSecondary },
+                          ]}
+                        >
+                          Piano 🎹
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  {/* Multiple Tunes Selector Row (if hymn has alternate tune) */}
+                  {hymnTune.allTunes && hymnTune.allTunes.length > 1 ? (
+                    <View style={styles.multiTuneSelectorRow}>
+                      <Text style={[styles.multiTuneLabel, { color: theme.textSecondary }]}>Select Tune:</Text>
+                      {hymnTune.allTunes.map((t, idx) => (
+                        <TouchableOpacity
+                          key={idx}
+                          onPress={() => handleChangeTuneIdx(idx)}
+                          style={[
+                            styles.tuneChoiceChip,
+                            selectedTuneIdx === idx
+                              ? [styles.activeTuneChoiceChip, { borderColor: theme.accentGold, backgroundColor: theme.accentGold + '20' }]
+                              : { borderColor: theme.border, backgroundColor: theme.background },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.tuneChoiceText,
+                              {
+                                color: selectedTuneIdx === idx ? theme.accentGold : theme.textSecondary,
+                                fontWeight: selectedTuneIdx === idx ? '700' : '500',
+                              },
+                            ]}
+                          >
+                            {t.tuneOrder ? `Tune ${t.tuneOrder}: ` : ''}{t.tuneName}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  ) : null}
+
+                  {/* Playback Controls & Progress Bar */}
+                  <View style={styles.audioControlsRow}>
+                    <TouchableOpacity
+                      onPress={handleTogglePlayTune}
+                      style={[styles.audioPlayBtn, { backgroundColor: theme.accentGold }]}
+                      disabled={isAudioBuffering}
+                    >
+                      {isAudioBuffering ? (
+                        <ActivityIndicator size="small" color="#000000" />
+                      ) : (
+                        <Ionicons
+                          name={isPlayingAudio ? 'pause' : 'play'}
+                          size={18}
+                          color="#000000"
+                          style={isPlayingAudio ? undefined : { marginLeft: 2 }}
+                        />
+                      )}
+                    </TouchableOpacity>
+
+                    {/* Progress Bar & Timestamps */}
+                    <View style={styles.audioProgressContainer}>
+                      <View style={[styles.audioProgressBarTrack, { backgroundColor: theme.borderLight }]}>
+                        <View
+                          style={[
+                            styles.audioProgressBarFill,
+                            {
+                              backgroundColor: theme.accentGold,
+                              width: `${audioDuration > 0 ? Math.min(100, (audioPosition / audioDuration) * 100) : 0}%`,
+                            },
+                          ]}
+                        />
+                      </View>
+                      <View style={styles.audioTimeRow}>
+                        <Text style={[styles.audioTimeText, { color: theme.textSecondary }]}>
+                          {formatAudioTime(audioPosition)}
+                        </Text>
+                        <Text style={[styles.audioTimeText, { color: theme.textSecondary }]}>
+                          {formatAudioTime(audioDuration)}
+                        </Text>
+                      </View>
+                    </View>
+
+                    {/* Loop Toggle Button */}
+                    <TouchableOpacity
+                      onPress={handleToggleLoop}
+                      style={[
+                        styles.audioLoopBtn,
+                        isLoopingAudio
+                          ? { backgroundColor: theme.accentGold + '25', borderColor: theme.accentGold }
+                          : { borderColor: theme.border, backgroundColor: theme.background },
+                      ]}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                      <Ionicons
+                        name="repeat"
+                        size={16}
+                        color={isLoopingAudio ? theme.accentGold : theme.textSecondary}
+                      />
+                    </TouchableOpacity>
+
+                    {/* Close / Collapse Player */}
+                    <TouchableOpacity
+                      onPress={() => {
+                        if (soundRef.current) {
+                          soundRef.current.pauseAsync().catch(() => {});
+                          setIsPlayingAudio(false);
+                        }
+                        setShowAudioPlayer(false);
+                      }}
+                      style={[styles.audioCloseBtn, { borderColor: theme.border }]}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                      <Ionicons name="close" size={16} color={theme.textSecondary} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : null}
 
               {/* Verified Choir Mode Expandable Box */}
               {showChoirMode && verifiedSolfa ? (
@@ -1281,6 +1619,114 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     width: '100%',
+  },
+  audioPlayerCard: {
+    marginTop: 10,
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    width: '100%',
+    gap: 10,
+  },
+  audioPlayerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  audioPlayerTuneTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  audioPlayerComposer: {
+    fontSize: 11,
+    fontStyle: 'italic',
+    marginTop: 1,
+  },
+  instrumentSelector: {
+    flexDirection: 'row',
+    borderRadius: 8,
+    borderWidth: 1,
+    padding: 2,
+  },
+  instrumentBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  activeInstrumentBtn: {},
+  instrumentBtnText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  multiTuneSelectorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  multiTuneLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  tuneChoiceChip: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  activeTuneChoiceChip: {},
+  tuneChoiceText: {
+    fontSize: 11,
+  },
+  audioControlsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  audioPlayBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  audioProgressContainer: {
+    flex: 1,
+    gap: 4,
+  },
+  audioProgressBarTrack: {
+    height: 5,
+    borderRadius: 2.5,
+    width: '100%',
+    overflow: 'hidden',
+  },
+  audioProgressBarFill: {
+    height: '100%',
+    borderRadius: 2.5,
+  },
+  audioTimeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  audioTimeText: {
+    fontSize: 10,
+    fontWeight: '600',
+    fontVariant: ['tabular-nums'],
+  },
+  audioLoopBtn: {
+    padding: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  audioCloseBtn: {
+    padding: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   choirMetaRow: {
     flexDirection: 'row',

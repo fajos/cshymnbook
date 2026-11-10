@@ -39,3 +39,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# local audio recordings & scratch data
+tune_recordings/
+scratch_*.json
