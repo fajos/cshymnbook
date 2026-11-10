@@ -16,14 +16,13 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 // Ensure @aws-sdk/client-s3 is available
+let S3Client, PutObjectCommand;
 try {
-  require.resolve('@aws-sdk/client-s3');
+  ({ S3Client, PutObjectCommand } = require('@aws-sdk/client-s3'));
 } catch (e) {
-  console.log('Installing @aws-sdk/client-s3 for S3-compatible R2 upload...');
-  execSync('npm install --no-save @aws-sdk/client-s3', { stdio: 'inherit' });
+  console.error('Error: @aws-sdk/client-s3 is required. Run: npm install @aws-sdk/client-s3');
+  process.exit(1);
 }
-
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
 const accountId = process.argv[2] || process.env.CLOUDFLARE_ACCOUNT_ID;
 const accessKeyId = process.argv[3] || process.env.R2_ACCESS_KEY_ID;
