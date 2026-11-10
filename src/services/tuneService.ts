@@ -21,10 +21,9 @@ const hymnTunesData: Record<string, HymnTuneInfo> = require('../../assets/data/h
 
 /**
  * Base CDN endpoint for streaming hymn audio.
- * When Cloudflare R2 is configured, update this to your R2 bucket public URL or custom domain
- * (e.g. 'https://pub-xxxx.r2.dev/audio' or 'https://tunes.yourdomain.com').
+ * Cloudflare R2 bucket: https://pub-b4f0c6d4ce79432b9b0d7d5417700a4b.r2.dev
  */
-export const TUNE_CDN_BASE_URL = 'https://cherubseraph.org/view/assets/audio';
+export const TUNE_CDN_BASE_URL = 'https://pub-b4f0c6d4ce79432b9b0d7d5417700a4b.r2.dev';
 
 /**
  * Retrieves tune metadata for a given hymn ID if available.
