@@ -15,7 +15,7 @@ import { Hymn, ThemeMode, Setlist, Stanza } from '../types/hymn';
 import { ThemeColors } from '../constants/theme';
 import { getHymnById, getSurroundingHymns } from '../services/hymnService';
 import { AddToSetlistModal } from '../components/AddToSetlistModal';
-import { parseMeterString } from '../services/musicService';
+import { parseMeterString, getVerifiedHymnSolfa } from '../services/musicService';
 import { getEnglishHymn } from '../constants/englishHymns';
 
 interface HymnDetailScreenProps {
@@ -96,6 +96,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   // Choir Mode & Musical Meter Analysis
   const [showChoirMode, setShowChoirMode] = useState(false);
   const meterInfo = React.useMemo(() => parseMeterString(hymn?.meter), [hymn?.meter]);
+  const verifiedSolfa = React.useMemo(() => (hymn ? getVerifiedHymnSolfa(hymn.id) : null), [hymn?.id]);
 
   // Bilingual Language Mode ('yoruba' | 'english' | 'dual')
   const [languageMode, setLanguageMode] = useState<'yoruba' | 'english' | 'dual'>('yoruba');
@@ -411,7 +412,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                     {hymn.meter}
                   </Text>
                 </View>
-                {meterInfo && (
+                {verifiedSolfa ? (
                   <TouchableOpacity
                     onPress={() => setShowChoirMode(!showChoirMode)}
                     style={[
@@ -432,42 +433,83 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                       {showChoirMode ? 'Hide Sol-fa' : 'Choir Sol-fa'}
                     </Text>
                   </TouchableOpacity>
-                )}
+                ) : null}
               </View>
 
-              {/* Choir Mode Expandable Box */}
-              {showChoirMode && meterInfo && (
+              {/* Verified Choir Mode Expandable Box */}
+              {showChoirMode && verifiedSolfa ? (
                 <View style={[styles.choirDetailsBox, { borderColor: theme.border, backgroundColor: theme.surfaceCard }]}>
                   <View style={styles.choirMetaRow}>
-                    <View style={[styles.meterTypeBadge, { backgroundColor: theme.primary + '18' }]}>
-                      <Text style={[styles.meterTypeBadgeText, { color: theme.primary }]}>
-                        {meterInfo.meterType}
+                    <View style={{ flex: 1, marginRight: 8 }}>
+                      <Text style={[styles.tuneTitleText, { color: theme.text }]}>
+                        Tune: <Text style={{ color: theme.accentGold, fontWeight: '700' }}>{verifiedSolfa.tuneTitle}</Text>
+                      </Text>
+                      {verifiedSolfa.composerOrOrigin ? (
+                        <Text style={[styles.composerText, { color: theme.textSecondary }]} numberOfLines={1}>
+                          {verifiedSolfa.composerOrOrigin}
+                        </Text>
+                      ) : null}
+                    </View>
+
+                    <View
+                      style={[
+                        styles.scopeBadge,
+                        {
+                          backgroundColor:
+                            verifiedSolfa.scope === 'incipit'
+                              ? theme.primary + '18'
+                              : theme.accentGold + '20',
+                          borderColor:
+                            verifiedSolfa.scope === 'incipit'
+                              ? theme.primary + '40'
+                              : theme.accentGold + '40',
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.scopeBadgeText,
+                          {
+                            color:
+                              verifiedSolfa.scope === 'incipit'
+                                ? theme.primary
+                                : theme.accentGold,
+                          },
+                        ]}
+                      >
+                        {verifiedSolfa.scopeLabel}
                       </Text>
                     </View>
-                    {meterInfo.editionRef ? (
-                      <Text style={[styles.editionRefText, { color: theme.accentGold }]}>
-                        {meterInfo.editionRef}
+                  </View>
+
+                  <View style={styles.solFaContainer}>
+                    <View style={styles.keyTimeRow}>
+                      <Text style={[styles.solFaKeyText, { color: theme.text }]}>
+                        Key / Beat: <Text style={{ color: theme.accentGold, fontWeight: '700' }}>{verifiedSolfa.keySignature}</Text> • {verifiedSolfa.timeSignature}
+                      </Text>
+                      {verifiedSolfa.meterName ? (
+                        <View style={[styles.meterTypeBadge, { backgroundColor: theme.borderLight }]}>
+                          <Text style={[styles.meterTypeBadgeText, { color: theme.textSecondary }]}>
+                            {verifiedSolfa.meterName}
+                          </Text>
+                        </View>
+                      ) : null}
+                    </View>
+
+                    <View style={[styles.solFaScoreBox, { backgroundColor: theme.background, borderColor: theme.border }]}>
+                      <Text style={[styles.solFaScoreText, { color: theme.text }]}>
+                        {verifiedSolfa.solfaNotation}
+                      </Text>
+                    </View>
+
+                    {verifiedSolfa.notes || verifiedSolfa.tempoGuidance ? (
+                      <Text style={[styles.solFaPatternNotes, { color: theme.textSecondary }]}>
+                        💡 {verifiedSolfa.tempoGuidance ? `${verifiedSolfa.tempoGuidance}. ` : ''}{verifiedSolfa.notes || ''}
                       </Text>
                     ) : null}
                   </View>
-
-                  {meterInfo.tonicSolFa ? (
-                    <View style={styles.solFaContainer}>
-                      <Text style={[styles.solFaKeyText, { color: theme.text }]}>
-                        Key / Beat: <Text style={{ color: theme.accentGold, fontWeight: '700' }}>{meterInfo.tonicSolFa.keySuggestion}</Text> • {meterInfo.tonicSolFa.timeSignature}
-                      </Text>
-                      <View style={[styles.solFaScoreBox, { backgroundColor: theme.background, borderColor: theme.border }]}>
-                        <Text style={[styles.solFaScoreText, { color: theme.text }]}>
-                          {meterInfo.tonicSolFa.scaleSnippet}
-                        </Text>
-                      </View>
-                      <Text style={[styles.solFaPatternNotes, { color: theme.textSecondary }]}>
-                        💡 {meterInfo.tonicSolFa.patternNotes}
-                      </Text>
-                    </View>
-                  ) : null}
                 </View>
-              )}
+              ) : null}
             </View>
           ) : null}
 
@@ -1247,6 +1289,34 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 6,
     marginBottom: 8,
+  },
+  tuneTitleText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  composerText: {
+    fontSize: 11,
+    fontStyle: 'italic',
+    marginTop: 1,
+  },
+  scopeBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  scopeBadgeText: {
+    fontSize: 10.5,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
+  keyTimeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: 2,
   },
   meterTypeBadge: {
     paddingHorizontal: 8,
