@@ -109,6 +109,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   const [selectedTuneIdx, setSelectedTuneIdx] = useState<number>(0);
   const [isLoopingAudio, setIsLoopingAudio] = useState(false);
   const [cacheVersion, setCacheVersion] = useState(0);
+  const [isPreparingAudio, setIsPreparingAudio] = useState(false);
 
   // Active tune file (defaults to index 0 which is the authentic C&S tune)
   const currentTuneFile = React.useMemo(() => {
@@ -124,8 +125,6 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     return getLocalTuneUri(currentTuneFile, selectedInstrument);
   }, [currentTuneFile, selectedInstrument, cacheVersion]);
 
-  const [isDownloadingCache, setIsDownloadingCache] = useState<boolean>(false);
-
   // Active audio source URI (prioritizes local file://, falls back to Cloudflare R2 streaming URL)
   const activeAudioUri = React.useMemo(() => {
     if (cachedLocalUri) return cachedLocalUri;
@@ -133,32 +132,31 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     return getAudioStreamUrl(currentTuneFile, selectedInstrument);
   }, [cachedLocalUri, currentTuneFile, selectedInstrument]);
 
-  // Automatically download and cache the tune to device storage when player is opened or played
-  useEffect(() => {
-    if (!currentTuneFile || cachedLocalUri || !showAudioPlayer) return;
-
-    let isMounted = true;
-    setIsDownloadingCache(true);
-    downloadAndCacheTune(currentTuneFile, selectedInstrument)
-      .then((localPath) => {
-        if (isMounted && localPath && localPath.startsWith('file://')) {
-          setCacheVersion((v) => v + 1);
-          setIsDownloadingCache(false);
-        }
-      })
-      .catch(() => {
-        if (isMounted) setIsDownloadingCache(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [currentTuneFile, selectedInstrument, showAudioPlayer, cachedLocalUri]);
-
   const player = useAudioPlayer(activeAudioUri ? { uri: activeAudioUri } : null, {
     updateInterval: 250,
   });
   const audioStatus = useAudioPlayerStatus(player);
+
+  // Background pre-fetch: quietly download in background as soon as hymn is opened
+  useEffect(() => {
+    if (!currentTuneFile || cachedLocalUri) return;
+
+    let isMounted = true;
+    downloadAndCacheTune(currentTuneFile, selectedInstrument)
+      .then((localPath) => {
+        if (isMounted && localPath && localPath.startsWith('file://')) {
+          // Never disrupt currently playing audio; only refresh cache version if paused
+          if (!audioStatus.playing) {
+            setCacheVersion((v) => v + 1);
+          }
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentTuneFile, selectedInstrument, cachedLocalUri, audioStatus.playing]);
 
   // Set audio mode for silent mode & background audio
   useEffect(() => {
@@ -182,6 +180,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     }
     setShowAudioPlayer(false);
     setSelectedTuneIdx(0);
+    setIsPreparingAudio(false);
   }, [hymnId]);
 
   const formatAudioTime = (seconds: number) => {
@@ -192,7 +191,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     return `${min}:${sec < 10 ? '0' : ''}${sec}`;
   };
 
-  const handleTogglePlayTune = () => {
+  const handleTogglePlayTune = async () => {
     if (!hymnTune || !player) return;
 
     if (!showAudioPlayer) {
@@ -201,34 +200,60 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
 
     if (audioStatus.playing) {
       player.pause();
-    } else {
-      player.play();
+      return;
     }
+
+    // If not yet cached on disk, download before playing so audio NEVER cuts off mid-song
+    if (!cachedLocalUri && currentTuneFile) {
+      try {
+        setIsPreparingAudio(true);
+        const localUri = await downloadAndCacheTune(currentTuneFile, selectedInstrument);
+        setIsPreparingAudio(false);
+        setCacheVersion((v) => v + 1);
+        player.replace({ uri: localUri });
+        player.play();
+        return;
+      } catch (err) {
+        setIsPreparingAudio(false);
+      }
+    }
+
+    player.play();
   };
 
-  const handleChangeInstrument = (inst: 'organ' | 'piano') => {
+  const handleChangeInstrument = async (inst: 'organ' | 'piano') => {
     if (selectedInstrument === inst) return;
     const wasPlaying = audioStatus.playing;
     setSelectedInstrument(inst);
     if (currentTuneFile && player) {
-      const local = getLocalTuneUri(currentTuneFile, inst);
-      const newUri = local || getAudioStreamUrl(currentTuneFile, inst);
-      player.replace({ uri: newUri });
+      let local = getLocalTuneUri(currentTuneFile, inst);
+      if (!local) {
+        setIsPreparingAudio(true);
+        local = await downloadAndCacheTune(currentTuneFile, inst);
+        setIsPreparingAudio(false);
+        setCacheVersion((v) => v + 1);
+      }
+      player.replace({ uri: local });
       if (wasPlaying) {
         player.play();
       }
     }
   };
 
-  const handleChangeTuneIdx = (idx: number) => {
+  const handleChangeTuneIdx = async (idx: number) => {
     if (selectedTuneIdx === idx) return;
     const wasPlaying = audioStatus.playing;
     setSelectedTuneIdx(idx);
     if (hymnTune?.allTunes && hymnTune.allTunes[idx] && player) {
       const newFile = hymnTune.allTunes[idx].fileName;
-      const local = getLocalTuneUri(newFile, selectedInstrument);
-      const newUri = local || getAudioStreamUrl(newFile, selectedInstrument);
-      player.replace({ uri: newUri });
+      let local = getLocalTuneUri(newFile, selectedInstrument);
+      if (!local) {
+        setIsPreparingAudio(true);
+        local = await downloadAndCacheTune(newFile, selectedInstrument);
+        setIsPreparingAudio(false);
+        setCacheVersion((v) => v + 1);
+      }
+      player.replace({ uri: local });
       if (wasPlaying) {
         player.play();
       }
@@ -574,7 +599,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                         },
                       ]}
                     >
-                      {audioStatus.isBuffering ? (
+                      {audioStatus.isBuffering || isPreparingAudio ? (
                         <ActivityIndicator size="small" color={audioStatus.playing ? '#000000' : theme.accentGold} />
                       ) : (
                         <Ionicons
@@ -589,7 +614,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                           { color: audioStatus.playing ? '#000000' : theme.accentGold },
                         ]}
                       >
-                        {audioStatus.playing ? 'Pause' : 'Play Tune'}
+                        {isPreparingAudio ? 'Loading...' : audioStatus.playing ? 'Pause' : 'Play Tune'}
                       </Text>
                     </TouchableOpacity>
                   ) : null}
@@ -644,10 +669,10 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                             <Ionicons name="checkmark-circle" size={11} color="#4CAF50" />
                             <Text style={{ fontSize: 10, color: '#4CAF50', fontWeight: '700' }}>Saved Offline</Text>
                           </View>
-                        ) : isDownloadingCache ? (
+                        ) : isPreparingAudio ? (
                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
                             <ActivityIndicator size="small" color={theme.accentGold} />
-                            <Text style={{ fontSize: 10, color: theme.textSecondary }}>Caching...</Text>
+                            <Text style={{ fontSize: 10, color: theme.textSecondary }}>Downloading...</Text>
                           </View>
                         ) : null}
                       </View>
@@ -727,9 +752,9 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                     <TouchableOpacity
                       onPress={handleTogglePlayTune}
                       style={[styles.audioPlayBtn, { backgroundColor: theme.accentGold }]}
-                      disabled={audioStatus.isBuffering}
+                      disabled={audioStatus.isBuffering || isPreparingAudio}
                     >
-                      {audioStatus.isBuffering ? (
+                      {audioStatus.isBuffering || isPreparingAudio ? (
                         <ActivityIndicator size="small" color="#000000" />
                       ) : (
                         <Ionicons
