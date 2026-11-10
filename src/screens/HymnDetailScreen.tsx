@@ -108,8 +108,9 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   const [selectedInstrument, setSelectedInstrument] = useState<'organ' | 'piano'>('organ');
   const [selectedTuneIdx, setSelectedTuneIdx] = useState<number>(0);
   const [isLoopingAudio, setIsLoopingAudio] = useState(false);
+  const [cacheVersion, setCacheVersion] = useState(0);
 
-  // Active tune file
+  // Active tune file (defaults to index 0 which is the authentic C&S tune)
   const currentTuneFile = React.useMemo(() => {
     if (!hymnTune) return null;
     return hymnTune.allTunes && hymnTune.allTunes[selectedTuneIdx]
@@ -117,21 +118,13 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
       : hymnTune.selectedFileName;
   }, [hymnTune, selectedTuneIdx]);
 
-  // Check if locally cached on device storage
-  const [cachedLocalUri, setCachedLocalUri] = useState<string | null>(() => {
-    return currentTuneFile ? getLocalTuneUri(currentTuneFile, selectedInstrument) : null;
-  });
-  const [isDownloadingCache, setIsDownloadingCache] = useState<boolean>(false);
+  // Synchronously check if locally cached on device storage
+  const cachedLocalUri = React.useMemo(() => {
+    if (!currentTuneFile) return null;
+    return getLocalTuneUri(currentTuneFile, selectedInstrument);
+  }, [currentTuneFile, selectedInstrument, cacheVersion]);
 
-  // When tune file, instrument, or hymn changes, immediately check local cache
-  useEffect(() => {
-    if (!currentTuneFile) {
-      setCachedLocalUri(null);
-      return;
-    }
-    const local = getLocalTuneUri(currentTuneFile, selectedInstrument);
-    setCachedLocalUri(local);
-  }, [currentTuneFile, selectedInstrument, hymnId]);
+  const [isDownloadingCache, setIsDownloadingCache] = useState<boolean>(false);
 
   // Active audio source URI (prioritizes local file://, falls back to Cloudflare R2 streaming URL)
   const activeAudioUri = React.useMemo(() => {
@@ -149,7 +142,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     downloadAndCacheTune(currentTuneFile, selectedInstrument)
       .then((localPath) => {
         if (isMounted && localPath && localPath.startsWith('file://')) {
-          setCachedLocalUri(localPath);
+          setCacheVersion((v) => v + 1);
           setIsDownloadingCache(false);
         }
       })
@@ -215,18 +208,31 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
 
   const handleChangeInstrument = (inst: 'organ' | 'piano') => {
     if (selectedInstrument === inst) return;
-    if (player && audioStatus.playing) {
-      player.pause();
-    }
+    const wasPlaying = audioStatus.playing;
     setSelectedInstrument(inst);
+    if (currentTuneFile && player) {
+      const local = getLocalTuneUri(currentTuneFile, inst);
+      const newUri = local || getAudioStreamUrl(currentTuneFile, inst);
+      player.replace({ uri: newUri });
+      if (wasPlaying) {
+        player.play();
+      }
+    }
   };
 
   const handleChangeTuneIdx = (idx: number) => {
     if (selectedTuneIdx === idx) return;
-    if (player && audioStatus.playing) {
-      player.pause();
-    }
+    const wasPlaying = audioStatus.playing;
     setSelectedTuneIdx(idx);
+    if (hymnTune?.allTunes && hymnTune.allTunes[idx] && player) {
+      const newFile = hymnTune.allTunes[idx].fileName;
+      const local = getLocalTuneUri(newFile, selectedInstrument);
+      const newUri = local || getAudioStreamUrl(newFile, selectedInstrument);
+      player.replace({ uri: newUri });
+      if (wasPlaying) {
+        player.play();
+      }
+    }
   };
 
   const handleToggleLoop = () => {
@@ -709,7 +715,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                               },
                             ]}
                           >
-                            {t.tuneOrder ? `Tune ${t.tuneOrder}: ` : ''}{t.tuneName}
+                            {idx === 0 ? '🎵 C&S: ' : `Alt ${idx}: `}{t.tuneName}
                           </Text>
                         </TouchableOpacity>
                       ))}

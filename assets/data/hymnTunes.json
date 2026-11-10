@@ -322,16 +322,16 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
-        "tuneOrder": "i",
-        "tuneName": "SEYMOUR (Weber)",
-        "composer": "Cal Maria von Weber, 1826",
-        "fileName": "tid0324tmBY6m4bmZ.mp3"
-      },
-      {
         "tuneOrder": "ii",
         "tuneName": "GBOJU SOKE",
         "composer": "Cherubim & Seraphim Church",
         "fileName": "tid0113CR14yYP137.mp3"
+      },
+      {
+        "tuneOrder": "i",
+        "tuneName": "SEYMOUR (Weber)",
+        "composer": "Cal Maria von Weber, 1826",
+        "fileName": "tid0324tmBY6m4bmZ.mp3"
       }
     ],
     "selectedFileName": "tid0113CR14yYP137.mp3"
@@ -982,6 +982,12 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
+        "tuneOrder": "iii",
+        "tuneName": "ỌNA ARA",
+        "composer": "Cherubim & Seraphim Church",
+        "fileName": "tid0283t3fdGdX9O2.mp3"
+      },
+      {
         "tuneOrder": "i",
         "tuneName": "ST. JAMES (Courteville)",
         "composer": "Raphael Courteville, 1697",
@@ -992,12 +998,6 @@
         "tuneName": "ST. AGNES (Dykes)",
         "composer": "John Bacchus Dykes, 1866",
         "fileName": "tid0337WKM5mNEOOR.mp3"
-      },
-      {
-        "tuneOrder": "iii",
-        "tuneName": "ỌNA ARA",
-        "composer": "Cherubim & Seraphim Church",
-        "fileName": "tid0283t3fdGdX9O2.mp3"
       },
       {
         "tuneOrder": "iv",
@@ -1125,16 +1125,16 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
-        "tuneOrder": "i",
-        "tuneName": "GELOBT SEI GOTT",
-        "composer": "Melchior Vulpius, 1609",
-        "fileName": "tid0117oOZPVQU6af.mp3"
-      },
-      {
         "tuneOrder": "ii",
         "tuneName": "OUN AYE",
         "composer": "Cherubim & Seraphim Church",
         "fileName": "tid0269OCRjdHAobt.mp3"
+      },
+      {
+        "tuneOrder": "i",
+        "tuneName": "GELOBT SEI GOTT",
+        "composer": "Melchior Vulpius, 1609",
+        "fileName": "tid0117oOZPVQU6af.mp3"
       }
     ],
     "selectedFileName": "tid0269OCRjdHAobt.mp3"
@@ -1182,16 +1182,16 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
-        "tuneOrder": "i",
-        "tuneName": "REGENT SQUARE (Smart)",
-        "composer": "Henry Thomas Smart, 1867",
-        "fileName": "tid0306yDBZ0DsWXl.mp3"
-      },
-      {
         "tuneOrder": "ii",
         "tuneName": "ỌBA ỌRUN - triple",
         "composer": "Cherubim & Seraphim Church",
         "fileName": "tid0275hv7OlOC4D8.mp3"
+      },
+      {
+        "tuneOrder": "i",
+        "tuneName": "REGENT SQUARE (Smart)",
+        "composer": "Henry Thomas Smart, 1867",
+        "fileName": "tid0306yDBZ0DsWXl.mp3"
       },
       {
         "tuneOrder": "iii",
@@ -1416,6 +1416,12 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
+        "tuneOrder": "iv",
+        "tuneName": "IṢẸGUN ORE RẸ",
+        "composer": "Yoruba Gospel tune",
+        "fileName": "tid0178KGjD00hamU.mp3"
+      },
+      {
         "tuneOrder": "i",
         "tuneName": "ST. JAMES (Courteville)",
         "composer": "Raphael Courteville, 1697",
@@ -1432,12 +1438,6 @@
         "tuneName": "CRANBROOK",
         "composer": "Thomas Clark, d. 1859",
         "fileName": "tid0065zTLmi5H1P4.mp3"
-      },
-      {
-        "tuneOrder": "iv",
-        "tuneName": "IṢẸGUN ORE RẸ",
-        "composer": "Yoruba Gospel tune",
-        "fileName": "tid0178KGjD00hamU.mp3"
       },
       {
         "tuneOrder": "v",
@@ -2312,16 +2312,16 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
-        "tuneOrder": "i",
-        "tuneName": "LENOX (Edson)",
-        "composer": "Lewis Edson, 1782",
-        "fileName": "tid0201aFE8B9gM6d.mp3"
-      },
-      {
         "tuneOrder": "ii",
         "tuneName": "FUNPE",
         "composer": "Cherubim & Seraphim Church",
         "fileName": "tid0110OcMIycFIB0.mp3"
+      },
+      {
+        "tuneOrder": "i",
+        "tuneName": "LENOX (Edson)",
+        "composer": "Lewis Edson, 1782",
+        "fileName": "tid0201aFE8B9gM6d.mp3"
       }
     ],
     "selectedFileName": "tid0110OcMIycFIB0.mp3"
@@ -3870,16 +3870,16 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
-        "tuneOrder": "i",
-        "tuneName": "DYING STEPHEN",
-        "composer": "John Frederick Lampe, 1746",
-        "fileName": "tid0083bStvVQNDOS.mp3"
-      },
-      {
         "tuneOrder": "ii",
         "tuneName": "OLORI IJỌ",
         "composer": "Cherubim & Seraphim Church",
         "fileName": "tid0257gpxoGHzVUX.mp3"
+      },
+      {
+        "tuneOrder": "i",
+        "tuneName": "DYING STEPHEN",
+        "composer": "John Frederick Lampe, 1746",
+        "fileName": "tid0083bStvVQNDOS.mp3"
       }
     ],
     "selectedFileName": "tid0257gpxoGHzVUX.mp3"
@@ -4486,16 +4486,16 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
-        "tuneOrder": "i",
-        "tuneName": "SOLID ROCK",
-        "composer": "William Batchelder Bradbury, 1863",
-        "fileName": "tid0332U3x5rZToSF.mp3"
-      },
-      {
         "tuneOrder": "ii",
         "tuneName": "IGBAGBỌ MI",
         "composer": "Yoruba gospel tune",
         "fileName": "tid0163GBkeH6x8ha.mp3"
+      },
+      {
+        "tuneOrder": "i",
+        "tuneName": "SOLID ROCK",
+        "composer": "William Batchelder Bradbury, 1863",
+        "fileName": "tid0332U3x5rZToSF.mp3"
       },
       {
         "tuneOrder": "iii",
@@ -4847,16 +4847,16 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
-        "tuneOrder": "i",
-        "tuneName": "HANOVER (Croft)",
-        "composer": "Anon",
-        "fileName": "tid0142gh9RlrrD2q.mp3"
-      },
-      {
         "tuneOrder": "ii",
         "tuneName": "TEMILOLUWA",
         "composer": "Yoruba gospel melody",
         "fileName": "tid0383wzTsiNtWur.mp3"
+      },
+      {
+        "tuneOrder": "i",
+        "tuneName": "HANOVER (Croft)",
+        "composer": "Anon",
+        "fileName": "tid0142gh9RlrrD2q.mp3"
       }
     ],
     "selectedFileName": "tid0383wzTsiNtWur.mp3"
@@ -5445,6 +5445,12 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
+        "tuneOrder": "iii",
+        "tuneName": "MA TỌJU MI",
+        "composer": "Cherubim & Seraphim Church",
+        "fileName": "tid0222fphgG19QJL.mp3"
+      },
+      {
         "tuneOrder": "i",
         "tuneName": "CWM RHONDDA",
         "composer": "John Hughes, 1907",
@@ -5455,12 +5461,6 @@
         "tuneName": "DISMISSAL (Viner)",
         "composer": "William Litton Viner, 1845",
         "fileName": "tid0073joS6W9mIjx.mp3"
-      },
-      {
-        "tuneOrder": "iii",
-        "tuneName": "MA TỌJU MI",
-        "composer": "Cherubim & Seraphim Church",
-        "fileName": "tid0222fphgG19QJL.mp3"
       }
     ],
     "selectedFileName": "tid0222fphgG19QJL.mp3"
@@ -5508,6 +5508,12 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
+        "tuneOrder": "iii",
+        "tuneName": "MA TỌJU MI",
+        "composer": "Cherubim & Seraphim Church",
+        "fileName": "tid0222fphgG19QJL.mp3"
+      },
+      {
         "tuneOrder": "i",
         "tuneName": "MANNHEIM",
         "composer": "Friedrich Filitz, 1847",
@@ -5518,12 +5524,6 @@
         "tuneName": "DISMISSAL (Viner)",
         "composer": "William Litton Viner, 1845",
         "fileName": "tid0073joS6W9mIjx.mp3"
-      },
-      {
-        "tuneOrder": "iii",
-        "tuneName": "MA TỌJU MI",
-        "composer": "Cherubim & Seraphim Church",
-        "fileName": "tid0222fphgG19QJL.mp3"
       }
     ],
     "selectedFileName": "tid0222fphgG19QJL.mp3"
@@ -6038,16 +6038,16 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
-        "tuneOrder": "i",
-        "tuneName": "PLAINFIELD",
-        "composer": "Robert Lowry, 1876",
-        "fileName": "tid0294dXHYM1mQ6d.mp3"
-      },
-      {
         "tuneOrder": "ii",
         "tuneName": "WẸṢẸ MI NU",
         "composer": "Cherubim & Seraphim Church",
         "fileName": "tid0421j46ckoQFtI.mp3"
+      },
+      {
+        "tuneOrder": "i",
+        "tuneName": "PLAINFIELD",
+        "composer": "Robert Lowry, 1876",
+        "fileName": "tid0294dXHYM1mQ6d.mp3"
       }
     ],
     "selectedFileName": "tid0421j46ckoQFtI.mp3"
@@ -6753,16 +6753,16 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
-        "tuneOrder": "i",
-        "tuneName": "O golden day, O day of God",
-        "composer": "James McGranahan, 1840-1907",
-        "fileName": "tid0250MbpSO9Lgdc.mp3"
-      },
-      {
         "tuneOrder": "ii",
         "tuneName": "ỌJỌ WURA",
         "composer": "Cherubim & Seraphim Church",
         "fileName": "tid0278B9RCqxA5Pm.mp3"
+      },
+      {
+        "tuneOrder": "i",
+        "tuneName": "O golden day, O day of God",
+        "composer": "James McGranahan, 1840-1907",
+        "fileName": "tid0250MbpSO9Lgdc.mp3"
       }
     ],
     "selectedFileName": "tid0278B9RCqxA5Pm.mp3"
@@ -6925,16 +6925,16 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
-        "tuneOrder": "i",
-        "tuneName": "SEYMOUR (Weber)",
-        "composer": "Cal Maria von Weber, 1826",
-        "fileName": "tid0324tmBY6m4bmZ.mp3"
-      },
-      {
         "tuneOrder": "ii",
         "tuneName": "GBOJU SOKE",
         "composer": "Cherubim & Seraphim Church",
         "fileName": "tid0113CR14yYP137.mp3"
+      },
+      {
+        "tuneOrder": "i",
+        "tuneName": "SEYMOUR (Weber)",
+        "composer": "Cal Maria von Weber, 1826",
+        "fileName": "tid0324tmBY6m4bmZ.mp3"
       }
     ],
     "selectedFileName": "tid0113CR14yYP137.mp3"
@@ -7277,16 +7277,16 @@
     "arranger": "arr. Akin Oguntusin, 1955- ",
     "allTunes": [
       {
-        "tuneOrder": "i",
-        "tuneName": "Yet there is room",
-        "composer": "Ira D. Sankey",
-        "fileName": "tid0434oRKqHrg8MF.mp3"
-      },
-      {
         "tuneOrder": "ii",
         "tuneName": "AYE MBẸ",
         "composer": "Cherubim & Seraphim Church",
         "fileName": "tid0026sZEke7wwoH.mp3"
+      },
+      {
+        "tuneOrder": "i",
+        "tuneName": "Yet there is room",
+        "composer": "Ira D. Sankey",
+        "fileName": "tid0434oRKqHrg8MF.mp3"
       }
     ],
     "selectedFileName": "tid0026sZEke7wwoH.mp3"
