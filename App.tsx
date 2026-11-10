@@ -107,6 +107,16 @@ export default function App() {
     setSetlists(updated);
   };
 
+  const handleCreateSetlistWithHymns = async (
+    name: string,
+    description?: string,
+    hymnIds: number[] = []
+  ) => {
+    await storageService.createSetlistWithHymns(name, description, hymnIds);
+    const updated = await storageService.getSetlists();
+    setSetlists(updated);
+  };
+
   // Header Title for tab view
   const getHeaderTitle = () => {
     switch (activeTab) {
@@ -258,6 +268,7 @@ export default function App() {
               onDeleteSetlist={handleDeleteSetlist}
               onAddHymnToSet={handleAddHymnToSet}
               onRemoveHymnFromSet={handleRemoveHymnFromSet}
+              onCreateSetlistWithHymns={handleCreateSetlistWithHymns}
             />
           </View>
 

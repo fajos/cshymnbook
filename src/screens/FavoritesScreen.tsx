@@ -9,12 +9,17 @@ import {
   Modal,
   TextInput,
   Pressable,
+  Share,
+  Platform,
+  ScrollView,
 } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import { Hymn, Setlist } from '../types/hymn';
 import { ThemeColors } from '../constants/theme';
 import { hymns, getHymnById, searchHymns } from '../services/hymnService';
 import { HymnCard } from '../components/HymnCard';
+import { LITURGICAL_PRESETS, LiturgicalPreset } from '../constants/liturgicalPresets';
 
 interface FavoritesScreenProps {
   theme: ThemeColors;
@@ -26,6 +31,7 @@ interface FavoritesScreenProps {
   onDeleteSetlist: (id: string) => Promise<void>;
   onAddHymnToSet: (setlistId: string, hymnId: number) => Promise<void>;
   onRemoveHymnFromSet: (setlistId: string, hymnId: number) => Promise<void>;
+  onCreateSetlistWithHymns: (name: string, description?: string, hymnIds?: number[]) => Promise<void>;
 }
 
 export const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
@@ -38,6 +44,7 @@ export const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
   onDeleteSetlist,
   onAddHymnToSet,
   onRemoveHymnFromSet,
+  onCreateSetlistWithHymns,
 }) => {
   const [activeTab, setActiveTab] = useState<'favorites' | 'setlists'>('favorites');
   const [selectedSetlistId, setSelectedSetlistId] = useState<string | null>(null);
@@ -50,6 +57,13 @@ export const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
   // Picker Modal state (Add hymn to current setlist)
   const [pickerModalVisible, setPickerModalVisible] = useState(false);
   const [pickerSearch, setPickerSearch] = useState('');
+
+  // Liturgical Presets State
+  const [presetsModalVisible, setPresetsModalVisible] = useState(false);
+
+  // Import Modal State
+  const [importModalVisible, setImportModalVisible] = useState(false);
+  const [importInput, setImportInput] = useState('');
 
   // Favorite hymns list
   const favoriteHymns = hymns.filter((h) => favorites.includes(h.id));
@@ -66,6 +80,117 @@ export const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
     setNewSetName('');
     setNewSetDesc('');
     setCreateModalVisible(false);
+  };
+
+  const handleLoadPreset = async (preset: LiturgicalPreset) => {
+    try {
+      await onCreateSetlistWithHymns(
+        preset.title,
+        `${preset.yorubaTitle} • ${preset.tagline}`,
+        preset.hymns.map((h) => h.id)
+      );
+      Alert.alert(
+        'Preset Added',
+        `"${preset.title}" (${preset.yorubaTitle}) has been added to your Service Sets!`
+      );
+      setPresetsModalVisible(false);
+    } catch {
+      Alert.alert('Error', 'Could not add preset service set.');
+    }
+  };
+
+  const handleShareSetlist = async (setlist: Setlist) => {
+    try {
+      const setHymns = setlist.hymnIds
+        .map((id) => getHymnById(id))
+        .filter((h): h is Hymn => h !== undefined);
+
+      let text = `🎵 C&S Hymn Book — Service Set: ${setlist.name}\n`;
+      if (setlist.description) {
+        text += `Description: ${setlist.description}\n`;
+      }
+      text += `\nSelected Hymns (${setHymns.length}):\n`;
+      setHymns.forEach((h, idx) => {
+        text += `${idx + 1}. ${h.hymn_number} - ${h.title}\n`;
+      });
+
+      text += `\n📥 Quick Import Code for C&S Hymn Book:\nCSSET:${setlist.name}:${setlist.hymnIds.join(',')}\n`;
+      text += `\n— Shared from C&S Hymn Book\n`;
+      if (Platform.OS === 'ios') {
+        text += `Download on App Store: apps.apple.com/app/id6829350908`;
+      } else {
+        text += `Download on Google Play: https://play.google.com/store/apps/details?id=com.fajostech.cshymnbook`;
+      }
+
+      await Share.share(
+        Platform.OS === 'ios'
+          ? { message: text }
+          : { message: text, title: `Service Set: ${setlist.name}` }
+      );
+    } catch {}
+  };
+
+  const parsedImport = React.useMemo(() => {
+    const trimmed = importInput.trim();
+    if (!trimmed) return null;
+
+    // Pattern: CSSET:<name>:<ids>
+    const match = trimmed.match(/CSSET:([^:\n]+):([0-9, ]+)/i);
+    let name = 'Imported Service Set';
+    let rawIdsStr = '';
+
+    if (match) {
+      name = match[1].trim();
+      rawIdsStr = match[2];
+    } else {
+      rawIdsStr = trimmed;
+    }
+
+    const ids = rawIdsStr
+      .split(/[, \n]+/)
+      .map((s) => parseInt(s.trim(), 10))
+      .filter((n) => !isNaN(n) && n > 0);
+
+    const validHymns = ids
+      .map((id) => getHymnById(id))
+      .filter((h): h is Hymn => h !== undefined);
+
+    const uniqueValidHymns = Array.from(new Map(validHymns.map((h) => [h.id, h])).values());
+
+    return {
+      name,
+      hymns: uniqueValidHymns,
+      hymnIds: uniqueValidHymns.map((h) => h.id),
+    };
+  }, [importInput]);
+
+  const handlePasteClipboard = async () => {
+    try {
+      const text = await Clipboard.getStringAsync();
+      if (text) {
+        setImportInput(text);
+      } else {
+        Alert.alert('Clipboard Empty', 'No text found in clipboard.');
+      }
+    } catch {}
+  };
+
+  const handleExecuteImport = async () => {
+    if (!parsedImport || parsedImport.hymnIds.length === 0) {
+      Alert.alert('Invalid Import', 'No valid hymn numbers were found in the text.');
+      return;
+    }
+    await onCreateSetlistWithHymns(
+      parsedImport.name,
+      `Imported with ${parsedImport.hymnIds.length} hymns`,
+      parsedImport.hymnIds
+    );
+    setImportInput('');
+    setImportModalVisible(false);
+    Alert.alert(
+      'Import Successful',
+      `"${parsedImport.name}" with ${parsedImport.hymnIds.length} hymns has been added to your Service Sets!`
+    );
   };
 
   const handleDeleteSetlist = (setlist: Setlist) => {
@@ -121,6 +246,15 @@ export const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
               {setlistHymns.length} Hymns selected
             </Text>
           </View>
+
+          <TouchableOpacity
+            onPress={() => handleShareSetlist(currentSetlist)}
+            style={[styles.shareHeaderBtn, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityLabel="Share service set"
+          >
+            <Ionicons name="share-social-outline" size={18} color={theme.accentGold} />
+          </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => setPickerModalVisible(true)}
@@ -337,20 +471,52 @@ export const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
         /* Tab 2: Service Sets with "+ Create New Set" */
         <View style={{ flex: 1 }}>
           <View style={[styles.setlistActionBar, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
-            <View>
+            <View style={{ flex: 1 }}>
               <Text style={[styles.setlistActionTitle, { color: theme.text }]}>Worship Programs</Text>
               <Text style={[styles.setlistActionSubtitle, { color: theme.textMuted }]}>
                 Organize hymns for Sunday services & vigils
               </Text>
             </View>
-            <TouchableOpacity
-              onPress={() => setCreateModalVisible(true)}
-              style={[styles.newSetButton, { backgroundColor: theme.primary }]}
-            >
-              <Ionicons name="add" size={18} color="#FFFFFF" />
-              <Text style={styles.newSetButtonText}>New Set</Text>
-            </TouchableOpacity>
+            <View style={styles.actionButtonsRow}>
+              <TouchableOpacity
+                onPress={() => setImportModalVisible(true)}
+                style={[styles.importSetButton, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}
+              >
+                <Ionicons name="download-outline" size={16} color={theme.accentGold} />
+                <Text style={[styles.importSetButtonText, { color: theme.accentGold }]}>Import</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setCreateModalVisible(true)}
+                style={[styles.newSetButton, { backgroundColor: theme.primary }]}
+              >
+                <Ionicons name="add" size={18} color="#FFFFFF" />
+                <Text style={styles.newSetButtonText}>New Set</Text>
+              </TouchableOpacity>
+            </View>
           </View>
+
+          {/* Liturgical Presets Quick Banner */}
+          <TouchableOpacity
+            style={[styles.presetsBanner, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}
+            onPress={() => setPresetsModalVisible(true)}
+            activeOpacity={0.8}
+          >
+            <View style={[styles.presetsBadge, { backgroundColor: theme.primaryLight }]}>
+              <Ionicons name="sparkles" size={20} color={theme.accentGold} />
+            </View>
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <Text style={[styles.presetsBannerTitle, { color: theme.text }]}>
+                Church Liturgical Presets (Ètò Ìjọ́sìn)
+              </Text>
+              <Text style={[styles.presetsBannerSub, { color: theme.textSecondary }]}>
+                Sunday Worship, Mercy Service, Friday Vigil &amp; Revival
+              </Text>
+            </View>
+            <View style={[styles.explorePill, { backgroundColor: theme.accentGold + '20' }]}>
+              <Text style={[styles.explorePillText, { color: theme.accentGold }]}>Explore</Text>
+              <Ionicons name="chevron-forward" size={14} color={theme.accentGold} />
+            </View>
+          </TouchableOpacity>
 
           <FlatList
             data={setlists}
@@ -380,6 +546,18 @@ export const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
                     {item.hymnIds.length} {item.hymnIds.length === 1 ? 'Hymn' : 'Hymns'} selected
                   </Text>
                 </View>
+
+                <TouchableOpacity
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    handleShareSetlist(item);
+                  }}
+                  style={styles.shareSetBtn}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  accessibilityLabel="Share setlist"
+                >
+                  <Ionicons name="share-social-outline" size={18} color={theme.accentGold} />
+                </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={(e) => {
@@ -468,6 +646,179 @@ export const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
                 style={[styles.modalSubmitBtn, { backgroundColor: theme.primary }]}
               >
                 <Text style={styles.modalSubmitText}>Create Set</Text>
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      {/* Modal: Liturgical Presets */}
+      <Modal
+        visible={presetsModalVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setPresetsModalVisible(false)}
+      >
+        <View style={styles.presetsModalOverlay}>
+          <View style={[styles.presetsModalContainer, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <View style={[styles.presetsModalHeader, { borderBottomColor: theme.border }]}>
+              <View>
+                <Text style={[styles.presetsModalTitle, { color: theme.text }]}>Church Liturgical Presets</Text>
+                <Text style={[styles.presetsModalSub, { color: theme.textSecondary }]}>
+                  Ètò Ìjọ́sìn Kérúbù &amp; Séráfù
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setPresetsModalVisible(false)}
+                style={[styles.closeIconBtn, { backgroundColor: theme.surfaceCard }]}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Ionicons name="close" size={22} color={theme.textSecondary} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView contentContainerStyle={styles.presetsScrollContent} showsVerticalScrollIndicator={false}>
+              {LITURGICAL_PRESETS.map((preset) => (
+                <View
+                  key={preset.id}
+                  style={[styles.presetCard, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}
+                >
+                  <View style={styles.presetTopRow}>
+                    <View style={[styles.presetIconBadge, { backgroundColor: preset.accentColor + '20' }]}>
+                      <Ionicons name={preset.icon} size={22} color={preset.accentColor} />
+                    </View>
+                    <View style={{ flex: 1, marginLeft: 10 }}>
+                      <Text style={[styles.presetCardTitle, { color: theme.text }]}>{preset.title}</Text>
+                      <Text style={[styles.presetCardYoruba, { color: preset.accentColor }]}>
+                        {preset.yorubaTitle}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <Text style={[styles.presetDesc, { color: theme.textSecondary }]}>
+                    {preset.description}
+                  </Text>
+
+                  {/* Hymn tags list */}
+                  <View style={styles.presetHymnsList}>
+                    {preset.hymns.map((h, i) => (
+                      <View
+                        key={i}
+                        style={[styles.presetHymnTag, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                      >
+                        <Text style={[styles.presetHymnPart, { color: theme.text }]}>
+                          {h.part}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+
+                  <TouchableOpacity
+                    style={[styles.loadPresetBtn, { backgroundColor: theme.primary }]}
+                    onPress={() => handleLoadPreset(preset)}
+                  >
+                    <Ionicons name="add-circle-outline" size={18} color="#FFFFFF" />
+                    <Text style={styles.loadPresetBtnText}>Add to My Service Sets</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal: Import Service Set */}
+      <Modal
+        visible={importModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setImportModalVisible(false)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setImportModalVisible(false)}>
+          <Pressable
+            style={[styles.modalBox, { backgroundColor: theme.surface, borderColor: theme.border }]}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <View style={styles.modalHeader}>
+              <View>
+                <Text style={[styles.modalTitle, { color: theme.text }]}>Import Service Set</Text>
+                <Text style={[styles.modalSubTitle, { color: theme.textSecondary }]}>
+                  Paste setlist code or share message from choir
+                </Text>
+              </View>
+              <TouchableOpacity onPress={() => setImportModalVisible(false)}>
+                <Ionicons name="close" size={24} color={theme.textMuted} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.pasteRow}>
+              <Text style={[styles.modalLabel, { color: theme.textSecondary }]}>Setlist Code / Text</Text>
+              <TouchableOpacity onPress={handlePasteClipboard} style={styles.pasteFromClipboardBtn}>
+                <Ionicons name="clipboard-outline" size={14} color={theme.primary} />
+                <Text style={[styles.pasteFromClipboardText, { color: theme.primary }]}>Paste from Clipboard</Text>
+              </TouchableOpacity>
+            </View>
+
+            <TextInput
+              placeholder="e.g. CSSET:Sunday Divine Service:46,1,66,442,127,821"
+              placeholderTextColor={theme.textMuted}
+              value={importInput}
+              onChangeText={setImportInput}
+              multiline
+              numberOfLines={4}
+              style={[
+                styles.modalInput,
+                styles.importTextInput,
+                { color: theme.text, borderColor: theme.border, backgroundColor: theme.background },
+              ]}
+              autoFocus
+            />
+
+            {/* Live Parsing Preview */}
+            {parsedImport && (
+              <View style={[styles.importPreviewBox, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}>
+                <Text style={[styles.importPreviewTitle, { color: theme.accentGold }]}>
+                  Set Name: {parsedImport.name}
+                </Text>
+                <Text style={[styles.importPreviewCount, { color: theme.text }]}>
+                  {parsedImport.hymns.length} Hymns Detected:
+                </Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.previewHymnTags}>
+                  {parsedImport.hymns.map((h) => (
+                    <View
+                      key={h.id}
+                      style={[styles.previewTag, { backgroundColor: theme.primary + '15', borderColor: theme.primary + '30' }]}
+                    >
+                      <Text style={[styles.previewTagText, { color: theme.primary }]}>{h.hymn_number}</Text>
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+
+            <View style={styles.modalFooter}>
+              <TouchableOpacity
+                onPress={() => {
+                  setImportInput('');
+                  setImportModalVisible(false);
+                }}
+                style={[styles.modalCancelBtn, { borderColor: theme.border }]}
+              >
+                <Text style={[styles.modalCancelText, { color: theme.textSecondary }]}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                disabled={!parsedImport || parsedImport.hymnIds.length === 0}
+                onPress={handleExecuteImport}
+                style={[
+                  styles.modalSubmitBtn,
+                  {
+                    backgroundColor:
+                      parsedImport && parsedImport.hymnIds.length > 0 ? theme.primary : theme.border,
+                  },
+                ]}
+              >
+                <Text style={styles.modalSubmitText}>Import Now</Text>
               </TouchableOpacity>
             </View>
           </Pressable>
@@ -788,5 +1139,227 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: '#10B981',
+  },
+  shareHeaderBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  shareSetBtn: {
+    padding: 6,
+  },
+  actionButtonsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  importSetButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 18,
+    borderWidth: 1,
+    gap: 4,
+  },
+  importSetButtonText: {
+    fontSize: 12.5,
+    fontWeight: '700',
+  },
+  presetsBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    marginTop: 12,
+    marginBottom: 6,
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  presetsBadge: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  presetsBannerTitle: {
+    fontSize: 14.5,
+    fontWeight: '700',
+  },
+  presetsBannerSub: {
+    fontSize: 12,
+    marginTop: 2,
+    lineHeight: 16,
+  },
+  explorePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    gap: 2,
+  },
+  explorePillText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  presetsModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'flex-end',
+  },
+  presetsModalContainer: {
+    height: '85%',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    borderTopWidth: 1,
+    overflow: 'hidden',
+  },
+  presetsModalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+  },
+  presetsModalTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  presetsModalSub: {
+    fontSize: 12.5,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  closeIconBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  presetsScrollContent: {
+    padding: 16,
+    paddingBottom: 40,
+    gap: 16,
+  },
+  presetCard: {
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  presetTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  presetIconBadge: {
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  presetCardTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  presetCardYoruba: {
+    fontSize: 13,
+    fontWeight: '600',
+    marginTop: 1,
+  },
+  presetDesc: {
+    fontSize: 13,
+    lineHeight: 18,
+    marginBottom: 12,
+  },
+  presetHymnsList: {
+    gap: 6,
+    marginBottom: 14,
+  },
+  presetHymnTag: {
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  presetHymnPart: {
+    fontSize: 12.5,
+    fontWeight: '600',
+  },
+  loadPresetBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 12,
+    gap: 6,
+  },
+  loadPresetBtnText: {
+    color: '#FFFFFF',
+    fontSize: 13.5,
+    fontWeight: '700',
+  },
+  modalSubTitle: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  pasteRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  pasteFromClipboardBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 2,
+  },
+  pasteFromClipboardText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  importTextInput: {
+    height: 80,
+    textAlignVertical: 'top',
+    paddingTop: 10,
+  },
+  importPreviewBox: {
+    marginTop: 12,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  importPreviewTitle: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  importPreviewCount: {
+    fontSize: 12.5,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  previewHymnTags: {
+    flexDirection: 'row',
+  },
+  previewTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1,
+    marginRight: 6,
+  },
+  previewTagText: {
+    fontSize: 11.5,
+    fontWeight: '700',
   },
 });

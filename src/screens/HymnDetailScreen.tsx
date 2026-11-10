@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -72,6 +72,51 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   const [showFontControls, setShowFontControls] = useState(false);
   const [showSetlistModal, setShowSetlistModal] = useState(false);
   const [copiedStanza, setCopiedStanza] = useState<string | null>(null);
+
+  // Hands-Free Auto-Scroll States & Refs
+  const [isAutoScrollActive, setIsAutoScrollActive] = useState(false);
+  const [isAutoScrollPlaying, setIsAutoScrollPlaying] = useState(false);
+  const [scrollSpeed, setScrollSpeed] = useState<number>(1.0);
+
+  const scrollYRef = useRef<number>(0);
+  const contentHeightRef = useRef<number>(0);
+  const layoutHeightRef = useRef<number>(0);
+  const autoScrollTimerRef = useRef<any>(null);
+
+  // Stop and reset auto-scroll when changing hymns
+  useEffect(() => {
+    setIsAutoScrollPlaying(false);
+    setIsAutoScrollActive(false);
+    scrollYRef.current = 0;
+  }, [hymnId]);
+
+  // Auto-scroll animation loop
+  useEffect(() => {
+    if (isAutoScrollPlaying) {
+      autoScrollTimerRef.current = setInterval(() => {
+        const maxScroll = Math.max(0, contentHeightRef.current - layoutHeightRef.current);
+        const step = 0.9 * scrollSpeed;
+        const nextY = scrollYRef.current + step;
+        if (nextY >= maxScroll) {
+          setIsAutoScrollPlaying(false);
+        } else {
+          scrollYRef.current = nextY;
+          scrollViewRef.current?.scrollTo({ y: nextY, animated: false });
+        }
+      }, 35);
+    } else {
+      if (autoScrollTimerRef.current) {
+        clearInterval(autoScrollTimerRef.current);
+        autoScrollTimerRef.current = null;
+      }
+    }
+    return () => {
+      if (autoScrollTimerRef.current) {
+        clearInterval(autoScrollTimerRef.current);
+        autoScrollTimerRef.current = null;
+      }
+    };
+  }, [isAutoScrollPlaying, scrollSpeed]);
 
   if (!hymn) {
     return (
@@ -254,6 +299,16 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
         ref={scrollViewRef}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={(e) => {
+          scrollYRef.current = e.nativeEvent.contentOffset.y;
+        }}
+        onContentSizeChange={(_, h) => {
+          contentHeightRef.current = h;
+        }}
+        onLayout={(e) => {
+          layoutHeightRef.current = e.nativeEvent.layout.height;
+        }}
       >
         {/* Hymn Header Info Card */}
         <View style={[styles.infoCard, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}>
@@ -425,6 +480,73 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
           <View style={{ flex: 1 }} />
         )}
       </View>
+
+      {/* Floating Auto-Scroll Launch Pill (when toolbar is closed) */}
+      {!isAutoScrollActive && (
+        <TouchableOpacity
+          style={[styles.floatingAutoScrollBtn, { backgroundColor: theme.primary, borderColor: theme.accentGold }]}
+          onPress={() => {
+            setIsAutoScrollActive(true);
+            setIsAutoScrollPlaying(true);
+          }}
+          activeOpacity={0.85}
+        >
+          <Ionicons name="play" size={13} color="#FFFFFF" />
+          <Text style={styles.floatingAutoScrollText}>Auto-Scroll</Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Floating Auto-Scroll Active Toolbar */}
+      {isAutoScrollActive && (
+        <View style={[styles.autoScrollPill, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}>
+          <TouchableOpacity
+            style={[
+              styles.autoScrollPlayBtn,
+              { backgroundColor: isAutoScrollPlaying ? theme.accentGold : theme.primary },
+            ]}
+            onPress={() => setIsAutoScrollPlaying(!isAutoScrollPlaying)}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons name={isAutoScrollPlaying ? 'pause' : 'play'} size={18} color="#FFFFFF" />
+          </TouchableOpacity>
+
+          <View style={styles.speedButtonGroup}>
+            {[0.5, 1.0, 1.5, 2.0].map((s) => (
+              <TouchableOpacity
+                key={s}
+                style={[
+                  styles.speedBtn,
+                  scrollSpeed === s && [
+                    styles.activeSpeedBtn,
+                    { backgroundColor: theme.primary + '20', borderColor: theme.accentGold },
+                  ],
+                ]}
+                onPress={() => setScrollSpeed(s)}
+              >
+                <Text
+                  style={[
+                    styles.speedBtnText,
+                    { color: scrollSpeed === s ? theme.accentGold : theme.textSecondary },
+                  ]}
+                >
+                  {s}x
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <TouchableOpacity
+            style={styles.autoScrollCloseBtn}
+            onPress={() => {
+              setIsAutoScrollPlaying(false);
+              setIsAutoScrollActive(false);
+            }}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="close" size={20} color={theme.textMuted} />
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Add To Service Set Modal */}
       <AddToSetlistModal
@@ -714,5 +836,75 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 40,
     fontSize: 16,
+  },
+  floatingAutoScrollBtn: {
+    position: 'absolute',
+    bottom: 74,
+    right: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 9,
+    paddingHorizontal: 15,
+    borderRadius: 24,
+    borderWidth: 1,
+    gap: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+    zIndex: 20,
+  },
+  floatingAutoScrollText: {
+    color: '#FFFFFF',
+    fontSize: 12.5,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
+  autoScrollPill: {
+    position: 'absolute',
+    bottom: 72,
+    left: 16,
+    right: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 30,
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 8,
+    zIndex: 25,
+  },
+  autoScrollPlayBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  speedButtonGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  speedBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  activeSpeedBtn: {},
+  speedBtnText: {
+    fontSize: 12.5,
+    fontWeight: '700',
+  },
+  autoScrollCloseBtn: {
+    padding: 6,
   },
 });

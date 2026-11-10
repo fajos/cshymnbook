@@ -12,6 +12,7 @@
     "updates": {
       "url": "https://u.expo.dev/18fcefc1-500c-4346-9799-a7b3162caba7",
       "enabled": true,
+      "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 0
     },
     "splash": {

@@ -112,13 +112,21 @@ export const storageService = {
   },
 
   async createSetlist(name: string, description?: string): Promise<Setlist> {
+    return this.createSetlistWithHymns(name, description, []);
+  },
+
+  async createSetlistWithHymns(
+    name: string,
+    description?: string,
+    hymnIds: number[] = []
+  ): Promise<Setlist> {
     const setlists = await this.getSetlists();
     const newSetlist: Setlist = {
       id: `setlist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       name: name.trim(),
       description: description?.trim() || '',
       createdAt: Date.now(),
-      hymnIds: [],
+      hymnIds: Array.from(new Set(hymnIds)),
     };
     const updated = [newSetlist, ...setlists];
     await this.saveSetlists(updated);
