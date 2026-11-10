@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
-import { Audio, AVPlaybackStatus } from 'expo-av';
+import { useAudioPlayer, useAudioPlayerStatus, AudioModule } from 'expo-audio';
 import { Hymn, ThemeMode, Setlist, Stanza } from '../types/hymn';
 import { ThemeColors } from '../constants/theme';
 import { getHymnById, getSurroundingHymns } from '../services/hymnService';
@@ -96,137 +96,95 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     scrollYRef.current = 0;
   }, [hymnId]);
 
-  // Audio Player State & Setup
+  // Audio Player State & Setup (Modern expo-audio for New Architecture & iOS)
   const hymnTune = React.useMemo(() => (hymn ? getHymnTune(hymn.id) : null), [hymn?.id]);
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [selectedInstrument, setSelectedInstrument] = useState<'organ' | 'piano'>('organ');
   const [selectedTuneIdx, setSelectedTuneIdx] = useState<number>(0);
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [isAudioBuffering, setIsAudioBuffering] = useState(false);
-  const [audioPosition, setAudioPosition] = useState(0);
-  const [audioDuration, setAudioDuration] = useState(0);
   const [isLoopingAudio, setIsLoopingAudio] = useState(false);
-  const soundRef = useRef<Audio.Sound | null>(null);
 
-  // Stop, unload sound, and reset audio when changing hymns
+  // Active streaming URL from Cloudflare R2
+  const currentStreamUrl = React.useMemo(() => {
+    if (!hymnTune) return null;
+    const currentTuneFile =
+      hymnTune.allTunes && hymnTune.allTunes[selectedTuneIdx]
+        ? hymnTune.allTunes[selectedTuneIdx].fileName
+        : hymnTune.selectedFileName;
+    return getAudioStreamUrl(currentTuneFile, selectedInstrument);
+  }, [hymnTune, selectedTuneIdx, selectedInstrument]);
+
+  const player = useAudioPlayer(currentStreamUrl ? { uri: currentStreamUrl } : null, {
+    updateInterval: 250,
+  });
+  const audioStatus = useAudioPlayerStatus(player);
+
+  // Set audio mode for silent mode & background audio
   useEffect(() => {
-    if (soundRef.current) {
-      soundRef.current.unloadAsync().catch(() => {});
-      soundRef.current = null;
+    AudioModule.setAudioModeAsync({
+      playsInSilentMode: true,
+      shouldPlayInBackground: true,
+    }).catch(() => {});
+  }, []);
+
+  // Sync looping state with player
+  useEffect(() => {
+    if (player) {
+      player.loop = isLoopingAudio;
     }
-    setIsPlayingAudio(false);
-    setIsAudioBuffering(false);
-    setAudioPosition(0);
-    setAudioDuration(0);
+  }, [player, isLoopingAudio]);
+
+  // Reset audio when switching hymns
+  useEffect(() => {
+    if (player && audioStatus.playing) {
+      player.pause();
+    }
     setShowAudioPlayer(false);
     setSelectedTuneIdx(0);
   }, [hymnId]);
 
-  // Cleanup sound on component unmount
-  useEffect(() => {
-    return () => {
-      if (soundRef.current) {
-        soundRef.current.unloadAsync().catch(() => {});
-        soundRef.current = null;
-      }
-    };
-  }, []);
-
-  const formatAudioTime = (millis: number) => {
-    if (!millis || isNaN(millis) || millis < 0) return '0:00';
-    const totalSec = Math.floor(millis / 1000);
+  const formatAudioTime = (seconds: number) => {
+    if (!seconds || isNaN(seconds) || seconds < 0) return '0:00';
+    const totalSec = Math.floor(seconds);
     const min = Math.floor(totalSec / 60);
     const sec = totalSec % 60;
     return `${min}:${sec < 10 ? '0' : ''}${sec}`;
   };
 
-  const handleTogglePlayTune = async () => {
-    if (!hymnTune) return;
+  const handleTogglePlayTune = () => {
+    if (!hymnTune || !player) return;
 
     if (!showAudioPlayer) {
       setShowAudioPlayer(true);
     }
 
-    const currentTuneFile =
-      hymnTune.allTunes && hymnTune.allTunes[selectedTuneIdx]
-        ? hymnTune.allTunes[selectedTuneIdx].fileName
-        : hymnTune.selectedFileName;
-
-    const streamUrl = getAudioStreamUrl(currentTuneFile, selectedInstrument);
-
-    if (soundRef.current) {
-      if (isPlayingAudio) {
-        await soundRef.current.pauseAsync().catch(() => {});
-        setIsPlayingAudio(false);
-      } else {
-        await soundRef.current.playAsync().catch(() => {});
-        setIsPlayingAudio(true);
-      }
-      return;
-    }
-
-    try {
-      setIsAudioBuffering(true);
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: true,
-        shouldDuckAndroid: true,
-      });
-
-      const { sound: newSound } = await Audio.Sound.createAsync(
-        { uri: streamUrl },
-        { shouldPlay: true, isLooping: isLoopingAudio },
-        (status: AVPlaybackStatus) => {
-          if (status.isLoaded) {
-            setAudioPosition(status.positionMillis);
-            setAudioDuration(status.durationMillis || 0);
-            setIsPlayingAudio(status.isPlaying);
-            setIsAudioBuffering(status.isBuffering);
-            if (status.didJustFinish && !status.isLooping) {
-              setIsPlayingAudio(false);
-              setAudioPosition(0);
-            }
-          } else if (status.error) {
-            setIsPlayingAudio(false);
-            setIsAudioBuffering(false);
-          }
-        }
-      );
-      soundRef.current = newSound;
-      setIsAudioBuffering(false);
-    } catch (err) {
-      setIsAudioBuffering(false);
-      Alert.alert('Playback Notice', 'Unable to stream audio accompaniment. Please verify your connection.');
+    if (audioStatus.playing) {
+      player.pause();
+    } else {
+      player.play();
     }
   };
 
-  const handleChangeInstrument = async (inst: 'organ' | 'piano') => {
+  const handleChangeInstrument = (inst: 'organ' | 'piano') => {
     if (selectedInstrument === inst) return;
+    if (player && audioStatus.playing) {
+      player.pause();
+    }
     setSelectedInstrument(inst);
-    if (soundRef.current) {
-      await soundRef.current.unloadAsync().catch(() => {});
-      soundRef.current = null;
-      setIsPlayingAudio(false);
-      setAudioPosition(0);
-    }
   };
 
-  const handleChangeTuneIdx = async (idx: number) => {
+  const handleChangeTuneIdx = (idx: number) => {
     if (selectedTuneIdx === idx) return;
-    setSelectedTuneIdx(idx);
-    if (soundRef.current) {
-      await soundRef.current.unloadAsync().catch(() => {});
-      soundRef.current = null;
-      setIsPlayingAudio(false);
-      setAudioPosition(0);
+    if (player && audioStatus.playing) {
+      player.pause();
     }
+    setSelectedTuneIdx(idx);
   };
 
-  const handleToggleLoop = async () => {
+  const handleToggleLoop = () => {
     const next = !isLoopingAudio;
     setIsLoopingAudio(next);
-    if (soundRef.current) {
-      await soundRef.current.setIsLoopingAsync(next).catch(() => {});
+    if (player) {
+      player.loop = next;
     }
   };
 
@@ -556,27 +514,27 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                       style={[
                         styles.choirModeChip,
                         {
-                          backgroundColor: isPlayingAudio ? theme.accentGold : theme.surface,
+                          backgroundColor: audioStatus.playing ? theme.accentGold : theme.surface,
                           borderColor: theme.accentGold,
                         },
                       ]}
                     >
-                      {isAudioBuffering ? (
-                        <ActivityIndicator size="small" color={isPlayingAudio ? '#000000' : theme.accentGold} />
+                      {audioStatus.isBuffering ? (
+                        <ActivityIndicator size="small" color={audioStatus.playing ? '#000000' : theme.accentGold} />
                       ) : (
                         <Ionicons
-                          name={isPlayingAudio ? 'pause' : 'play'}
+                          name={audioStatus.playing ? 'pause' : 'play'}
                           size={12}
-                          color={isPlayingAudio ? '#000000' : theme.accentGold}
+                          color={audioStatus.playing ? '#000000' : theme.accentGold}
                         />
                       )}
                       <Text
                         style={[
                           styles.choirModeChipText,
-                          { color: isPlayingAudio ? '#000000' : theme.accentGold },
+                          { color: audioStatus.playing ? '#000000' : theme.accentGold },
                         ]}
                       >
-                        {isPlayingAudio ? 'Pause' : 'Play Tune'}
+                        {audioStatus.playing ? 'Pause' : 'Play Tune'}
                       </Text>
                     </TouchableOpacity>
                   ) : null}
@@ -701,16 +659,16 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                     <TouchableOpacity
                       onPress={handleTogglePlayTune}
                       style={[styles.audioPlayBtn, { backgroundColor: theme.accentGold }]}
-                      disabled={isAudioBuffering}
+                      disabled={audioStatus.isBuffering}
                     >
-                      {isAudioBuffering ? (
+                      {audioStatus.isBuffering ? (
                         <ActivityIndicator size="small" color="#000000" />
                       ) : (
                         <Ionicons
-                          name={isPlayingAudio ? 'pause' : 'play'}
+                          name={audioStatus.playing ? 'pause' : 'play'}
                           size={18}
                           color="#000000"
-                          style={isPlayingAudio ? undefined : { marginLeft: 2 }}
+                          style={audioStatus.playing ? undefined : { marginLeft: 2 }}
                         />
                       )}
                     </TouchableOpacity>
@@ -723,17 +681,17 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                             styles.audioProgressBarFill,
                             {
                               backgroundColor: theme.accentGold,
-                              width: `${audioDuration > 0 ? Math.min(100, (audioPosition / audioDuration) * 100) : 0}%`,
+                              width: `${audioStatus.duration > 0 ? Math.min(100, (audioStatus.currentTime / audioStatus.duration) * 100) : 0}%`,
                             },
                           ]}
                         />
                       </View>
                       <View style={styles.audioTimeRow}>
                         <Text style={[styles.audioTimeText, { color: theme.textSecondary }]}>
-                          {formatAudioTime(audioPosition)}
+                          {formatAudioTime(audioStatus.currentTime)}
                         </Text>
                         <Text style={[styles.audioTimeText, { color: theme.textSecondary }]}>
-                          {formatAudioTime(audioDuration)}
+                          {formatAudioTime(audioStatus.duration)}
                         </Text>
                       </View>
                     </View>
@@ -759,9 +717,8 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                     {/* Close / Collapse Player */}
                     <TouchableOpacity
                       onPress={() => {
-                        if (soundRef.current) {
-                          soundRef.current.pauseAsync().catch(() => {});
-                          setIsPlayingAudio(false);
+                        if (player && audioStatus.playing) {
+                          player.pause();
                         }
                         setShowAudioPlayer(false);
                       }}

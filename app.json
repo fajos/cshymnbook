@@ -15,11 +15,6 @@
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 0
     },
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0B1B3D"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.fajostech.cshymnbook",
@@ -43,6 +38,20 @@
         "projectId": "18fcefc1-500c-4346-9799-a7b3162caba7"
       }
     },
-    "owner": "cshymnbook"
+    "owner": "cshymnbook",
+    "plugins": [
+      "expo-audio",
+      "expo-font",
+      "expo-asset",
+      "expo-sharing",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#0B1B3D"
+        }
+      ]
+    ]
   }
 }
