@@ -1,3 +1,5 @@
+import { cleanChorusText, cleanStanzaText } from '../services/hymnService';
+
 export interface EnglishStanza {
   number: string;
   text: string;
@@ -111,12 +113,21 @@ export const getEnglishHymn = (hymnId: number): EnglishHymn | null => {
   if (!base) return null;
 
   const override = CURATED_METADATA_OVERRIDES[hymnId];
-  if (!override) return base;
+  const combined = override
+    ? {
+        ...base,
+        ...override,
+        stanzas: override.stanzas || base.stanzas,
+      }
+    : base;
 
   return {
-    ...base,
-    ...override,
-    stanzas: override.stanzas || base.stanzas,
+    ...combined,
+    stanzas: combined.stanzas.map((s) => ({
+      ...s,
+      text: cleanStanzaText(s.text),
+      chorus: cleanChorusText(s.chorus),
+    })),
   };
 };
 

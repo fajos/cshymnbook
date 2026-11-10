@@ -15,7 +15,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAudioPlayer, useAudioPlayerStatus, AudioModule } from 'expo-audio';
 import { Hymn, ThemeMode, Setlist, Stanza } from '../types/hymn';
 import { ThemeColors } from '../constants/theme';
-import { getHymnById, getSurroundingHymns } from '../services/hymnService';
+import {
+  getHymnById,
+  getSurroundingHymns,
+  cleanChorusText,
+  cleanStanzaText,
+  cleanAmenText,
+} from '../services/hymnService';
 import { AddToSetlistModal } from '../components/AddToSetlistModal';
 import { parseMeterString, getVerifiedHymnSolfa } from '../services/musicService';
 import { getEnglishHymn } from '../constants/englishHymns';
@@ -334,33 +340,38 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
 
     if (languageMode === 'english' && englishHymn) {
       englishHymn.stanzas.forEach((s) => {
-        output += `${s.number}\n${s.text}\n`;
-        if (s.chorus) output += `${s.chorus}\n`;
+        output += `${s.number}\n${cleanStanzaText(s.text)}\n`;
+        const c = cleanChorusText(s.chorus);
+        if (c) output += `Refrain:\n${c}\n`;
         output += '\n';
       });
     } else if (languageMode === 'dual' && englishHymn) {
       hymn.stanzas.forEach((s, idx) => {
-        output += `${s.number} [Yorùbá]\n${s.text}\n`;
-        if (s.chorus) output += `Egbe:\n${s.chorus}\n`;
+        output += `${s.number} [Yorùbá]\n${cleanStanzaText(s.text)}\n`;
+        const c = cleanChorusText(s.chorus);
+        if (c) output += `Egbe:\n${c}\n`;
         const eng = englishHymn.stanzas[idx];
         if (eng) {
-          output += `[English Translation]\n${eng.text}\n`;
-          if (eng.chorus) output += `${eng.chorus}\n`;
+          output += `[English Translation]\n${cleanStanzaText(eng.text)}\n`;
+          const engC = cleanChorusText(eng.chorus);
+          if (engC) output += `Refrain:\n${engC}\n`;
         }
         output += '\n';
       });
     } else {
       hymn.stanzas.forEach((s) => {
-        output += `${s.number}\n${s.text}\n`;
-        if (s.chorus) {
-          output += `Egbe:\n${s.chorus}\n`;
+        output += `${s.number}\n${cleanStanzaText(s.text)}\n`;
+        const c = cleanChorusText(s.chorus);
+        if (c) {
+          output += `Egbe:\n${c}\n`;
         }
         output += '\n';
       });
     }
 
     if (hymn.amen) {
-      output += `${hymn.amen}\n`;
+      const cleanedAmen = cleanAmenText(hymn.amen);
+      if (cleanedAmen) output += `${cleanedAmen}\n`;
     }
 
     output += `\n${getStoreShareFooter(isCopy)}`;
@@ -397,23 +408,27 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     const engStanza = typeof stanzaIdx === 'number' && englishHymn ? englishHymn.stanzas[stanzaIdx] : undefined;
 
     if (languageMode === 'english' && engStanza) {
-      output += `${engStanza.text}\n`;
-      if (engStanza.chorus) {
-        output += `\n${engStanza.chorus}\n`;
+      output += `${cleanStanzaText(engStanza.text)}\n`;
+      const c = cleanChorusText(engStanza.chorus);
+      if (c) {
+        output += `\nRefrain:\n${c}\n`;
       }
     } else if (languageMode === 'dual' && engStanza) {
-      output += `[Yorùbá]\n${stanza.text}\n`;
-      if (stanza.chorus) {
-        output += `\nEgbe:\n${stanza.chorus}\n`;
+      output += `[Yorùbá]\n${cleanStanzaText(stanza.text)}\n`;
+      const c = cleanChorusText(stanza.chorus);
+      if (c) {
+        output += `\nEgbe:\n${c}\n`;
       }
-      output += `\n[English Translation]\n${engStanza.text}\n`;
-      if (engStanza.chorus) {
-        output += `\n${engStanza.chorus}\n`;
+      output += `\n[English Translation]\n${cleanStanzaText(engStanza.text)}\n`;
+      const engC = cleanChorusText(engStanza.chorus);
+      if (engC) {
+        output += `\nRefrain:\n${engC}\n`;
       }
     } else {
-      output += `${stanza.text}\n`;
-      if (stanza.chorus) {
-        output += `\nEgbe:\n${stanza.chorus}\n`;
+      output += `${cleanStanzaText(stanza.text)}\n`;
+      const c = cleanChorusText(stanza.chorus);
+      if (c) {
+        output += `\nEgbe:\n${c}\n`;
       }
     }
 
@@ -1056,14 +1071,14 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                 </View>
 
                 <Text style={[styles.stanzaText, { color: theme.text, fontSize, lineHeight: fontSize * 1.55 }]}>
-                  {stanza.text}
+                  {cleanStanzaText(stanza.text)}
                 </Text>
 
-                {stanza.chorus ? (
+                {cleanChorusText(stanza.chorus) ? (
                   <View style={[styles.chorusBox, { backgroundColor: theme.chorusBg, borderColor: theme.chorusBorder }]}>
                     <Text style={[styles.chorusHeader, { color: theme.accentGold }]}>Refrain:</Text>
                     <Text style={[styles.chorusText, { color: theme.text, fontSize: fontSize * 0.95, lineHeight: fontSize * 1.45 }]}>
-                      {stanza.chorus}
+                      {cleanChorusText(stanza.chorus)}
                     </Text>
                   </View>
                 ) : null}
@@ -1127,15 +1142,15 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                   </View>
 
                   <Text style={[styles.stanzaText, { color: theme.text, fontSize, lineHeight: fontSize * 1.55 }]}>
-                    {stanza.text}
+                    {cleanStanzaText(stanza.text)}
                   </Text>
 
                   {/* Chorus if stanza has one */}
-                  {stanza.chorus ? (
+                  {cleanChorusText(stanza.chorus) ? (
                     <View style={[styles.chorusBox, { backgroundColor: theme.chorusBg, borderColor: theme.chorusBorder }]}>
                       <Text style={[styles.chorusHeader, { color: theme.accentGold }]}>Egbe:</Text>
                       <Text style={[styles.chorusText, { color: theme.text, fontSize: fontSize * 0.95, lineHeight: fontSize * 1.45 }]}>
-                        {stanza.chorus}
+                        {cleanChorusText(stanza.chorus)}
                       </Text>
                     </View>
                   ) : null}
@@ -1150,13 +1165,13 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                         </Text>
                       </View>
                       <Text style={[styles.dualText, { color: theme.text, fontSize: fontSize * 0.92, lineHeight: fontSize * 1.48 }]}>
-                        {engStanza.text}
+                        {cleanStanzaText(engStanza.text)}
                       </Text>
-                      {engStanza.chorus ? (
+                      {cleanChorusText(engStanza.chorus) ? (
                         <View style={styles.dualChorusBox}>
                           <Text style={[styles.dualChorusLabel, { color: theme.accentGold }]}>Refrain:</Text>
                           <Text style={[styles.dualChorusText, { color: theme.textSecondary, fontSize: fontSize * 0.88, lineHeight: fontSize * 1.35 }]}>
-                            {engStanza.chorus}
+                            {cleanChorusText(engStanza.chorus)}
                           </Text>
                         </View>
                       ) : null}
@@ -1169,10 +1184,10 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
         </View>
 
         {/* Amen Banner */}
-        {hymn.amen ? (
+        {cleanAmenText(hymn.amen) ? (
           <View style={[styles.amenBanner, { backgroundColor: theme.primary + '15', borderColor: theme.primary + '30' }]}>
             <Text style={[styles.amenText, { color: theme.primary }]}>
-              {hymn.amen}
+              {cleanAmenText(hymn.amen)}
             </Text>
           </View>
         ) : null}
