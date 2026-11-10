@@ -404,7 +404,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
           {hymn.meter ? (
             <View style={[styles.meterCard, { backgroundColor: theme.background }]}>
               <View style={styles.meterCardRow}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1, marginRight: 6 }}>
                   <Ionicons name="musical-notes" size={15} color={theme.accentGold} />
                   <Text style={[styles.meterLabel, { color: theme.accentGold }]}>Tune / Meter:</Text>
                   <Text style={[styles.meterVal, { color: theme.textSecondary }]} numberOfLines={1}>
@@ -995,12 +995,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   meterCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 10,
-    gap: 6,
+    padding: 12,
+    borderRadius: 12,
     marginBottom: 10,
+    width: '100%',
   },
   meterLabel: {
     fontSize: 12,
@@ -1219,6 +1217,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    width: '100%',
     gap: 8,
   },
   choirModeChip: {
@@ -1236,14 +1235,17 @@ const styles = StyleSheet.create({
   },
   choirDetailsBox: {
     marginTop: 10,
-    padding: 10,
-    borderRadius: 10,
+    padding: 12,
+    borderRadius: 12,
     borderWidth: 1,
+    width: '100%',
   },
   choirMetaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 6,
     marginBottom: 8,
   },
   meterTypeBadge: {
