@@ -19,7 +19,13 @@ import { getHymnById, getSurroundingHymns } from '../services/hymnService';
 import { AddToSetlistModal } from '../components/AddToSetlistModal';
 import { parseMeterString, getVerifiedHymnSolfa } from '../services/musicService';
 import { getEnglishHymn } from '../constants/englishHymns';
-import { getHymnTune, getAudioStreamUrl, HymnTuneInfo } from '../services/tuneService';
+import {
+  getHymnTune,
+  getAudioStreamUrl,
+  getLocalTuneUri,
+  downloadAndCacheTune,
+  HymnTuneInfo,
+} from '../services/tuneService';
 
 interface HymnDetailScreenProps {
   hymnId: number;
@@ -103,17 +109,60 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   const [selectedTuneIdx, setSelectedTuneIdx] = useState<number>(0);
   const [isLoopingAudio, setIsLoopingAudio] = useState(false);
 
-  // Active streaming URL from Cloudflare R2
-  const currentStreamUrl = React.useMemo(() => {
+  // Active tune file
+  const currentTuneFile = React.useMemo(() => {
     if (!hymnTune) return null;
-    const currentTuneFile =
-      hymnTune.allTunes && hymnTune.allTunes[selectedTuneIdx]
-        ? hymnTune.allTunes[selectedTuneIdx].fileName
-        : hymnTune.selectedFileName;
-    return getAudioStreamUrl(currentTuneFile, selectedInstrument);
-  }, [hymnTune, selectedTuneIdx, selectedInstrument]);
+    return hymnTune.allTunes && hymnTune.allTunes[selectedTuneIdx]
+      ? hymnTune.allTunes[selectedTuneIdx].fileName
+      : hymnTune.selectedFileName;
+  }, [hymnTune, selectedTuneIdx]);
 
-  const player = useAudioPlayer(currentStreamUrl ? { uri: currentStreamUrl } : null, {
+  // Check if locally cached on device storage
+  const [cachedLocalUri, setCachedLocalUri] = useState<string | null>(() => {
+    return currentTuneFile ? getLocalTuneUri(currentTuneFile, selectedInstrument) : null;
+  });
+  const [isDownloadingCache, setIsDownloadingCache] = useState<boolean>(false);
+
+  // When tune file, instrument, or hymn changes, immediately check local cache
+  useEffect(() => {
+    if (!currentTuneFile) {
+      setCachedLocalUri(null);
+      return;
+    }
+    const local = getLocalTuneUri(currentTuneFile, selectedInstrument);
+    setCachedLocalUri(local);
+  }, [currentTuneFile, selectedInstrument, hymnId]);
+
+  // Active audio source URI (prioritizes local file://, falls back to Cloudflare R2 streaming URL)
+  const activeAudioUri = React.useMemo(() => {
+    if (cachedLocalUri) return cachedLocalUri;
+    if (!currentTuneFile) return null;
+    return getAudioStreamUrl(currentTuneFile, selectedInstrument);
+  }, [cachedLocalUri, currentTuneFile, selectedInstrument]);
+
+  // Automatically download and cache the tune to device storage when player is opened or played
+  useEffect(() => {
+    if (!currentTuneFile || cachedLocalUri || !showAudioPlayer) return;
+
+    let isMounted = true;
+    setIsDownloadingCache(true);
+    downloadAndCacheTune(currentTuneFile, selectedInstrument)
+      .then((localPath) => {
+        if (isMounted && localPath && localPath.startsWith('file://')) {
+          setCachedLocalUri(localPath);
+          setIsDownloadingCache(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setIsDownloadingCache(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentTuneFile, selectedInstrument, showAudioPlayer, cachedLocalUri]);
+
+  const player = useAudioPlayer(activeAudioUri ? { uri: activeAudioUri } : null, {
     updateInterval: 250,
   });
   const audioStatus = useAudioPlayerStatus(player);
@@ -578,11 +627,24 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                             : hymnTune.tuneName}
                         </Text>
                       </View>
-                      <Text style={[styles.audioPlayerComposer, { color: theme.textSecondary }]} numberOfLines={1}>
-                        {hymnTune.allTunes && hymnTune.allTunes[selectedTuneIdx]
-                          ? hymnTune.allTunes[selectedTuneIdx].composer
-                          : hymnTune.composer}
-                      </Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
+                        <Text style={[styles.audioPlayerComposer, { color: theme.textSecondary }]} numberOfLines={1}>
+                          {hymnTune.allTunes && hymnTune.allTunes[selectedTuneIdx]
+                            ? hymnTune.allTunes[selectedTuneIdx].composer
+                            : hymnTune.composer}
+                        </Text>
+                        {cachedLocalUri ? (
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                            <Ionicons name="checkmark-circle" size={11} color="#4CAF50" />
+                            <Text style={{ fontSize: 10, color: '#4CAF50', fontWeight: '700' }}>Saved Offline</Text>
+                          </View>
+                        ) : isDownloadingCache ? (
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                            <ActivityIndicator size="small" color={theme.accentGold} />
+                            <Text style={{ fontSize: 10, color: theme.textSecondary }}>Caching...</Text>
+                          </View>
+                        ) : null}
+                      </View>
                     </View>
 
                     {/* Instrument Selector Pill: Organ vs Piano */}
