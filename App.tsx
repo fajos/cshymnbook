@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   Platform,
+  BackHandler,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
@@ -50,6 +51,28 @@ export default function App() {
       setSetlists(savedSets);
     })();
   }, []);
+
+  // Hardware back button support on Android
+  useEffect(() => {
+    const onHardwareBack = () => {
+      if (showAboutModal) {
+        setShowAboutModal(false);
+        return true;
+      }
+      if (selectedHymnId !== null) {
+        setSelectedHymnId(null);
+        return true;
+      }
+      if (selectedCategory !== null) {
+        setSelectedCategory(null);
+        return true;
+      }
+      return false;
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onHardwareBack);
+    return () => subscription.remove();
+  }, [showAboutModal, selectedHymnId, selectedCategory]);
 
   const theme = THEMES[themeMode];
 
@@ -185,7 +208,7 @@ export default function App() {
           <View
             style={[
               styles.tabContainer,
-              activeTab === 'hymns' && selectedCategory === null && selectedHymnId === null
+              activeTab === 'hymns' && selectedCategory === null
                 ? styles.visible
                 : styles.hidden,
             ]}
@@ -202,7 +225,7 @@ export default function App() {
           <View
             style={[
               styles.tabContainer,
-              activeTab === 'categories' && selectedCategory === null && selectedHymnId === null
+              activeTab === 'categories' && selectedCategory === null
                 ? styles.visible
                 : styles.hidden,
             ]}
@@ -215,12 +238,7 @@ export default function App() {
 
           {/* Category Detail Screen */}
           {selectedCategory !== null && (
-            <View
-              style={[
-                styles.tabContainer,
-                selectedHymnId === null ? styles.visible : styles.hidden,
-              ]}
-            >
+            <View style={[styles.tabContainer, styles.visible]}>
               <CategoryDetailScreen
                 category={selectedCategory}
                 theme={theme}
@@ -236,7 +254,7 @@ export default function App() {
           <View
             style={[
               styles.tabContainer,
-              activeTab === 'liturgy' && selectedCategory === null && selectedHymnId === null
+              activeTab === 'liturgy' && selectedCategory === null
                 ? styles.visible
                 : styles.hidden,
             ]}
@@ -253,7 +271,7 @@ export default function App() {
           <View
             style={[
               styles.tabContainer,
-              activeTab === 'favorites' && selectedCategory === null && selectedHymnId === null
+              activeTab === 'favorites' && selectedCategory === null
                 ? styles.visible
                 : styles.hidden,
             ]}
@@ -274,7 +292,7 @@ export default function App() {
 
           {/* Hymn Detail Screen (Overlaid when viewing a hymn) */}
           {selectedHymnId !== null && (
-            <View style={StyleSheet.absoluteFill}>
+            <View style={[StyleSheet.absoluteFill, { zIndex: 100, elevation: 100 }]}>
               <HymnDetailScreen
                 hymnId={selectedHymnId}
                 theme={theme}

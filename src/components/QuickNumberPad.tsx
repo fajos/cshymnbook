@@ -56,9 +56,12 @@ export const QuickNumberPad: React.FC<QuickNumberPadProps> = ({
     }
 
     if (match) {
+      const targetHymnId = match.id;
       setInputNum('');
       onClose();
-      onSelectHymn(match.id);
+      setTimeout(() => {
+        onSelectHymn(targetHymnId);
+      }, 100);
     }
   };
 
