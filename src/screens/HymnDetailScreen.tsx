@@ -15,6 +15,8 @@ import { Hymn, ThemeMode, Setlist, Stanza } from '../types/hymn';
 import { ThemeColors } from '../constants/theme';
 import { getHymnById, getSurroundingHymns } from '../services/hymnService';
 import { AddToSetlistModal } from '../components/AddToSetlistModal';
+import { parseMeterString } from '../services/musicService';
+import { getEnglishHymn } from '../constants/englishHymns';
 
 interface HymnDetailScreenProps {
   hymnId: number;
@@ -87,8 +89,17 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   useEffect(() => {
     setIsAutoScrollPlaying(false);
     setIsAutoScrollActive(false);
+    setShowChoirMode(false);
     scrollYRef.current = 0;
   }, [hymnId]);
+
+  // Choir Mode & Musical Meter Analysis
+  const [showChoirMode, setShowChoirMode] = useState(false);
+  const meterInfo = React.useMemo(() => parseMeterString(hymn?.meter), [hymn?.meter]);
+
+  // Bilingual Language Mode ('yoruba' | 'english' | 'dual')
+  const [languageMode, setLanguageMode] = useState<'yoruba' | 'english' | 'dual'>('yoruba');
+  const englishHymn = React.useMemo(() => getEnglishHymn(hymnId), [hymnId]);
 
   // Auto-scroll animation loop
   useEffect(() => {
@@ -126,20 +137,42 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     );
   }
 
-  // Format hymn text for sharing / copying
+  // Format hymn text for sharing / copying (aware of Yoruba, English, or Dual view)
   const getShareableText = (isCopy: boolean = false) => {
-    let output = `${hymn.hymn_number}: ${hymn.title}\n`;
-    output += `Category: ${hymn.category_name}\n`;
+    let output = `${hymn.hymn_number}: ${hymn.title}`;
+    if (englishHymn && languageMode !== 'yoruba') {
+      output += ` (${englishHymn.englishTitle})`;
+    }
+    output += `\nCategory: ${hymn.category_name}\n`;
     if (hymn.meter) output += `Tune/Meter: ${hymn.meter}\n`;
     if (hymn.scripture) output += `Scripture: ${hymn.scripture}\n\n`;
 
-    hymn.stanzas.forEach((s) => {
-      output += `${s.number}\n${s.text}\n`;
-      if (s.chorus) {
-        output += `Egbe:\n${s.chorus}\n`;
-      }
-      output += '\n';
-    });
+    if (languageMode === 'english' && englishHymn) {
+      englishHymn.stanzas.forEach((s) => {
+        output += `${s.number}\n${s.text}\n`;
+        if (s.chorus) output += `${s.chorus}\n`;
+        output += '\n';
+      });
+    } else if (languageMode === 'dual' && englishHymn) {
+      hymn.stanzas.forEach((s, idx) => {
+        output += `${s.number} [Yorùbá]\n${s.text}\n`;
+        if (s.chorus) output += `Egbe:\n${s.chorus}\n`;
+        const eng = englishHymn.stanzas[idx];
+        if (eng) {
+          output += `[English Translation]\n${eng.text}\n`;
+          if (eng.chorus) output += `${eng.chorus}\n`;
+        }
+        output += '\n';
+      });
+    } else {
+      hymn.stanzas.forEach((s) => {
+        output += `${s.number}\n${s.text}\n`;
+        if (s.chorus) {
+          output += `Egbe:\n${s.chorus}\n`;
+        }
+        output += '\n';
+      });
+    }
 
     if (hymn.amen) {
       output += `${hymn.amen}\n`;
@@ -169,20 +202,43 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   };
 
   // Format single stanza for sharing / copying
-  const getStanzaShareableText = (stanza: Stanza, isCopy: boolean = false) => {
-    let output = `${hymn.hymn_number}: ${hymn.title}\n`;
-    output += `Verse ${stanza.number}\n\n`;
-    output += `${stanza.text}\n`;
-    if (stanza.chorus) {
-      output += `\nEgbe:\n${stanza.chorus}\n`;
+  const getStanzaShareableText = (stanza: Stanza, isCopy: boolean = false, stanzaIdx?: number) => {
+    let output = `${hymn.hymn_number}: ${hymn.title}`;
+    if (englishHymn && languageMode !== 'yoruba') {
+      output += ` (${englishHymn.englishTitle})`;
     }
+    output += `\nVerse ${stanza.number}\n\n`;
+
+    const engStanza = typeof stanzaIdx === 'number' && englishHymn ? englishHymn.stanzas[stanzaIdx] : undefined;
+
+    if (languageMode === 'english' && engStanza) {
+      output += `${engStanza.text}\n`;
+      if (engStanza.chorus) {
+        output += `\n${engStanza.chorus}\n`;
+      }
+    } else if (languageMode === 'dual' && engStanza) {
+      output += `[Yorùbá]\n${stanza.text}\n`;
+      if (stanza.chorus) {
+        output += `\nEgbe:\n${stanza.chorus}\n`;
+      }
+      output += `\n[English Translation]\n${engStanza.text}\n`;
+      if (engStanza.chorus) {
+        output += `\n${engStanza.chorus}\n`;
+      }
+    } else {
+      output += `${stanza.text}\n`;
+      if (stanza.chorus) {
+        output += `\nEgbe:\n${stanza.chorus}\n`;
+      }
+    }
+
     output += `\n${getStoreShareFooter(isCopy)}`;
     return output;
   };
 
-  const handleCopyStanza = async (stanza: Stanza) => {
+  const handleCopyStanza = async (stanza: Stanza, stanzaIdx?: number) => {
     try {
-      const text = getStanzaShareableText(stanza, true);
+      const text = getStanzaShareableText(stanza, true, stanzaIdx);
       await Clipboard.setStringAsync(text);
       setCopiedStanza(stanza.number);
       setTimeout(() => {
@@ -194,9 +250,9 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     } catch {}
   };
 
-  const handleShareStanza = async (stanza: Stanza) => {
+  const handleShareStanza = async (stanza: Stanza, stanzaIdx?: number) => {
     try {
-      const text = getStanzaShareableText(stanza, false);
+      const text = getStanzaShareableText(stanza, false, stanzaIdx);
       await Share.share(
         Platform.OS === 'ios'
           ? { message: text }
@@ -338,11 +394,80 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
             {hymn.title}
           </Text>
 
+          {englishHymn && (
+            <Text style={[styles.englishHymnSubTitle, { color: theme.accentGold }]}>
+              {englishHymn.englishTitle}
+              {englishHymn.author ? ` • ${englishHymn.author}` : ''}
+            </Text>
+          )}
+
           {hymn.meter ? (
             <View style={[styles.meterCard, { backgroundColor: theme.background }]}>
-              <Ionicons name="musical-note" size={14} color={theme.accentGold} />
-              <Text style={[styles.meterLabel, { color: theme.accentGold }]}>Ohun Orin / Tune:</Text>
-              <Text style={[styles.meterVal, { color: theme.textSecondary }]}>{hymn.meter}</Text>
+              <View style={styles.meterCardRow}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 }}>
+                  <Ionicons name="musical-notes" size={15} color={theme.accentGold} />
+                  <Text style={[styles.meterLabel, { color: theme.accentGold }]}>Tune / Meter:</Text>
+                  <Text style={[styles.meterVal, { color: theme.textSecondary }]} numberOfLines={1}>
+                    {hymn.meter}
+                  </Text>
+                </View>
+                {meterInfo && (
+                  <TouchableOpacity
+                    onPress={() => setShowChoirMode(!showChoirMode)}
+                    style={[
+                      styles.choirModeChip,
+                      {
+                        backgroundColor: showChoirMode ? theme.accentGold : theme.surface,
+                        borderColor: theme.accentGold,
+                      },
+                    ]}
+                  >
+                    <Ionicons name="musical-note" size={12} color={showChoirMode ? '#000000' : theme.accentGold} />
+                    <Text
+                      style={[
+                        styles.choirModeChipText,
+                        { color: showChoirMode ? '#000000' : theme.accentGold },
+                      ]}
+                    >
+                      {showChoirMode ? 'Hide Sol-fa' : 'Choir Sol-fa'}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {/* Choir Mode Expandable Box */}
+              {showChoirMode && meterInfo && (
+                <View style={[styles.choirDetailsBox, { borderColor: theme.border, backgroundColor: theme.surfaceCard }]}>
+                  <View style={styles.choirMetaRow}>
+                    <View style={[styles.meterTypeBadge, { backgroundColor: theme.primary + '18' }]}>
+                      <Text style={[styles.meterTypeBadgeText, { color: theme.primary }]}>
+                        {meterInfo.meterType}
+                      </Text>
+                    </View>
+                    {meterInfo.editionRef ? (
+                      <Text style={[styles.editionRefText, { color: theme.accentGold }]}>
+                        {meterInfo.editionRef}
+                      </Text>
+                    ) : null}
+                  </View>
+
+                  {meterInfo.tonicSolFa ? (
+                    <View style={styles.solFaContainer}>
+                      <Text style={[styles.solFaKeyText, { color: theme.text }]}>
+                        Key / Beat: <Text style={{ color: theme.accentGold, fontWeight: '700' }}>{meterInfo.tonicSolFa.keySuggestion}</Text> • {meterInfo.tonicSolFa.timeSignature}
+                      </Text>
+                      <View style={[styles.solFaScoreBox, { backgroundColor: theme.background, borderColor: theme.border }]}>
+                        <Text style={[styles.solFaScoreText, { color: theme.text }]}>
+                          {meterInfo.tonicSolFa.scaleSnippet}
+                        </Text>
+                      </View>
+                      <Text style={[styles.solFaPatternNotes, { color: theme.textSecondary }]}>
+                        💡 {meterInfo.tonicSolFa.patternNotes}
+                      </Text>
+                    </View>
+                  ) : null}
+                </View>
+              )}
             </View>
           ) : null}
 
@@ -355,77 +480,253 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
           ) : null}
         </View>
 
+        {/* Language Selector Bar (Yorùbá | English | Dual View) */}
+        <View style={[styles.langBarContainer, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}>
+          <View style={styles.langBarLeft}>
+            <Ionicons name="language" size={15} color={theme.accentGold} />
+            <Text style={[styles.langBarTitle, { color: theme.text }]}>Language:</Text>
+          </View>
+          <View style={[styles.langSegmentGroup, { backgroundColor: theme.background, borderColor: theme.border }]}>
+            <TouchableOpacity
+              style={[
+                styles.langSegmentBtn,
+                languageMode === 'yoruba' && [styles.activeLangSegmentBtn, { backgroundColor: theme.primary }],
+              ]}
+              onPress={() => setLanguageMode('yoruba')}
+            >
+              <Text
+                style={[
+                  styles.langSegmentText,
+                  { color: languageMode === 'yoruba' ? '#FFFFFF' : theme.textSecondary },
+                ]}
+              >
+                Yorùbá
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.langSegmentBtn,
+                languageMode === 'english' && [styles.activeLangSegmentBtn, { backgroundColor: theme.primary }],
+              ]}
+              onPress={() => setLanguageMode('english')}
+            >
+              <Text
+                style={[
+                  styles.langSegmentText,
+                  { color: languageMode === 'english' ? '#FFFFFF' : theme.textSecondary },
+                ]}
+              >
+                English {englishHymn ? '✓' : ''}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.langSegmentBtn,
+                languageMode === 'dual' && [styles.activeLangSegmentBtn, { backgroundColor: theme.primary }],
+              ]}
+              onPress={() => setLanguageMode('dual')}
+            >
+              <Text
+                style={[
+                  styles.langSegmentText,
+                  { color: languageMode === 'dual' ? '#FFFFFF' : theme.textSecondary },
+                ]}
+              >
+                Dual View
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {languageMode === 'english' && !englishHymn && (
+          <View style={[styles.noEnglishNotice, { backgroundColor: theme.primary + '12', borderColor: theme.primary + '30' }]}>
+            <Ionicons name="information-circle-outline" size={18} color={theme.accentGold} />
+            <Text style={[styles.noEnglishNoticeText, { color: theme.textSecondary }]}>
+              English translation for this indigenous C&amp;S hymn is in preparation. Displaying original Yorùbá liturgical lyrics below.
+            </Text>
+          </View>
+        )}
+
         {/* Stanzas */}
         <View style={styles.stanzasContainer}>
-          {hymn.stanzas.map((stanza, idx) => (
-            <View
-              key={idx}
-              style={[
-                styles.stanzaCard,
-                { backgroundColor: theme.surfaceCard, borderColor: theme.border },
-              ]}
-            >
-              <View style={styles.stanzaHeader}>
-                <View style={[styles.stanzaBadge, { backgroundColor: theme.primary + '20' }]}>
-                  <Text style={[styles.stanzaBadgeText, { color: theme.primary }]}>
-                    {stanza.number}
-                  </Text>
-                </View>
-
-                <View style={styles.stanzaActions}>
-                  <TouchableOpacity
-                    onPress={() => handleCopyStanza(stanza)}
-                    style={[
-                      styles.stanzaActionBtn,
-                      {
-                        backgroundColor: copiedStanza === stanza.number ? '#10B98118' : theme.surface,
-                        borderColor: copiedStanza === stanza.number ? '#10B981' : theme.border,
-                      },
-                    ]}
-                    hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
-                    accessibilityLabel={`Copy verse ${stanza.number}`}
-                  >
-                    <Ionicons
-                      name={copiedStanza === stanza.number ? 'checkmark' : 'copy-outline'}
-                      size={12}
-                      color={copiedStanza === stanza.number ? '#059669' : theme.textSecondary}
-                    />
-                    <Text
-                      style={[
-                        styles.stanzaActionText,
-                        { color: copiedStanza === stanza.number ? '#059669' : theme.textSecondary },
-                      ]}
-                    >
-                      {copiedStanza === stanza.number ? 'Copied' : 'Copy'}
+          {languageMode === 'english' && englishHymn ? (
+            englishHymn.stanzas.map((stanza, idx) => (
+              <View
+                key={idx}
+                style={[
+                  styles.stanzaCard,
+                  { backgroundColor: theme.surfaceCard, borderColor: theme.border },
+                ]}
+              >
+                <View style={styles.stanzaHeader}>
+                  <View style={[styles.stanzaBadge, { backgroundColor: theme.primary + '20' }]}>
+                    <Text style={[styles.stanzaBadgeText, { color: theme.primary }]}>
+                      {stanza.number}
                     </Text>
-                  </TouchableOpacity>
+                  </View>
 
-                  <TouchableOpacity
-                    onPress={() => handleShareStanza(stanza)}
-                    style={[styles.stanzaActionBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
-                    hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
-                    accessibilityLabel={`Share verse ${stanza.number}`}
-                  >
-                    <Ionicons name="share-social-outline" size={12} color={theme.textSecondary} />
-                  </TouchableOpacity>
+                  <View style={styles.stanzaActions}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        handleCopyStanza(
+                          hymn.stanzas[idx] || { number: stanza.number, text: stanza.text, chorus: stanza.chorus || '' },
+                          idx
+                        )
+                      }
+                      style={[
+                        styles.stanzaActionBtn,
+                        {
+                          backgroundColor: copiedStanza === stanza.number ? '#10B98118' : theme.surface,
+                          borderColor: copiedStanza === stanza.number ? '#10B981' : theme.border,
+                        },
+                      ]}
+                      hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                      accessibilityLabel={`Copy verse ${stanza.number}`}
+                    >
+                      <Ionicons
+                        name={copiedStanza === stanza.number ? 'checkmark' : 'copy-outline'}
+                        size={12}
+                        color={copiedStanza === stanza.number ? '#059669' : theme.textSecondary}
+                      />
+                      <Text
+                        style={[
+                          styles.stanzaActionText,
+                          { color: copiedStanza === stanza.number ? '#059669' : theme.textSecondary },
+                        ]}
+                      >
+                        {copiedStanza === stanza.number ? 'Copied' : 'Copy'}
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() =>
+                        handleShareStanza(
+                          hymn.stanzas[idx] || { number: stanza.number, text: stanza.text, chorus: stanza.chorus || '' },
+                          idx
+                        )
+                      }
+                      style={[styles.stanzaActionBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                      hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                      accessibilityLabel={`Share verse ${stanza.number}`}
+                    >
+                      <Ionicons name="share-social-outline" size={12} color={theme.textSecondary} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
+
+                <Text style={[styles.stanzaText, { color: theme.text, fontSize, lineHeight: fontSize * 1.55 }]}>
+                  {stanza.text}
+                </Text>
+
+                {stanza.chorus ? (
+                  <View style={[styles.chorusBox, { backgroundColor: theme.chorusBg, borderColor: theme.chorusBorder }]}>
+                    <Text style={[styles.chorusHeader, { color: theme.accentGold }]}>Refrain:</Text>
+                    <Text style={[styles.chorusText, { color: theme.text, fontSize: fontSize * 0.95, lineHeight: fontSize * 1.45 }]}>
+                      {stanza.chorus}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
+            ))
+          ) : (
+            hymn.stanzas.map((stanza, idx) => {
+              const engStanza = englishHymn?.stanzas[idx];
+              return (
+                <View
+                  key={idx}
+                  style={[
+                    styles.stanzaCard,
+                    { backgroundColor: theme.surfaceCard, borderColor: theme.border },
+                  ]}
+                >
+                  <View style={styles.stanzaHeader}>
+                    <View style={[styles.stanzaBadge, { backgroundColor: theme.primary + '20' }]}>
+                      <Text style={[styles.stanzaBadgeText, { color: theme.primary }]}>
+                        {stanza.number}
+                      </Text>
+                    </View>
 
-              <Text style={[styles.stanzaText, { color: theme.text, fontSize, lineHeight: fontSize * 1.55 }]}>
-                {stanza.text}
-              </Text>
+                    <View style={styles.stanzaActions}>
+                      <TouchableOpacity
+                        onPress={() => handleCopyStanza(stanza, idx)}
+                        style={[
+                          styles.stanzaActionBtn,
+                          {
+                            backgroundColor: copiedStanza === stanza.number ? '#10B98118' : theme.surface,
+                            borderColor: copiedStanza === stanza.number ? '#10B981' : theme.border,
+                          },
+                        ]}
+                        hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                        accessibilityLabel={`Copy verse ${stanza.number}`}
+                      >
+                        <Ionicons
+                          name={copiedStanza === stanza.number ? 'checkmark' : 'copy-outline'}
+                          size={12}
+                          color={copiedStanza === stanza.number ? '#059669' : theme.textSecondary}
+                        />
+                        <Text
+                          style={[
+                            styles.stanzaActionText,
+                            { color: copiedStanza === stanza.number ? '#059669' : theme.textSecondary },
+                          ]}
+                        >
+                          {copiedStanza === stanza.number ? 'Copied' : 'Copy'}
+                        </Text>
+                      </TouchableOpacity>
 
-              {/* Chorus if stanza has one */}
-              {stanza.chorus ? (
-                <View style={[styles.chorusBox, { backgroundColor: theme.chorusBg, borderColor: theme.chorusBorder }]}>
-                  <Text style={[styles.chorusHeader, { color: theme.accentGold }]}>Egbe:</Text>
-                  <Text style={[styles.chorusText, { color: theme.text, fontSize: fontSize * 0.95, lineHeight: fontSize * 1.45 }]}>
-                    {stanza.chorus}
+                      <TouchableOpacity
+                        onPress={() => handleShareStanza(stanza, idx)}
+                        style={[styles.stanzaActionBtn, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                        hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                        accessibilityLabel={`Share verse ${stanza.number}`}
+                      >
+                        <Ionicons name="share-social-outline" size={12} color={theme.textSecondary} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  <Text style={[styles.stanzaText, { color: theme.text, fontSize, lineHeight: fontSize * 1.55 }]}>
+                    {stanza.text}
                   </Text>
+
+                  {/* Chorus if stanza has one */}
+                  {stanza.chorus ? (
+                    <View style={[styles.chorusBox, { backgroundColor: theme.chorusBg, borderColor: theme.chorusBorder }]}>
+                      <Text style={[styles.chorusHeader, { color: theme.accentGold }]}>Egbe:</Text>
+                      <Text style={[styles.chorusText, { color: theme.text, fontSize: fontSize * 0.95, lineHeight: fontSize * 1.45 }]}>
+                        {stanza.chorus}
+                      </Text>
+                    </View>
+                  ) : null}
+
+                  {/* Dual Mode: Parallel English translation block */}
+                  {languageMode === 'dual' && engStanza && (
+                    <View style={[styles.dualEnglishBox, { backgroundColor: theme.primary + '10', borderColor: theme.accentGold }]}>
+                      <View style={styles.dualHeader}>
+                        <Ionicons name="globe-outline" size={12} color={theme.accentGold} />
+                        <Text style={[styles.dualLabel, { color: theme.accentGold }]}>
+                          English Translation
+                        </Text>
+                      </View>
+                      <Text style={[styles.dualText, { color: theme.text, fontSize: fontSize * 0.92, lineHeight: fontSize * 1.48 }]}>
+                        {engStanza.text}
+                      </Text>
+                      {engStanza.chorus ? (
+                        <View style={styles.dualChorusBox}>
+                          <Text style={[styles.dualChorusLabel, { color: theme.accentGold }]}>Refrain:</Text>
+                          <Text style={[styles.dualChorusText, { color: theme.textSecondary, fontSize: fontSize * 0.88, lineHeight: fontSize * 1.35 }]}>
+                            {engStanza.chorus}
+                          </Text>
+                        </View>
+                      ) : null}
+                    </View>
+                  )}
                 </View>
-              ) : null}
-            </View>
-          ))}
+              );
+            })
+          )}
         </View>
 
         {/* Amen Banner */}
@@ -906,5 +1207,167 @@ const styles = StyleSheet.create({
   },
   autoScrollCloseBtn: {
     padding: 6,
+  },
+  englishHymnSubTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    fontStyle: 'italic',
+    marginTop: 4,
+    marginBottom: 6,
+  },
+  meterCardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  choirModeChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 4,
+  },
+  choirModeChipText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  choirDetailsBox: {
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  choirMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  meterTypeBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  meterTypeBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  editionRefText: {
+    fontSize: 11.5,
+    fontWeight: '600',
+  },
+  solFaContainer: {
+    gap: 6,
+  },
+  solFaKeyText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  solFaScoreBox: {
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginVertical: 4,
+  },
+  solFaScoreText: {
+    fontSize: 12.5,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    lineHeight: 18,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  solFaPatternNotes: {
+    fontSize: 11.5,
+    lineHeight: 16,
+  },
+  langBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: 16,
+    marginTop: 10,
+    marginBottom: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  langBarLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  langBarTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  langSegmentGroup: {
+    flexDirection: 'row',
+    borderRadius: 8,
+    borderWidth: 1,
+    padding: 2,
+    gap: 2,
+  },
+  langSegmentBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 6,
+  },
+  activeLangSegmentBtn: {},
+  langSegmentText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  noEnglishNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    marginBottom: 14,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    gap: 8,
+  },
+  noEnglishNoticeText: {
+    flex: 1,
+    fontSize: 12.5,
+    lineHeight: 17,
+  },
+  dualEnglishBox: {
+    marginTop: 12,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  dualHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 6,
+  },
+  dualLabel: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    letterSpacing: 0.2,
+  },
+  dualText: {
+    fontWeight: '500',
+  },
+  dualChorusBox: {
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(212, 175, 55, 0.3)',
+  },
+  dualChorusLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  dualChorusText: {
+    fontStyle: 'italic',
   },
 });
