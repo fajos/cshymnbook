@@ -13,19 +13,11 @@ export interface EnglishHymn {
   stanzas: EnglishStanza[];
 }
 
-// Bundled English Hymn Database (868 hymns)
+// Bundled English Hymn Database (866 hymns)
 const bundledEnglishHymns: Record<string, EnglishHymn> = require('../../assets/data/englishHymns.json');
 
 // Curated author & title metadata for classic Western & C&S pillars
 const CURATED_METADATA_OVERRIDES: Record<number, Partial<EnglishHymn>> = {
-  1: {
-    englishTitle: 'God is a Spirit: And They That Worship Him',
-    author: 'Liturgical Scripture (John 4:24)',
-  },
-  4: {
-    englishTitle: 'Our Heavenly Father, We Have Come Today',
-    author: 'C&S Traditional Kneeling Air',
-  },
   46: {
     englishTitle: 'Awake, My Soul, and with the Sun',
     author: 'Thomas Ken (1637–1711)',

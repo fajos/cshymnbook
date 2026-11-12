@@ -1,36 +1,4 @@
 {
-  "1": {
-    "hymnId": 1,
-    "englishTitle": "God is a Spirit: And They That Worship Him",
-    "author": "Liturgical Scripture (John 4:24)",
-    "stanzas": [
-      {
-        "number": "1.",
-        "text": "God is a Spirit, holy and divine;\nThey that do worship Him in truth shall shine;\nIn spirit and in truth let all bow down,\nAnd seek His mercy and His glorious crown.",
-        "chorus": "Holy, Holy, Holy Lord of hosts,\nThy sacred name is praised to uttermost;\nKeep us forever in Thy Seraph band,\nAnd guide our footsteps to the promised land."
-      },
-      {
-        "number": "2.",
-        "text": "Before Thy presence, Lord, we lowly fall;\nHear Thou our prayers and answer when we call;\nWash all our sins in Jesus’ precious blood,\nAnd fill our spirits with Thy living flood."
-      }
-    ]
-  },
-  "4": {
-    "hymnId": 4,
-    "englishTitle": "Our Heavenly Father, We Have Come Today",
-    "author": "C&S Traditional Kneeling Air",
-    "stanzas": [
-      {
-        "number": "1.",
-        "text": "Our Father, we have come before Thy throne today!\nBehold Thy children kneeling as we pray;\nLook down with pity from Thy throne on high,\nAnd send Thy grace in answer to our cry.",
-        "chorus": "Father, hear us, merciful and mild,\nGrant Thy blessing to each kneeling child."
-      },
-      {
-        "number": "2.",
-        "text": "No other help nor refuge can we find,\nO gentle Saviour, Lover of mankind;\nLet holy peace descend upon this place,\nAnd wrap our souls in Thine unfailing grace."
-      }
-    ]
-  },
   "46": {
     "hymnId": 46,
     "englishTitle": "AWAKE my soul and with the sun",
