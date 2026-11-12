@@ -7,6 +7,7 @@ const KEYS = {
   FONT_SIZE: '@cshymnbook_font_size',
   RECENTS: '@cshymnbook_recents',
   SETLISTS: '@cshymnbook_setlists',
+  ONBOARDING_DONE: '@cshymnbook_onboarding_v1',
 };
 
 export const storageService = {
@@ -160,6 +161,22 @@ export const storageService = {
         target.hymnIds = target.hymnIds.filter((id) => id !== hymnId);
         await this.saveSetlists(setlists);
       }
+    } catch {}
+  },
+
+  // Onboarding Tour
+  async hasCompletedOnboarding(): Promise<boolean> {
+    try {
+      const value = await AsyncStorage.getItem(KEYS.ONBOARDING_DONE);
+      return value === 'true';
+    } catch {
+      return false;
+    }
+  },
+
+  async setOnboardingCompleted(): Promise<void> {
+    try {
+      await AsyncStorage.setItem(KEYS.ONBOARDING_DONE, 'true');
     } catch {}
   },
 };

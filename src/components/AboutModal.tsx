@@ -14,10 +14,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { ThemeColors } from '../constants/theme';
 import { updateService } from '../services/updateService';
 
+const APP_VERSION: string = require('../../app.json').expo?.version || '1.0.1';
+
 interface AboutModalProps {
   visible: boolean;
   theme: ThemeColors;
   onClose: () => void;
+  onOpenOnboarding?: () => void;
 }
 
 type TabType = 'about' | 'privacy' | 'terms';
@@ -26,6 +29,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({
   visible,
   theme,
   onClose,
+  onOpenOnboarding,
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('about');
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
@@ -68,7 +72,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({
               <View>
                 <Text style={[styles.headerTitle, { color: theme.text }]}>C&amp;S Hymn Book</Text>
                 <Text style={[styles.headerSubtitle, { color: theme.textSecondary }]}>
-                  Version 1.0.0 &bull; com.fajostech.cshymnbook
+                  Version {APP_VERSION} &bull; com.fajostech.cshymnbook
                 </Text>
               </View>
             </View>
@@ -181,6 +185,18 @@ export const AboutModal: React.FC<AboutModalProps> = ({
                     &bull; <Text style={styles.boldText}>Instant Dial Pad:</Text> Quick-jump directly to any hymn announced during worship.
                   </Text>
                 </View>
+
+                {onOpenOnboarding && (
+                  <TouchableOpacity
+                    style={[styles.linkButton, { backgroundColor: theme.surfaceCard, borderColor: theme.border, marginTop: 12 }]}
+                    onPress={onOpenOnboarding}
+                  >
+                    <Ionicons name="sparkles-outline" size={18} color={theme.accentGold} />
+                    <Text style={[styles.linkButtonText, { color: theme.text }]}>
+                      View App Feature Tour
+                    </Text>
+                  </TouchableOpacity>
+                )}
 
                 <Text style={[styles.sectionHeading, { color: theme.text }]}>Updates &amp; Maintenance</Text>
                 <TouchableOpacity

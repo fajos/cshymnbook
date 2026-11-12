@@ -22,6 +22,7 @@ import { HymnDetailScreen } from './src/screens/HymnDetailScreen';
 import { FavoritesScreen } from './src/screens/FavoritesScreen';
 import { SpecialLiturgyScreen } from './src/screens/SpecialLiturgyScreen';
 import { AboutModal } from './src/components/AboutModal';
+import { OnboardingModal } from './src/components/OnboardingModal';
 
 type Tab = 'hymns' | 'categories' | 'liturgy' | 'favorites';
 
@@ -36,25 +37,42 @@ export default function App() {
   const [selectedHymnId, setSelectedHymnId] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [showAboutModal, setShowAboutModal] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Load saved preferences
   useEffect(() => {
     (async () => {
-      const savedTheme = await storageService.getTheme();
-      const savedSize = await storageService.getFontSize();
-      const savedFavs = await storageService.getFavorites();
-      const savedSets = await storageService.getSetlists();
+      const [savedTheme, savedSize, savedFavs, savedSets, onboardingDone] =
+        await Promise.all([
+          storageService.getTheme(),
+          storageService.getFontSize(),
+          storageService.getFavorites(),
+          storageService.getSetlists(),
+          storageService.hasCompletedOnboarding(),
+        ]);
 
       setThemeMode(savedTheme);
       setFontSize(savedSize);
       setFavorites(savedFavs);
       setSetlists(savedSets);
+      if (!onboardingDone) {
+        setShowOnboarding(true);
+      }
     })();
+  }, []);
+
+  const handleCompleteOnboarding = useCallback(async () => {
+    setShowOnboarding(false);
+    await storageService.setOnboardingCompleted();
   }, []);
 
   // Hardware back button support on Android
   useEffect(() => {
     const onHardwareBack = () => {
+      if (showOnboarding) {
+        handleCompleteOnboarding();
+        return true;
+      }
       if (showAboutModal) {
         setShowAboutModal(false);
         return true;
@@ -72,7 +90,7 @@ export default function App() {
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', onHardwareBack);
     return () => subscription.remove();
-  }, [showAboutModal, selectedHymnId, selectedCategory]);
+  }, [showOnboarding, handleCompleteOnboarding, showAboutModal, selectedHymnId, selectedCategory]);
 
   const theme = THEMES[themeMode];
 
@@ -398,6 +416,17 @@ export default function App() {
           visible={showAboutModal}
           theme={theme}
           onClose={() => setShowAboutModal(false)}
+          onOpenOnboarding={() => {
+            setShowAboutModal(false);
+            setShowOnboarding(true);
+          }}
+        />
+
+        {/* First-Launch / Replayable Onboarding Tour */}
+        <OnboardingModal
+          visible={showOnboarding}
+          theme={theme}
+          onComplete={handleCompleteOnboarding}
         />
       </SafeAreaView>
     </SafeAreaProvider>
