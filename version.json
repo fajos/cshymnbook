@@ -1,0 +1,10 @@
+{
+  "minimumVersion": "1.0.0",
+  "latestVersion": "1.0.1",
+  "title": "Update Required",
+  "message": "A new version of C&S Hymn Book is available with authentic church tunes, offline tune caching, and lyric formatting improvements. Please update to continue.",
+  "storeUrls": {
+    "ios": "https://apps.apple.com/app/id6829350908",
+    "android": "https://play.google.com/store/apps/details?id=com.fajostech.cshymnbook"
+  }
+}

@@ -23,6 +23,8 @@ import { FavoritesScreen } from './src/screens/FavoritesScreen';
 import { SpecialLiturgyScreen } from './src/screens/SpecialLiturgyScreen';
 import { AboutModal } from './src/components/AboutModal';
 import { OnboardingModal } from './src/components/OnboardingModal';
+import { ForceUpdateModal } from './src/components/ForceUpdateModal';
+import { versionService, VersionCheckResult } from './src/services/versionService';
 
 type Tab = 'hymns' | 'categories' | 'liturgy' | 'favorites';
 
@@ -38,6 +40,22 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [showAboutModal, setShowAboutModal] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Minimum App Version / Force Update state
+  const [versionCheck, setVersionCheck] = useState<VersionCheckResult | null>(null);
+  const [dismissedSoftUpdate, setDismissedSoftUpdate] = useState(false);
+
+  // Check remote minimum app version on launch
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await versionService.checkVersion();
+        if (res.checked && (res.isHardUpdateRequired || res.isSoftUpdateAvailable)) {
+          setVersionCheck(res);
+        }
+      } catch {}
+    })();
+  }, []);
 
   // Load saved preferences
   useEffect(() => {
@@ -69,6 +87,9 @@ export default function App() {
   // Hardware back button support on Android
   useEffect(() => {
     const onHardwareBack = () => {
+      if (versionCheck?.isHardUpdateRequired) {
+        return true;
+      }
       if (showOnboarding) {
         handleCompleteOnboarding();
         return true;
@@ -428,6 +449,24 @@ export default function App() {
           theme={theme}
           onComplete={handleCompleteOnboarding}
         />
+
+        {/* Minimum App Version / Force Update Blocking Modal */}
+        {versionCheck && (
+          <ForceUpdateModal
+            visible={
+              versionCheck.isHardUpdateRequired ||
+              (!dismissedSoftUpdate && versionCheck.isSoftUpdateAvailable)
+            }
+            theme={theme}
+            currentVersion={versionCheck.currentVersion}
+            minimumVersion={versionCheck.minimumVersion}
+            title={versionCheck.title}
+            message={versionCheck.message}
+            storeUrl={versionCheck.storeUrl}
+            isHardUpdate={versionCheck.isHardUpdateRequired}
+            onDismissSoftUpdate={() => setDismissedSoftUpdate(true)}
+          />
+        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );

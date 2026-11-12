@@ -9,10 +9,12 @@ import {
   Linking,
   Platform,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemeColors } from '../constants/theme';
 import { updateService } from '../services/updateService';
+import { versionService } from '../services/versionService';
 
 const APP_VERSION: string = require('../../app.json').expo?.version || '1.0.1';
 
@@ -37,6 +39,26 @@ export const AboutModal: React.FC<AboutModalProps> = ({
   const handleCheckForUpdates = async () => {
     setIsCheckingUpdate(true);
     try {
+      const nativeCheck = await versionService.checkVersion();
+      if (
+        nativeCheck.checked &&
+        (nativeCheck.isHardUpdateRequired || nativeCheck.isSoftUpdateAvailable)
+      ) {
+        Alert.alert(
+          'Store Update Available',
+          `Version ${nativeCheck.latestVersion} is available on the ${
+            Platform.OS === 'ios' ? 'App Store' : 'Google Play'
+          }.\n\n${nativeCheck.message}`,
+          [
+            { text: 'Later', style: 'cancel' },
+            {
+              text: 'Update Now',
+              onPress: () => Linking.openURL(nativeCheck.storeUrl),
+            },
+          ]
+        );
+        return;
+      }
       await updateService.checkAndApplyUpdate(true);
     } finally {
       setIsCheckingUpdate(false);
