@@ -27,8 +27,8 @@ const CURATED_METADATA_OVERRIDES: Record<number, Partial<EnglishHymn>> = {
     author: 'Thomas Tallis (1567)',
   },
   48: {
-    englishTitle: 'All People That on Earth Do Dwell',
-    author: 'William Kethe (1561)',
+    englishTitle: 'Through All the Dangers of the Night',
+    author: 'Thomas Kelly (1806)',
   },
   50: {
     englishTitle: 'Come to the Morning Prayer',
@@ -66,17 +66,33 @@ const CURATED_METADATA_OVERRIDES: Record<number, Partial<EnglishHymn>> = {
     englishTitle: 'Rejoice in the Lord Always',
     author: 'Wilbur A. Christy (1896)',
   },
+  131: {
+    englishTitle: 'Blessed Assurance, Jesus Is Mine',
+    author: 'Fanny J. Crosby & Phoebe P. Knapp (1873)',
+  },
+  143: {
+    englishTitle: 'God Our Creator Who Created the Seraphic Band',
+    author: 'Cherubim & Seraphim Founding Fathers (1925)',
+  },
+  169: {
+    englishTitle: 'All People That on Earth Do Dwell',
+    author: 'William Kethe (1561)',
+  },
   245: {
     englishTitle: 'Christians, Awake, Salute the Happy Morn',
     author: 'John Byrom (1749)',
   },
   344: {
-    englishTitle: 'Sweet Hour of Prayer',
-    author: 'William W. Walford (1845)',
+    englishTitle: 'Sweet the Moments Rich in Blessing',
+    author: 'James Allen & Walter Shirley (1770)',
   },
   442: {
     englishTitle: 'Holy Bible, Book Divine',
     author: 'John Burton (1803)',
+  },
+  461: {
+    englishTitle: 'Sweet Hour of Prayer',
+    author: 'William W. Walford (1845)',
   },
   482: {
     englishTitle: 'All to Jesus I Surrender (I Surrender All)',
@@ -86,9 +102,21 @@ const CURATED_METADATA_OVERRIDES: Record<number, Partial<EnglishHymn>> = {
     englishTitle: 'Under His Wings I Am Safely Abiding',
     author: 'William Orcutt Cushing (1896)',
   },
-  646: {
+  549: {
+    englishTitle: 'What a Friend We Have in Jesus',
+    author: 'Joseph M. Scriven (1855)',
+  },
+  585: {
+    englishTitle: 'Amazing Grace, How Sweet the Sound',
+    author: 'John Newton (1779)',
+  },
+  621: {
     englishTitle: 'Stand Up, Stand Up for Jesus',
     author: 'George Duffield Jr. (1858)',
+  },
+  646: {
+    englishTitle: 'All Ye the Holy Saints of God',
+    author: 'Cherubim & Seraphim Traditional',
   },
   819: {
     englishTitle: 'God Be with You Till We Meet Again',

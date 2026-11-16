@@ -1,8 +1,8 @@
 {
   "minimumVersion": "1.0.2",
-  "latestVersion": "1.0.2",
-  "title": "Update Required",
-  "message": "A new version of C&S Hymn Book is available with authentic church tunes, offline tune caching, and lyric formatting improvements. Please update to continue.",
+  "latestVersion": "2.0.0",
+  "title": "Major Update Required",
+  "message": "C&S Hymn Book 2.0.0 is now available! This major milestone release introduces full Hymn Histories & Author Origins (both C&S Heritage and Global Pillars), Choir Master Tonic Sol-fa notations, Church Seasons, and offline tune caching. Please update to enjoy the complete worship experience.",
   "storeUrls": {
     "ios": "https://apps.apple.com/app/id6829350908",
     "android": "https://play.google.com/store/apps/details?id=com.fajostech.cshymnbook"

@@ -636,13 +636,33 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
               </Text>
             </View>
 
-            <TouchableOpacity
-              onPress={() => setShowSetlistModal(true)}
-              style={[styles.addToSetChip, { borderColor: theme.accentGold, backgroundColor: theme.accentGold + '15' }]}
-            >
-              <Ionicons name="bookmark-outline" size={13} color={theme.accentGold} />
-              <Text style={[styles.addToSetChipText, { color: theme.accentGold }]}>Add to Set</Text>
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {hymnStory ? (
+                <TouchableOpacity
+                  onPress={() => setShowStory((prev) => !prev)}
+                  style={[
+                    styles.addToSetChip,
+                    {
+                      borderColor: theme.primary,
+                      backgroundColor: theme.primary + '18',
+                    },
+                  ]}
+                >
+                  <Ionicons name="book-outline" size={13} color={theme.primary} />
+                  <Text style={[styles.addToSetChipText, { color: theme.primary }]}>
+                    {showStory ? 'Hide History' : 'Hymn History'}
+                  </Text>
+                </TouchableOpacity>
+              ) : null}
+
+              <TouchableOpacity
+                onPress={() => setShowSetlistModal(true)}
+                style={[styles.addToSetChip, { borderColor: theme.accentGold, backgroundColor: theme.accentGold + '15' }]}
+              >
+                <Ionicons name="bookmark-outline" size={13} color={theme.accentGold} />
+                <Text style={[styles.addToSetChipText, { color: theme.accentGold }]}>Add to Set</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <Text style={[styles.hymnTitle, { color: theme.text }]}>
@@ -1072,7 +1092,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
               <View style={styles.hymnStoryTitleRow}>
                 <Ionicons name="book-outline" size={16} color={theme.accentGold} />
                 <Text style={[styles.hymnStoryHeaderTitle, { color: theme.text }]}>
-                  Story Behind the Hymn
+                  History & Origin of this Hymn
                 </Text>
                 <Text style={[styles.hymnStoryAuthor, { color: theme.textSecondary }]} numberOfLines={1}>
                   • {hymnStory.author}
@@ -1087,6 +1107,45 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
 
             {showStory && (
               <View style={styles.hymnStoryBody}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+                  <View
+                    style={{
+                      paddingHorizontal: 8,
+                      paddingVertical: 3,
+                      borderRadius: 6,
+                      backgroundColor:
+                        hymnStory.category === 'cs_heritage'
+                          ? theme.accentGold + '20'
+                          : theme.primary + '18',
+                      borderWidth: 1,
+                      borderColor:
+                        hymnStory.category === 'cs_heritage'
+                          ? theme.accentGold + '40'
+                          : theme.primary + '35',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 10.5,
+                        fontWeight: '700',
+                        color:
+                          hymnStory.category === 'cs_heritage'
+                            ? theme.accentGold
+                            : theme.primary,
+                      }}
+                    >
+                      {hymnStory.category === 'cs_heritage'
+                        ? '👑 C&S Heritage Origin'
+                        : '🌍 Classic Global Pillar'}
+                    </Text>
+                  </View>
+                  {hymnStory.year ? (
+                    <Text style={{ fontSize: 11, color: theme.textMuted, fontWeight: '600' }}>
+                      Era: {hymnStory.year}
+                    </Text>
+                  ) : null}
+                </View>
+
                 {hymnStory.scriptureReference ? (
                   <Text style={[styles.hymnStoryScripture, { color: theme.accentGold }]}>
                     📖 {hymnStory.scriptureReference}

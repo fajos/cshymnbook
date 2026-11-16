@@ -6,14 +6,16 @@ import {
   FlatList,
   TouchableOpacity,
   ScrollView,
+  TextInput,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemeColors } from '../constants/theme';
 import { getHymnsByCategory, SPECIAL_SECTIONS, getHymnById } from '../services/hymnService';
 import { CHURCH_SEASONS, ChurchSeason } from '../constants/churchSeasons';
+import { getAllHymnStories } from '../constants/hymnStories';
 import { HymnCard } from '../components/HymnCard';
 import { DownloadAllTunesModal } from '../components/DownloadAllTunesModal';
-import { Hymn } from '../types/hymn';
+import { Hymn, HymnStory } from '../types/hymn';
 
 interface SpecialLiturgyScreenProps {
   theme: ThemeColors;
@@ -22,7 +24,7 @@ interface SpecialLiturgyScreenProps {
   onToggleFavorite: (hymnId: number) => void;
 }
 
-type LiturgyMode = 'orders' | 'seasons';
+type LiturgyMode = 'orders' | 'seasons' | 'histories';
 
 export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
   theme,
@@ -34,6 +36,40 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
   const [selectedSection, setSelectedSection] = useState(SPECIAL_SECTIONS[0]);
   const [selectedSeason, setSelectedSeason] = useState<ChurchSeason>(CHURCH_SEASONS[0]);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
+
+  // Hymn Histories states
+  const [historyCategory, setHistoryCategory] = useState<'all' | 'cs_heritage' | 'general_classic'>('all');
+  const [historyQuery, setHistoryQuery] = useState('');
+  const [expandedStoryIds, setExpandedStoryIds] = useState<Record<number, boolean>>({});
+
+  const allStories = useMemo(() => getAllHymnStories(), []);
+
+  const filteredStories = useMemo(() => {
+    let list = allStories;
+    if (historyCategory !== 'all') {
+      list = list.filter((s) => s.category === historyCategory);
+    }
+    if (historyQuery.trim()) {
+      const q = historyQuery.trim().toLowerCase();
+      list = list.filter(
+        (s) =>
+          (s.hymnNumber && s.hymnNumber.toLowerCase().includes(q)) ||
+          s.title.toLowerCase().includes(q) ||
+          s.author.toLowerCase().includes(q) ||
+          (s.year && s.year.toLowerCase().includes(q)) ||
+          (s.originStory && s.originStory.toLowerCase().includes(q)) ||
+          (s.spiritualTakeaway && s.spiritualTakeaway.toLowerCase().includes(q))
+      );
+    }
+    return list;
+  }, [allStories, historyCategory, historyQuery]);
+
+  const toggleExpandStory = (id: number) => {
+    setExpandedStoryIds((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   // Hymns for selected special order category
   const hymnsInOrder = useMemo(() => {
@@ -93,6 +129,28 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
               ]}
             >
               Church Seasons
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setMode('histories')}
+            style={[
+              styles.segmentBtn,
+              mode === 'histories' && [styles.activeSegmentBtn, { borderBottomColor: theme.primary }],
+            ]}
+          >
+            <Ionicons
+              name={mode === 'histories' ? 'time' : 'time-outline'}
+              size={15}
+              color={mode === 'histories' ? theme.primary : theme.textMuted}
+            />
+            <Text
+              style={[
+                styles.segmentBtnText,
+                { color: mode === 'histories' ? theme.primary : theme.textMuted },
+              ]}
+            >
+              Hymn Histories
             </Text>
           </TouchableOpacity>
         </View>
@@ -181,7 +239,7 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
             initialNumToRender={12}
           />
         </View>
-      ) : (
+      ) : mode === 'seasons' ? (
         /* Mode 2: Canonical Church Seasons (Lent, Easter, Pentecost, Harvest, Christmas, New Year, Seraphic Anniversary) */
         <View style={{ flex: 1 }}>
           <View style={[styles.tabsWrapper, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
@@ -278,6 +336,230 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
             )}
             contentContainerStyle={styles.listContent}
             initialNumToRender={12}
+          />
+        </View>
+      ) : (
+        /* Mode 3: Hymn Histories & Historical Backgrounds */
+        <View style={{ flex: 1 }}>
+          {/* Search Box */}
+          <View style={[styles.historySearchWrapper, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
+            <View style={[styles.historySearchInputBox, { backgroundColor: theme.background, borderColor: theme.border }]}>
+              <Ionicons name="search" size={16} color={theme.textMuted} />
+              <TextInput
+                placeholder="Search hymn history, author, title, story..."
+                placeholderTextColor={theme.textMuted}
+                value={historyQuery}
+                onChangeText={setHistoryQuery}
+                style={[styles.historySearchInput, { color: theme.text }]}
+                clearButtonMode="while-editing"
+              />
+              {historyQuery ? (
+                <TouchableOpacity onPress={() => setHistoryQuery('')}>
+                  <Ionicons name="close-circle" size={16} color={theme.textMuted} />
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          </View>
+
+          {/* Category Filter Chips */}
+          <View style={[styles.historyFilterRow, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsContent}>
+              <TouchableOpacity
+                onPress={() => setHistoryCategory('all')}
+                style={[
+                  styles.tabChip,
+                  {
+                    backgroundColor: historyCategory === 'all' ? theme.primary : theme.surfaceCard,
+                    borderColor: historyCategory === 'all' ? theme.primary : theme.border,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name="library"
+                  size={14}
+                  color={historyCategory === 'all' ? '#FFFFFF' : theme.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.tabChipText,
+                    { color: historyCategory === 'all' ? '#FFFFFF' : theme.textSecondary },
+                  ]}
+                >
+                  All Histories ({allStories.length})
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setHistoryCategory('cs_heritage')}
+                style={[
+                  styles.tabChip,
+                  {
+                    backgroundColor: historyCategory === 'cs_heritage' ? theme.accentGold : theme.surfaceCard,
+                    borderColor: historyCategory === 'cs_heritage' ? theme.accentGold : theme.border,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name="sparkles"
+                  size={14}
+                  color={historyCategory === 'cs_heritage' ? '#000000' : theme.accentGold}
+                />
+                <Text
+                  style={[
+                    styles.tabChipText,
+                    {
+                      color: historyCategory === 'cs_heritage' ? '#000000' : theme.textSecondary,
+                      fontWeight: historyCategory === 'cs_heritage' ? '700' : '500',
+                    },
+                  ]}
+                >
+                  👑 Seraphic Heritage ({allStories.filter((s) => s.category === 'cs_heritage').length})
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setHistoryCategory('general_classic')}
+                style={[
+                  styles.tabChip,
+                  {
+                    backgroundColor: historyCategory === 'general_classic' ? theme.primary : theme.surfaceCard,
+                    borderColor: historyCategory === 'general_classic' ? theme.primary : theme.border,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name="globe-outline"
+                  size={14}
+                  color={historyCategory === 'general_classic' ? '#FFFFFF' : theme.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.tabChipText,
+                    { color: historyCategory === 'general_classic' ? '#FFFFFF' : theme.textSecondary },
+                  ]}
+                >
+                  🌍 Classic Pillars ({allStories.filter((s) => s.category === 'general_classic').length})
+                </Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+
+          {/* Stories List */}
+          <FlatList
+            data={filteredStories}
+            keyExtractor={(item) => item.hymnId.toString()}
+            contentContainerStyle={styles.historyListContent}
+            renderItem={({ item }) => {
+              const isExpanded = expandedStoryIds[item.hymnId] ?? false;
+              return (
+                <View style={[styles.historyCard, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}>
+                  {/* Top Bar: Hymn Number, Badges, Category */}
+                  <View style={styles.historyCardTopRow}>
+                    <View style={styles.historyHymnBadgeRow}>
+                      <View style={[styles.historyNumberBadge, { backgroundColor: theme.primary }]}>
+                        <Text style={styles.historyNumberBadgeText}>
+                          {item.hymnNumber || `Hymn ${item.hymnId}`}
+                        </Text>
+                      </View>
+                      <View
+                        style={[
+                          styles.historyCategoryPill,
+                          {
+                            backgroundColor:
+                              item.category === 'cs_heritage'
+                                ? theme.accentGold + '20'
+                                : theme.primary + '18',
+                            borderColor:
+                              item.category === 'cs_heritage'
+                                ? theme.accentGold + '40'
+                                : theme.primary + '35',
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.historyCategoryPillText,
+                            {
+                              color:
+                                item.category === 'cs_heritage'
+                                  ? theme.accentGold
+                                  : theme.primary,
+                            },
+                          ]}
+                        >
+                          {item.category === 'cs_heritage' ? '👑 C&S Heritage' : '🌍 Global Pillar'}
+                        </Text>
+                      </View>
+                    </View>
+
+                    {item.year ? (
+                      <Text style={[styles.historyYearText, { color: theme.textMuted }]}>
+                        {item.year}
+                      </Text>
+                    ) : null}
+                  </View>
+
+                  {/* Title & Author */}
+                  <Text style={[styles.historyCardTitle, { color: theme.text }]}>
+                    {item.title}
+                  </Text>
+                  <Text style={[styles.historyCardAuthor, { color: theme.textSecondary }]}>
+                    ✍️ By <Text style={{ fontWeight: '700', color: theme.text }}>{item.author}</Text>
+                  </Text>
+
+                  {/* Scripture Reference */}
+                  {item.scriptureReference ? (
+                    <Text style={[styles.historyScriptureText, { color: theme.accentGold }]}>
+                      📖 {item.scriptureReference}
+                    </Text>
+                  ) : null}
+
+                  {/* Narrative Body */}
+                  <Text
+                    style={[styles.historyStoryText, { color: theme.textSecondary }]}
+                    numberOfLines={isExpanded ? undefined : 4}
+                  >
+                    {item.originStory}
+                  </Text>
+
+                  {item.originStory && item.originStory.length > 200 ? (
+                    <TouchableOpacity
+                      onPress={() => toggleExpandStory(item.hymnId)}
+                      style={styles.historyExpandBtn}
+                      hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                    >
+                      <Text style={[styles.historyExpandText, { color: theme.primary }]}>
+                        {isExpanded ? 'Show Less ▲' : 'Read Full History ▼'}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : null}
+
+                  {/* Spiritual Takeaway Box */}
+                  {item.spiritualTakeaway && isExpanded ? (
+                    <View style={[styles.historyTakeawayBox, { backgroundColor: theme.primary + '10', borderColor: theme.primary + '30' }]}>
+                      <Text style={[styles.historyTakeawayLabel, { color: theme.primary }]}>
+                        💡 Spiritual Takeaway
+                      </Text>
+                      <Text style={[styles.historyTakeawayText, { color: theme.textSecondary }]}>
+                        {item.spiritualTakeaway}
+                      </Text>
+                    </View>
+                  ) : null}
+
+                  {/* Bottom Action: Open Hymn in HymnDetailScreen */}
+                  <View style={[styles.historyActionRow, { borderTopColor: theme.border }]}>
+                    <TouchableOpacity
+                      onPress={() => onSelectHymn(item.hymnId)}
+                      style={[styles.historyOpenHymnBtn, { backgroundColor: theme.primary }]}
+                      activeOpacity={0.8}
+                    >
+                      <Ionicons name="musical-notes" size={15} color="#FFFFFF" />
+                      <Text style={styles.historyOpenHymnText}>Open Hymn & Sing</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              );
+            }}
           />
         </View>
       )}
@@ -442,5 +724,137 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 80,
+  },
+  historySearchWrapper: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  historySearchInputBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    gap: 8,
+  },
+  historySearchInput: {
+    flex: 1,
+    fontSize: 14,
+    paddingVertical: 0,
+  },
+  historyFilterRow: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingVertical: 4,
+  },
+  historyListContent: {
+    padding: 16,
+    paddingBottom: 90,
+  },
+  historyCard: {
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 16,
+    marginBottom: 16,
+  },
+  historyCardTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  historyHymnBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  historyNumberBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  historyNumberBadgeText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 12,
+  },
+  historyCategoryPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  historyCategoryPillText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  historyYearText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  historyCardTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 4,
+    lineHeight: 22,
+  },
+  historyCardAuthor: {
+    fontSize: 13,
+    marginBottom: 8,
+  },
+  historyScriptureText: {
+    fontSize: 12,
+    fontWeight: '600',
+    fontStyle: 'italic',
+    marginBottom: 8,
+  },
+  historyStoryText: {
+    fontSize: 13.5,
+    lineHeight: 21,
+  },
+  historyExpandBtn: {
+    alignSelf: 'flex-start',
+    marginTop: 6,
+    marginBottom: 4,
+  },
+  historyExpandText: {
+    fontSize: 12.5,
+    fontWeight: '700',
+  },
+  historyTakeawayBox: {
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  historyTakeawayLabel: {
+    fontSize: 12,
+    fontWeight: '800',
+    marginBottom: 3,
+  },
+  historyTakeawayText: {
+    fontSize: 12.5,
+    lineHeight: 18,
+  },
+  historyActionRow: {
+    marginTop: 14,
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  historyOpenHymnBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 8,
+    gap: 6,
+  },
+  historyOpenHymnText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
   },
 });

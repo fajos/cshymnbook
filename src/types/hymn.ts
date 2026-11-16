@@ -55,6 +55,8 @@ export interface HymnNote {
 
 export interface HymnStory {
   hymnId: number;
+  hymnNumber?: string;
+  category?: 'cs_heritage' | 'general_classic';
   title: string;
   author: string;
   year?: string;
