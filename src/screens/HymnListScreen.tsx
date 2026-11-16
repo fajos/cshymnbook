@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -30,7 +30,7 @@ export const HymnListScreen: React.FC<HymnListScreenProps> = React.memo(({
   onToggleFavorite,
 }) => {
   const flatListRef = useRef<FlatList<Hymn>>(null);
-  const isFirstRender = useRef(true);
+  const scrollOffsetRef = useRef<number>(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCatId, setSelectedCatId] = useState<number | null>(null);
   const [keypadVisible, setKeypadVisible] = useState(false);
@@ -46,24 +46,34 @@ export const HymnListScreen: React.FC<HymnListScreenProps> = React.memo(({
     return selectedCatId !== null ? categories.find((c) => c.id === selectedCatId) : null;
   }, [selectedCatId]);
 
-  // Scroll to top ONLY when search query or category filter changes (not on initial mount or re-render)
+  // Scroll to top ONLY when user actively changes search query or category filter
+  const prevFilterRef = useRef({ searchQuery, selectedCatId });
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
+    if (
+      prevFilterRef.current.searchQuery !== searchQuery ||
+      prevFilterRef.current.selectedCatId !== selectedCatId
+    ) {
+      prevFilterRef.current = { searchQuery, selectedCatId };
+      scrollOffsetRef.current = 0;
+      flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
+      setShowScrollTop(false);
     }
-    flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
-    setShowScrollTop(false);
   }, [searchQuery, selectedCatId]);
 
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetY = event.nativeEvent.contentOffset.y;
-    setShowScrollTop(offsetY > 300);
-  };
+    if (offsetY >= 0) {
+      scrollOffsetRef.current = offsetY;
+    }
+    const shouldShow = offsetY > 350;
+    setShowScrollTop((prev) => (prev !== shouldShow ? shouldShow : prev));
+  }, []);
 
-  const scrollToTop = () => {
+  const scrollToTop = useCallback(() => {
+    scrollOffsetRef.current = 0;
     flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
-  };
+    setShowScrollTop(false);
+  }, []);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -166,12 +176,13 @@ export const HymnListScreen: React.FC<HymnListScreenProps> = React.memo(({
           />
         )}
         onScroll={handleScroll}
-        scrollEventThrottle={16}
+        scrollEventThrottle={32}
         contentContainerStyle={styles.listContent}
         initialNumToRender={15}
         maxToRenderPerBatch={20}
-        windowSize={10}
+        windowSize={11}
         removeClippedSubviews={false}
+        maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="musical-notes-outline" size={48} color={theme.textMuted} />
@@ -191,6 +202,7 @@ export const HymnListScreen: React.FC<HymnListScreenProps> = React.memo(({
           ]}
           onPress={scrollToTop}
           activeOpacity={0.85}
+          delayPressIn={100}
           accessibilityLabel="Back to top"
         >
           <Ionicons name="arrow-up" size={24} color="#FFFFFF" />
@@ -306,17 +318,17 @@ const styles = StyleSheet.create({
   },
   scrollTopButton: {
     position: 'absolute',
-    right: 20,
-    bottom: 24,
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    right: 18,
+    bottom: 28,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 6,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.25,
     shadowRadius: 5,
     zIndex: 99,
   },

@@ -87,9 +87,10 @@ export const CategoryDetailScreen: React.FC<CategoryDetailScreenProps> = ({
           />
         )}
         onScroll={handleScroll}
-        scrollEventThrottle={16}
+        scrollEventThrottle={32}
         contentContainerStyle={styles.listContent}
         initialNumToRender={15}
+        maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
       />
 
       {/* Floating Back to Top Button */}
@@ -101,6 +102,7 @@ export const CategoryDetailScreen: React.FC<CategoryDetailScreenProps> = ({
           ]}
           onPress={scrollToTop}
           activeOpacity={0.85}
+          delayPressIn={100}
           accessibilityLabel="Back to top"
         >
           <Ionicons name="arrow-up" size={24} color="#FFFFFF" />
@@ -151,17 +153,17 @@ const styles = StyleSheet.create({
   },
   scrollTopButton: {
     position: 'absolute',
-    right: 20,
-    bottom: 24,
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    right: 18,
+    bottom: 28,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 6,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.25,
     shadowRadius: 5,
     zIndex: 99,
   },

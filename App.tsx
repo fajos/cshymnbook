@@ -211,45 +211,42 @@ export default function App() {
       <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.surface }]}>
         <StatusBar style={theme.statusBar} />
 
-        {/* Top App Header (when not inside hymn reader or category detail) */}
-        {selectedHymnId === null && selectedCategory === null && (
-          <Header
-            title={getHeaderTitle()}
-            subtitle={getHeaderSubtitle()}
-            theme={theme}
-            rightActions={[
-              {
-                icon:
-                  themeMode === 'dark'
-                    ? 'moon'
-                    : themeMode === 'sepia'
-                    ? 'book'
-                    : 'sunny',
-                onPress: () => {
-                  const cycle: ThemeMode[] = ['light', 'dark', 'sepia'];
-                  const nextIdx = (cycle.indexOf(themeMode) + 1) % cycle.length;
-                  handleChangeTheme(cycle[nextIdx]);
-                },
-                color: theme.accentGold,
+        {/* Top App Header */}
+        <Header
+          title={getHeaderTitle()}
+          subtitle={getHeaderSubtitle()}
+          theme={theme}
+          rightActions={[
+            {
+              icon:
+                themeMode === 'dark'
+                  ? 'moon'
+                  : themeMode === 'sepia'
+                  ? 'book'
+                  : 'sunny',
+              onPress: () => {
+                const cycle: ThemeMode[] = ['light', 'dark', 'sepia'];
+                const nextIdx = (cycle.indexOf(themeMode) + 1) % cycle.length;
+                handleChangeTheme(cycle[nextIdx]);
               },
-              {
-                icon: 'information-circle-outline',
-                onPress: () => setShowAboutModal(true),
-                color: theme.accentGold,
-              },
-            ]}
-          />
-        )}
+              color: theme.accentGold,
+            },
+            {
+              icon: 'information-circle-outline',
+              onPress: () => setShowAboutModal(true),
+              color: theme.accentGold,
+            },
+          ]}
+        />
 
-        {/* Screen Content */}
+        {/* Screen Content - Fixed layout boundaries so child FlatLists never resize or lose scroll state */}
         <View style={styles.body}>
           {/* Tab 1: Hymns */}
           <View
+            pointerEvents={activeTab === 'hymns' ? 'auto' : 'none'}
             style={[
               styles.tabContainer,
-              activeTab === 'hymns' && selectedCategory === null
-                ? styles.visible
-                : styles.hidden,
+              activeTab === 'hymns' ? styles.visible : styles.hidden,
             ]}
           >
             <HymnListScreen
@@ -262,11 +259,10 @@ export default function App() {
 
           {/* Tab 2: Categories */}
           <View
+            pointerEvents={activeTab === 'categories' ? 'auto' : 'none'}
             style={[
               styles.tabContainer,
-              activeTab === 'categories' && selectedCategory === null
-                ? styles.visible
-                : styles.hidden,
+              activeTab === 'categories' ? styles.visible : styles.hidden,
             ]}
           >
             <CategoryListScreen
@@ -275,27 +271,12 @@ export default function App() {
             />
           </View>
 
-          {/* Category Detail Screen */}
-          {selectedCategory !== null && (
-            <View style={[styles.tabContainer, styles.visible]}>
-              <CategoryDetailScreen
-                category={selectedCategory}
-                theme={theme}
-                favorites={favorites}
-                onBack={() => setSelectedCategory(null)}
-                onSelectHymn={handleSelectHymn}
-                onToggleFavorite={handleToggleFavorite}
-              />
-            </View>
-          )}
-
           {/* Tab 3: Liturgy */}
           <View
+            pointerEvents={activeTab === 'liturgy' ? 'auto' : 'none'}
             style={[
               styles.tabContainer,
-              activeTab === 'liturgy' && selectedCategory === null
-                ? styles.visible
-                : styles.hidden,
+              activeTab === 'liturgy' ? styles.visible : styles.hidden,
             ]}
           >
             <SpecialLiturgyScreen
@@ -308,11 +289,10 @@ export default function App() {
 
           {/* Tab 4: Favorites & Setlists */}
           <View
+            pointerEvents={activeTab === 'favorites' ? 'auto' : 'none'}
             style={[
               styles.tabContainer,
-              activeTab === 'favorites' && selectedCategory === null
-                ? styles.visible
-                : styles.hidden,
+              activeTab === 'favorites' ? styles.visible : styles.hidden,
             ]}
           >
             <FavoritesScreen
@@ -328,107 +308,119 @@ export default function App() {
               onCreateSetlistWithHymns={handleCreateSetlistWithHymns}
             />
           </View>
-
-          {/* Hymn Detail Screen (Overlaid when viewing a hymn) */}
-          {selectedHymnId !== null && (
-            <View style={[StyleSheet.absoluteFill, { zIndex: 100, elevation: 100 }]}>
-              <HymnDetailScreen
-                hymnId={selectedHymnId}
-                theme={theme}
-                themeMode={themeMode}
-                fontSize={fontSize}
-                isFavorite={favorites.includes(selectedHymnId)}
-                setlists={setlists}
-                onBack={() => setSelectedHymnId(null)}
-                onSelectHymn={handleSelectHymn}
-                onToggleFavorite={handleToggleFavorite}
-                onChangeTheme={handleChangeTheme}
-                onChangeFontSize={handleChangeFontSize}
-                onAddToSetlist={handleAddHymnToSet}
-                onCreateAndAddSetlist={handleCreateAndAddSetlist}
-              />
-            </View>
-          )}
         </View>
 
-        {/* Bottom Tab Navigation Bar (when not in detail view) */}
-        {selectedHymnId === null && selectedCategory === null && (
-          <View style={[styles.bottomTabs, { backgroundColor: theme.surface, borderTopColor: theme.border }]}>
-            <TouchableOpacity
-              style={styles.tabItem}
-              onPress={() => setActiveTab('hymns')}
+        {/* Bottom Tab Navigation Bar */}
+        <View style={[styles.bottomTabs, { backgroundColor: theme.surface, borderTopColor: theme.border }]}>
+          <TouchableOpacity
+            style={styles.tabItem}
+            onPress={() => setActiveTab('hymns')}
+          >
+            <Ionicons
+              name={activeTab === 'hymns' ? 'book' : 'book-outline'}
+              size={22}
+              color={activeTab === 'hymns' ? theme.primary : theme.textMuted}
+            />
+            <Text
+              style={[
+                styles.tabLabel,
+                { color: activeTab === 'hymns' ? theme.primary : theme.textMuted },
+              ]}
             >
-              <Ionicons
-                name={activeTab === 'hymns' ? 'book' : 'book-outline'}
-                size={22}
-                color={activeTab === 'hymns' ? theme.primary : theme.textMuted}
-              />
-              <Text
-                style={[
-                  styles.tabLabel,
-                  { color: activeTab === 'hymns' ? theme.primary : theme.textMuted },
-                ]}
-              >
-                Hymns
-              </Text>
-            </TouchableOpacity>
+              Hymns
+            </Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.tabItem}
-              onPress={() => setActiveTab('categories')}
+          <TouchableOpacity
+            style={styles.tabItem}
+            onPress={() => setActiveTab('categories')}
+          >
+            <Ionicons
+              name={activeTab === 'categories' ? 'grid' : 'grid-outline'}
+              size={22}
+              color={activeTab === 'categories' ? theme.primary : theme.textMuted}
+            />
+            <Text
+              style={[
+                styles.tabLabel,
+                { color: activeTab === 'categories' ? theme.primary : theme.textMuted },
+              ]}
             >
-              <Ionicons
-                name={activeTab === 'categories' ? 'grid' : 'grid-outline'}
-                size={22}
-                color={activeTab === 'categories' ? theme.primary : theme.textMuted}
-              />
-              <Text
-                style={[
-                  styles.tabLabel,
-                  { color: activeTab === 'categories' ? theme.primary : theme.textMuted },
-                ]}
-              >
-                Categories
-              </Text>
-            </TouchableOpacity>
+              Categories
+            </Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.tabItem}
-              onPress={() => setActiveTab('liturgy')}
+          <TouchableOpacity
+            style={styles.tabItem}
+            onPress={() => setActiveTab('liturgy')}
+          >
+            <Ionicons
+              name={activeTab === 'liturgy' ? 'flame' : 'flame-outline'}
+              size={22}
+              color={activeTab === 'liturgy' ? theme.primary : theme.textMuted}
+            />
+            <Text
+              style={[
+                styles.tabLabel,
+                { color: activeTab === 'liturgy' ? theme.primary : theme.textMuted },
+              ]}
             >
-              <Ionicons
-                name={activeTab === 'liturgy' ? 'flame' : 'flame-outline'}
-                size={22}
-                color={activeTab === 'liturgy' ? theme.primary : theme.textMuted}
-              />
-              <Text
-                style={[
-                  styles.tabLabel,
-                  { color: activeTab === 'liturgy' ? theme.primary : theme.textMuted },
-                ]}
-              >
-                Liturgy
-              </Text>
-            </TouchableOpacity>
+              Liturgy
+            </Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.tabItem}
-              onPress={() => setActiveTab('favorites')}
+          <TouchableOpacity
+            style={styles.tabItem}
+            onPress={() => setActiveTab('favorites')}
+          >
+            <Ionicons
+              name={activeTab === 'favorites' ? 'heart' : 'heart-outline'}
+              size={22}
+              color={activeTab === 'favorites' ? theme.primary : theme.textMuted}
+            />
+            <Text
+              style={[
+                styles.tabLabel,
+                { color: activeTab === 'favorites' ? theme.primary : theme.textMuted },
+              ]}
             >
-              <Ionicons
-                name={activeTab === 'favorites' ? 'heart' : 'heart-outline'}
-                size={22}
-                color={activeTab === 'favorites' ? theme.primary : theme.textMuted}
-              />
-              <Text
-                style={[
-                  styles.tabLabel,
-                  { color: activeTab === 'favorites' ? theme.primary : theme.textMuted },
-                ]}
-              >
-                Favorites
-              </Text>
-            </TouchableOpacity>
+              Favorites
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Category Detail Screen (Full-Screen Overlay over tabs) */}
+        {selectedCategory !== null && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 90, elevation: 90, backgroundColor: theme.background }]}>
+            <CategoryDetailScreen
+              category={selectedCategory}
+              theme={theme}
+              favorites={favorites}
+              onBack={() => setSelectedCategory(null)}
+              onSelectHymn={handleSelectHymn}
+              onToggleFavorite={handleToggleFavorite}
+            />
+          </View>
+        )}
+
+        {/* Hymn Detail Screen (Full-Screen Overlay over everything) */}
+        {selectedHymnId !== null && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 100, elevation: 100, backgroundColor: theme.background }]}>
+            <HymnDetailScreen
+              hymnId={selectedHymnId}
+              theme={theme}
+              themeMode={themeMode}
+              fontSize={fontSize}
+              isFavorite={favorites.includes(selectedHymnId)}
+              setlists={setlists}
+              onBack={() => setSelectedHymnId(null)}
+              onSelectHymn={handleSelectHymn}
+              onToggleFavorite={handleToggleFavorite}
+              onChangeTheme={handleChangeTheme}
+              onChangeFontSize={handleChangeFontSize}
+              onAddToSetlist={handleAddHymnToSet}
+              onCreateAndAddSetlist={handleCreateAndAddSetlist}
+            />
           </View>
         )}
 
@@ -488,10 +480,12 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   visible: {
-    display: 'flex',
+    opacity: 1,
+    zIndex: 1,
   },
   hidden: {
-    display: 'none',
+    opacity: 0,
+    zIndex: -1,
   },
   bottomTabs: {
     flexDirection: 'row',
