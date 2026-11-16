@@ -167,7 +167,7 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
         </TouchableOpacity>
       </View>
 
-      {mode === 'orders' ? (
+      {mode === 'orders' && (
         /* Mode 1: Special Liturgical Orders (Akunleko, Isoji, Psalms, Lord's Prayer, Creeds) */
         <View style={{ flex: 1 }}>
           <View style={[styles.tabsWrapper, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
@@ -239,7 +239,9 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
             initialNumToRender={12}
           />
         </View>
-      ) : mode === 'seasons' ? (
+      )}
+
+      {mode === 'seasons' && (
         /* Mode 2: Canonical Church Seasons (Lent, Easter, Pentecost, Harvest, Christmas, New Year, Seraphic Anniversary) */
         <View style={{ flex: 1 }}>
           <View style={[styles.tabsWrapper, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
@@ -338,7 +340,9 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
             initialNumToRender={12}
           />
         </View>
-      ) : (
+      )}
+
+      {mode === 'histories' && (
         /* Mode 3: Hymn Histories & Historical Backgrounds */
         <View style={{ flex: 1 }}>
           {/* Search Box */}
