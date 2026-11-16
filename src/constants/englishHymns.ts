@@ -90,9 +90,13 @@ const CURATED_METADATA_OVERRIDES: Record<number, Partial<EnglishHymn>> = {
     englishTitle: 'Stand Up, Stand Up for Jesus',
     author: 'George Duffield Jr. (1858)',
   },
-  821: {
+  819: {
     englishTitle: 'God Be with You Till We Meet Again',
     author: 'Jeremiah E. Rankin (1880)',
+  },
+  821: {
+    englishTitle: 'We Are Going Home, Escort Us Forth',
+    author: 'Cherubim & Seraphim Dismissal Air',
   },
 };
 

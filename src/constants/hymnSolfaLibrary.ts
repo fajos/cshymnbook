@@ -853,12 +853,12 @@ export const HYMN_SOLFA_LIBRARY: Record<number, VerifiedHymnSolfa> = {
     notes: 'The historic Cherubim and Seraphim fellowship march.',
   },
 
-  // Hymn 821: K&S 774
-  821: {
-    hymnId: 821,
-    hymnNumber: 'K&S 774',
+  // Hymn 819: K&S 772
+  819: {
+    hymnId: 819,
+    hymnNumber: 'K&S 772',
     tuneTitle: 'God Be with You Till We Meet Again',
-    composerOrOrigin: 'William G. Tomer (1880) • C.M.S. 594, SS&S 357',
+    composerOrOrigin: 'William G. Tomer (1880) • C.M.S. 527, H.C. 388',
     meterName: '9.8.8.9 with Refrain',
     keySignature: 'Key D♭ / C major',
     timeSignature: '4/4 (Common Time)',

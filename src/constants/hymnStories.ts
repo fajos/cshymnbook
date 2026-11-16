@@ -135,9 +135,9 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
       'Stand firm in faith and truth, never shrinking from Christ’s standard in a compromising world.',
   },
 
-  // K&S 821: God Be with You Till We Meet Again
-  821: {
-    hymnId: 821,
+  // K&S 772: God Be with You Till We Meet Again
+  819: {
+    hymnId: 819,
     title: 'God Be with You Till We Meet Again',
     author: 'Jeremiah E. Rankin',
     year: '1880',

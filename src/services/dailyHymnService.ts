@@ -19,7 +19,7 @@ const DEVOTIONAL_ANCHORS: { hymnId: number; theme: string }[] = [
   { hymnId: 105, theme: 'The Wonder of Redemption' },
   { hymnId: 344, theme: 'The Sweet Haven of Prayer' },
   { hymnId: 442, theme: 'Treasure of the Holy Scriptures' },
-  { hymnId: 821, theme: 'Grace & Farewell Benediction' },
+  { hymnId: 819, theme: 'Grace & Farewell Benediction' },
   { hymnId: 46, theme: 'Morning Consecration & Sun of Righteousness' },
   { hymnId: 48, theme: 'All People That on Earth Do Dwell' },
   { hymnId: 64, theme: 'Evening Contemplation & Eventide' },
