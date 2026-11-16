@@ -21,12 +21,13 @@ import { CategoryDetailScreen } from './src/screens/CategoryDetailScreen';
 import { HymnDetailScreen } from './src/screens/HymnDetailScreen';
 import { FavoritesScreen } from './src/screens/FavoritesScreen';
 import { SpecialLiturgyScreen } from './src/screens/SpecialLiturgyScreen';
+import { HymnHistoriesScreen } from './src/screens/HymnHistoriesScreen';
 import { AboutModal } from './src/components/AboutModal';
 import { OnboardingModal } from './src/components/OnboardingModal';
 import { ForceUpdateModal } from './src/components/ForceUpdateModal';
 import { versionService, VersionCheckResult } from './src/services/versionService';
 
-type Tab = 'hymns' | 'categories' | 'liturgy' | 'favorites';
+type Tab = 'hymns' | 'categories' | 'histories' | 'liturgy' | 'favorites';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('hymns');
@@ -186,6 +187,8 @@ export default function App() {
         return 'C&S Hymn Book';
       case 'categories':
         return 'Hymn Categories';
+      case 'histories':
+        return 'Hymn Histories';
       case 'liturgy':
         return 'Special Liturgy';
       case 'favorites':
@@ -199,6 +202,8 @@ export default function App() {
         return 'Orin Mimo K&S (980 Hymns)';
       case 'categories':
         return '58 Liturgical Sections';
+      case 'histories':
+        return '138 Stories & Seraphic Heritage';
       case 'liturgy':
         return 'Akunleko, Isoji, Psalms & Creeds';
       case 'favorites':
@@ -254,6 +259,7 @@ export default function App() {
               favorites={favorites}
               onSelectHymn={handleSelectHymn}
               onToggleFavorite={handleToggleFavorite}
+              onOpenHistories={() => setActiveTab('histories')}
             />
           </View>
 
@@ -271,7 +277,23 @@ export default function App() {
             />
           </View>
 
-          {/* Tab 3: Liturgy */}
+          {/* Tab 3: Hymn Histories */}
+          <View
+            pointerEvents={activeTab === 'histories' ? 'auto' : 'none'}
+            style={[
+              styles.tabContainer,
+              activeTab === 'histories' ? styles.visible : styles.hidden,
+            ]}
+          >
+            <HymnHistoriesScreen
+              theme={theme}
+              favorites={favorites}
+              onSelectHymn={handleSelectHymn}
+              onToggleFavorite={handleToggleFavorite}
+            />
+          </View>
+
+          {/* Tab 4: Liturgy */}
           <View
             pointerEvents={activeTab === 'liturgy' ? 'auto' : 'none'}
             style={[
@@ -287,7 +309,7 @@ export default function App() {
             />
           </View>
 
-          {/* Tab 4: Favorites & Setlists */}
+          {/* Tab 5: Favorites & Setlists */}
           <View
             pointerEvents={activeTab === 'favorites' ? 'auto' : 'none'}
             style={[
@@ -318,7 +340,7 @@ export default function App() {
           >
             <Ionicons
               name={activeTab === 'hymns' ? 'book' : 'book-outline'}
-              size={22}
+              size={21}
               color={activeTab === 'hymns' ? theme.primary : theme.textMuted}
             />
             <Text
@@ -337,7 +359,7 @@ export default function App() {
           >
             <Ionicons
               name={activeTab === 'categories' ? 'grid' : 'grid-outline'}
-              size={22}
+              size={21}
               color={activeTab === 'categories' ? theme.primary : theme.textMuted}
             />
             <Text
@@ -352,11 +374,45 @@ export default function App() {
 
           <TouchableOpacity
             style={styles.tabItem}
+            onPress={() => setActiveTab('histories')}
+          >
+            <View style={{ position: 'relative' }}>
+              <Ionicons
+                name={activeTab === 'histories' ? 'library' : 'library-outline'}
+                size={21}
+                color={activeTab === 'histories' ? theme.primary : theme.textMuted}
+              />
+              <View
+                style={{
+                  position: 'absolute',
+                  top: -3,
+                  right: -9,
+                  backgroundColor: theme.accentGold,
+                  paddingHorizontal: 3.5,
+                  paddingVertical: 1,
+                  borderRadius: 4,
+                }}
+              >
+                <Text style={{ fontSize: 7.5, fontWeight: '900', color: '#000000' }}>138</Text>
+              </View>
+            </View>
+            <Text
+              style={[
+                styles.tabLabel,
+                { color: activeTab === 'histories' ? theme.primary : theme.textMuted },
+              ]}
+            >
+              Histories
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.tabItem}
             onPress={() => setActiveTab('liturgy')}
           >
             <Ionicons
               name={activeTab === 'liturgy' ? 'flame' : 'flame-outline'}
-              size={22}
+              size={21}
               color={activeTab === 'liturgy' ? theme.primary : theme.textMuted}
             />
             <Text
@@ -375,7 +431,7 @@ export default function App() {
           >
             <Ionicons
               name={activeTab === 'favorites' ? 'heart' : 'heart-outline'}
-              size={22}
+              size={21}
               color={activeTab === 'favorites' ? theme.primary : theme.textMuted}
             />
             <Text
@@ -384,7 +440,7 @@ export default function App() {
                 { color: activeTab === 'favorites' ? theme.primary : theme.textMuted },
               ]}
             >
-              Favorites
+              Saved
             </Text>
           </TouchableOpacity>
         </View>

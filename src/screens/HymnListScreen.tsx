@@ -22,6 +22,7 @@ interface HymnListScreenProps {
   favorites: number[];
   onSelectHymn: (hymnId: number) => void;
   onToggleFavorite: (hymnId: number) => void;
+  onOpenHistories?: () => void;
 }
 
 export const HymnListScreen: React.FC<HymnListScreenProps> = React.memo(({
@@ -29,6 +30,7 @@ export const HymnListScreen: React.FC<HymnListScreenProps> = React.memo(({
   favorites,
   onSelectHymn,
   onToggleFavorite,
+  onOpenHistories,
 }) => {
   const flatListRef = useRef<FlatList<Hymn>>(null);
   const scrollOffsetRef = useRef<number>(0);
@@ -76,15 +78,44 @@ export const HymnListScreen: React.FC<HymnListScreenProps> = React.memo(({
     setShowScrollTop(false);
   }, []);
 
-  // Hymn of the day banner shown when browsing all hymns
+  // Hymn of the day banner & Hymn Histories promo card shown when browsing all hymns
   const listHeader = useMemo(() => {
     if (searchQuery.trim().length > 0 || selectedCatId !== null) return undefined;
     return (
       <View style={{ marginBottom: 4 }}>
         <DailyHymnCard theme={theme} onPressHymn={onSelectHymn} />
+
+        {onOpenHistories && (
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={onOpenHistories}
+            style={[
+              styles.historiesPromoCard,
+              { backgroundColor: theme.surface, borderColor: theme.border },
+            ]}
+          >
+            <View style={[styles.historiesPromoIcon, { backgroundColor: theme.primary + '18' }]}>
+              <Text style={{ fontSize: 22 }}>📜</Text>
+            </View>
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                <Text style={[styles.historiesPromoTitle, { color: theme.text }]}>
+                  Hymn Histories & Heritage
+                </Text>
+                <View style={[styles.historiesPromoBadge, { backgroundColor: theme.accentGold }]}>
+                  <Text style={styles.historiesPromoBadgeText}>138 Stories</Text>
+                </View>
+              </View>
+              <Text style={[styles.historiesPromoSubtitle, { color: theme.textMuted }]}>
+                Discover inspiring backstories, divine origins & Seraphic roots.
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={theme.accentGold} />
+          </TouchableOpacity>
+        )}
       </View>
     );
-  }, [searchQuery, selectedCatId, theme, onSelectHymn]);
+  }, [searchQuery, selectedCatId, theme, onSelectHymn, onOpenHistories]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -312,6 +343,46 @@ const styles = StyleSheet.create({
   countText: {
     fontSize: 12,
     fontWeight: '600',
+  },
+  historiesPromoCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 6,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+  },
+  historiesPromoIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  historiesPromoTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  historiesPromoBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 1.5,
+    borderRadius: 5,
+  },
+  historiesPromoBadgeText: {
+    fontSize: 9.5,
+    fontWeight: '800',
+    color: '#000000',
+  },
+  historiesPromoSubtitle: {
+    fontSize: 11.5,
+    lineHeight: 15,
   },
   listContent: {
     paddingBottom: 80,

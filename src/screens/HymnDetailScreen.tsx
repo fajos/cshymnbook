@@ -1090,20 +1090,62 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
               activeOpacity={0.7}
             >
               <View style={styles.hymnStoryTitleRow}>
-                <Ionicons name="book-outline" size={16} color={theme.accentGold} />
-                <Text style={[styles.hymnStoryHeaderTitle, { color: theme.text }]}>
-                  History & Origin of this Hymn
-                </Text>
-                <Text style={[styles.hymnStoryAuthor, { color: theme.textSecondary }]} numberOfLines={1}>
-                  • {hymnStory.author}
-                </Text>
+                <View style={{ backgroundColor: theme.accentGold + '20', padding: 5, borderRadius: 8, marginRight: 4 }}>
+                  <Text style={{ fontSize: 16 }}>📜</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <Text style={[styles.hymnStoryHeaderTitle, { color: theme.text }]}>
+                      History & Origin of this Hymn
+                    </Text>
+                    <View
+                      style={{
+                        paddingHorizontal: 6,
+                        paddingVertical: 1.5,
+                        borderRadius: 4,
+                        backgroundColor:
+                          hymnStory.category === 'cs_heritage'
+                            ? theme.accentGold
+                            : theme.primary,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 9,
+                          fontWeight: '800',
+                          color: hymnStory.category === 'cs_heritage' ? '#000000' : '#FFFFFF',
+                        }}
+                      >
+                        {hymnStory.category === 'cs_heritage' ? 'C&S HERITAGE' : 'CLASSIC'}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={[styles.hymnStoryAuthor, { color: theme.textSecondary }]} numberOfLines={1}>
+                    By {hymnStory.author} {hymnStory.year ? `(${hymnStory.year})` : ''}
+                  </Text>
+                </View>
               </View>
               <Ionicons
                 name={showStory ? 'chevron-up' : 'chevron-down'}
-                size={18}
-                color={theme.textMuted}
+                size={20}
+                color={theme.accentGold}
               />
             </TouchableOpacity>
+
+            {!showStory && (
+              <TouchableOpacity
+                onPress={() => setShowStory(true)}
+                activeOpacity={0.8}
+                style={{ paddingHorizontal: 14, paddingBottom: 12, paddingTop: 2 }}
+              >
+                <Text numberOfLines={2} style={[styles.hymnStoryText, { color: theme.textSecondary, marginBottom: 4 }]}>
+                  {hymnStory.originStory}
+                </Text>
+                <Text style={{ fontSize: 12, fontWeight: '700', color: theme.primary }}>
+                  Read full history & spiritual takeaway ▾
+                </Text>
+              </TouchableOpacity>
+            )}
 
             {showStory && (
               <View style={styles.hymnStoryBody}>
