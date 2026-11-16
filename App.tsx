@@ -259,7 +259,6 @@ export default function App() {
               favorites={favorites}
               onSelectHymn={handleSelectHymn}
               onToggleFavorite={handleToggleFavorite}
-              onOpenHistories={() => setActiveTab('histories')}
             />
           </View>
 

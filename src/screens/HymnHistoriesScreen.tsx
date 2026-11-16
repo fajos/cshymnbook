@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   Share,
   Platform,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemeColors } from '../constants/theme';
@@ -30,11 +32,27 @@ export const HymnHistoriesScreen: React.FC<HymnHistoriesScreenProps> = React.mem
   favorites = [],
   onToggleFavorite,
 }) => {
+  const flatListRef = useRef<FlatList<HymnStory>>(null);
   const [historyQuery, setHistoryQuery] = useState('');
   const [historyCategory, setHistoryCategory] = useState<'all' | 'cs_heritage' | 'general_classic'>('all');
   const [expandedStoryIds, setExpandedStoryIds] = useState<Record<number, boolean>>({});
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const allStories = useMemo(() => getAllHymnStories(), []);
+
+  useEffect(() => {
+    setShowScrollTop(false);
+  }, [historyCategory, historyQuery]);
+
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setShowScrollTop(offsetY > 300);
+  }, []);
+
+  const scrollToTop = useCallback(() => {
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    setShowScrollTop(false);
+  }, []);
 
   const filteredStories = useMemo(() => {
     let list = allStories;
@@ -346,10 +364,13 @@ ${story.spiritualTakeaway || 'To God be the glory.'}
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <FlatList
+        ref={flatListRef}
         data={filteredStories}
         keyExtractor={(item) => String(item.hymnId)}
         ListHeaderComponent={renderHeader}
         renderItem={renderStoryItem}
+        onScroll={handleScroll}
+        scrollEventThrottle={32}
         contentContainerStyle={styles.listContent}
         keyboardShouldPersistTaps="handled"
         initialNumToRender={10}
@@ -365,6 +386,22 @@ ${story.spiritualTakeaway || 'To God be the glory.'}
           </View>
         }
       />
+
+      {/* Floating Back to Top Button */}
+      {showScrollTop && (
+        <TouchableOpacity
+          style={[
+            styles.scrollTopButton,
+            { backgroundColor: theme.primary },
+          ]}
+          onPress={scrollToTop}
+          activeOpacity={0.85}
+          delayPressIn={100}
+          accessibilityLabel="Back to top"
+        >
+          <Ionicons name="arrow-up" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 });
@@ -614,5 +651,21 @@ const styles = StyleSheet.create({
   emptySubtitle: {
     fontSize: 13,
     textAlign: 'center',
+  },
+  scrollTopButton: {
+    position: 'absolute',
+    right: 18,
+    bottom: 28,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    zIndex: 99,
   },
 });

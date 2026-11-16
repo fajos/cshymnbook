@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   FlatList,
   TextInput,
   TouchableOpacity,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Category } from '../types/hymn';
@@ -22,7 +24,9 @@ export const CategoryListScreen: React.FC<CategoryListScreenProps> = ({
   theme,
   onSelectCategory,
 }) => {
+  const flatListRef = useRef<FlatList<Category>>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const filteredCategories = useMemo(() => {
     if (!searchQuery.trim()) return categories;
@@ -35,6 +39,16 @@ export const CategoryListScreen: React.FC<CategoryListScreenProps> = ({
       );
     });
   }, [searchQuery]);
+
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setShowScrollTop(offsetY > 300);
+  }, []);
+
+  const scrollToTop = useCallback(() => {
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    setShowScrollTop(false);
+  }, []);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -70,6 +84,7 @@ export const CategoryListScreen: React.FC<CategoryListScreenProps> = ({
 
       {/* Categories List */}
       <FlatList
+        ref={flatListRef}
         data={filteredCategories}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
@@ -79,6 +94,8 @@ export const CategoryListScreen: React.FC<CategoryListScreenProps> = ({
             onPress={() => onSelectCategory(item)}
           />
         )}
+        onScroll={handleScroll}
+        scrollEventThrottle={32}
         contentContainerStyle={styles.listContent}
         initialNumToRender={12}
         ListEmptyComponent={
@@ -90,6 +107,22 @@ export const CategoryListScreen: React.FC<CategoryListScreenProps> = ({
           </View>
         }
       />
+
+      {/* Floating Back to Top Button */}
+      {showScrollTop && (
+        <TouchableOpacity
+          style={[
+            styles.scrollTopButton,
+            { backgroundColor: theme.primary },
+          ]}
+          onPress={scrollToTop}
+          activeOpacity={0.85}
+          delayPressIn={100}
+          accessibilityLabel="Back to top"
+        >
+          <Ionicons name="arrow-up" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -145,5 +178,21 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 15,
     fontWeight: '600',
+  },
+  scrollTopButton: {
+    position: 'absolute',
+    right: 18,
+    bottom: 28,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    zIndex: 99,
   },
 });

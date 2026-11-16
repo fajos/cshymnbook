@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   FlatList,
   TouchableOpacity,
   ScrollView,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemeColors } from '../constants/theme';
@@ -14,7 +16,6 @@ import { CHURCH_SEASONS, ChurchSeason } from '../constants/churchSeasons';
 import { HymnCard } from '../components/HymnCard';
 import { DownloadAllTunesModal } from '../components/DownloadAllTunesModal';
 import { Hymn } from '../types/hymn';
-import { HymnHistoriesScreen } from './HymnHistoriesScreen';
 
 interface SpecialLiturgyScreenProps {
   theme: ThemeColors;
@@ -23,7 +24,7 @@ interface SpecialLiturgyScreenProps {
   onToggleFavorite: (hymnId: number) => void;
 }
 
-type LiturgyMode = 'orders' | 'seasons' | 'histories';
+type LiturgyMode = 'orders' | 'seasons';
 
 export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
   theme,
@@ -35,6 +36,10 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
   const [selectedSection, setSelectedSection] = useState(SPECIAL_SECTIONS[0]);
   const [selectedSeason, setSelectedSeason] = useState<ChurchSeason>(CHURCH_SEASONS[0]);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const ordersListRef = useRef<FlatList<Hymn>>(null);
+  const seasonsListRef = useRef<FlatList<Hymn>>(null);
 
   // Hymns for selected special order category
   const hymnsInOrder = useMemo(() => {
@@ -48,6 +53,35 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
       .filter((h): h is Hymn => h !== undefined);
   }, [selectedSeason]);
 
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setShowScrollTop(offsetY > 300);
+  }, []);
+
+  const scrollToTop = useCallback(() => {
+    if (mode === 'orders') {
+      ordersListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    } else {
+      seasonsListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    }
+    setShowScrollTop(false);
+  }, [mode]);
+
+  const handleSelectMode = (newMode: LiturgyMode) => {
+    setMode(newMode);
+    setShowScrollTop(false);
+  };
+
+  const handleSelectSection = (section: (typeof SPECIAL_SECTIONS)[0]) => {
+    setSelectedSection(section);
+    setShowScrollTop(false);
+  };
+
+  const handleSelectSeason = (season: ChurchSeason) => {
+    setSelectedSeason(season);
+    setShowScrollTop(false);
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Top Segmented Mode Selector */}
@@ -59,7 +93,7 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
           contentContainerStyle={styles.tabButtonsScroll}
         >
           <TouchableOpacity
-            onPress={() => setMode('orders')}
+            onPress={() => handleSelectMode('orders')}
             style={[
               styles.segmentBtn,
               mode === 'orders' && [styles.activeSegmentBtn, { borderBottomColor: theme.primary }],
@@ -81,7 +115,7 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => setMode('seasons')}
+            onPress={() => handleSelectMode('seasons')}
             style={[
               styles.segmentBtn,
               mode === 'seasons' && [styles.activeSegmentBtn, { borderBottomColor: theme.primary }],
@@ -99,28 +133,6 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
               ]}
             >
               Church Seasons
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => setMode('histories')}
-            style={[
-              styles.segmentBtn,
-              mode === 'histories' && [styles.activeSegmentBtn, { borderBottomColor: theme.primary }],
-            ]}
-          >
-            <Ionicons
-              name={mode === 'histories' ? 'time' : 'time-outline'}
-              size={15}
-              color={mode === 'histories' ? theme.primary : theme.textMuted}
-            />
-            <Text
-              style={[
-                styles.segmentBtnText,
-                { color: mode === 'histories' ? theme.primary : theme.textMuted },
-              ]}
-            >
-              Hymn Histories
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -153,7 +165,7 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
                 return (
                   <TouchableOpacity
                     key={sec.id}
-                    onPress={() => setSelectedSection(sec)}
+                    onPress={() => handleSelectSection(sec)}
                     style={[
                       styles.tabChip,
                       {
@@ -196,6 +208,7 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
 
           {/* Hymns List */}
           <FlatList
+            ref={ordersListRef}
             data={hymnsInOrder}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
@@ -207,6 +220,8 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
                 onToggleFavorite={() => onToggleFavorite(item.id)}
               />
             )}
+            onScroll={handleScroll}
+            scrollEventThrottle={32}
             contentContainerStyle={styles.listContent}
             initialNumToRender={12}
           />
@@ -227,7 +242,7 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
                 return (
                   <TouchableOpacity
                     key={season.id}
-                    onPress={() => setSelectedSeason(season)}
+                    onPress={() => handleSelectSeason(season)}
                     style={[
                       styles.tabChip,
                       {
@@ -297,6 +312,7 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
 
           {/* Season Hymns List */}
           <FlatList
+            ref={seasonsListRef}
             data={hymnsInSeason}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
@@ -308,22 +324,28 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
                 onToggleFavorite={() => onToggleFavorite(item.id)}
               />
             )}
+            onScroll={handleScroll}
+            scrollEventThrottle={32}
             contentContainerStyle={styles.listContent}
             initialNumToRender={12}
           />
         </View>
       )}
 
-      {mode === 'histories' && (
-        /* Mode 3: Hymn Histories & Historical Backgrounds */
-        <View style={{ flex: 1 }}>
-          <HymnHistoriesScreen
-            theme={theme}
-            onSelectHymn={onSelectHymn}
-            favorites={favorites}
-            onToggleFavorite={onToggleFavorite}
-          />
-        </View>
+      {/* Floating Back to Top Button */}
+      {showScrollTop && (
+        <TouchableOpacity
+          style={[
+            styles.scrollTopButton,
+            { backgroundColor: theme.primary },
+          ]}
+          onPress={scrollToTop}
+          activeOpacity={0.85}
+          delayPressIn={100}
+          accessibilityLabel="Back to top"
+        >
+          <Ionicons name="arrow-up" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
       )}
 
       {/* Bulk Offline Audio Downloader Modal */}
@@ -526,109 +548,20 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 90,
   },
-  historyCard: {
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: 16,
-    marginBottom: 16,
-  },
-  historyCardTopRow: {
-    flexDirection: 'row',
+  scrollTopButton: {
+    position: 'absolute',
+    right: 18,
+    bottom: 28,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  historyHymnBadgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  historyNumberBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  historyNumberBadgeText: {
-    color: '#FFFFFF',
-    fontWeight: '800',
-    fontSize: 12,
-  },
-  historyCategoryPill: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-    borderWidth: 1,
-  },
-  historyCategoryPillText: {
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  historyYearText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  historyCardTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 4,
-    lineHeight: 22,
-  },
-  historyCardAuthor: {
-    fontSize: 13,
-    marginBottom: 8,
-  },
-  historyScriptureText: {
-    fontSize: 12,
-    fontWeight: '600',
-    fontStyle: 'italic',
-    marginBottom: 8,
-  },
-  historyStoryText: {
-    fontSize: 13.5,
-    lineHeight: 21,
-  },
-  historyExpandBtn: {
-    alignSelf: 'flex-start',
-    marginTop: 6,
-    marginBottom: 4,
-  },
-  historyExpandText: {
-    fontSize: 12.5,
-    fontWeight: '700',
-  },
-  historyTakeawayBox: {
-    marginTop: 10,
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-  },
-  historyTakeawayLabel: {
-    fontSize: 12,
-    fontWeight: '800',
-    marginBottom: 3,
-  },
-  historyTakeawayText: {
-    fontSize: 12.5,
-    lineHeight: 18,
-  },
-  historyActionRow: {
-    marginTop: 14,
-    paddingTop: 12,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  historyOpenHymnBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 8,
-    gap: 6,
-  },
-  historyOpenHymnText: {
-    color: '#FFFFFF',
-    fontSize: 13,
-    fontWeight: '700',
+    justifyContent: 'center',
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    zIndex: 99,
   },
 });
