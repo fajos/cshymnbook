@@ -159,7 +159,7 @@
       <img src="https://raw.githubusercontent.com/fajos/cshymnbook/main/assets/playstore-icon.png" alt="C&amp;S Hymn Book Logo" class="app-icon" onerror="this.style.display='none'">
       <h1>Privacy Policy</h1>
       <div class="subtitle">C&amp;S Hymn Book (Orin Mímọ́ Kérúbù àti Séráfù)</div>
-      <div class="meta">Package: com.fajostech.cshymnbook • Effective: November 3, 2026</div>
+      <div class="meta">Package: com.fajostech.cshymnbook • Version: 2.0.0 • Effective: November 16, 2026</div>
       <div class="nav-links">
         <a href="index.html">Home</a>
         <a href="terms-of-use.html">Terms of Use</a>
@@ -171,11 +171,12 @@
   <main>
     <div class="card">
       <div class="highlight-box">
-        <p><strong>Summary:</strong> The C&amp;S Hymn Book app operates 100% offline. We do not collect, transmit, store, track, or share any personal identity data, location, or telemetry from your device.</p>
+        <p><strong>Summary:</strong> C&amp;S Hymn Book is an offline-first worship and study application. We do not collect, transmit, store, track, or share any personal identity data, location, or telemetry from your device.</p>
       </div>
 
       <h2>1. Introduction</h2>
-      <p>This Privacy Policy applies to the <strong>C&amp;S Hymn Book</strong> mobile application (package name: <code>com.fajostech.cshymnbook</code>), published by <strong>Fajostech / Femi Adeyemi</strong> (&ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;). We respect your privacy and are committed to ensuring a completely safe, private worship environment for all users worldwide.</p>
+      <p>This Privacy Policy applies to the <strong>C&amp;S Hymn Book</strong> mobile and web applications (package name: <code>com.fajostech.cshymnbook</code>), published by <strong>Fajostech / Femi Adeyemi</strong> (&ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;). We respect your privacy and are committed to ensuring a completely safe, private worship environment for all users worldwide.</p>
+      <p>All core devotional content—including 980 hymns, Yoruba and English translations, liturgical orders, kneeling prayers (<em>Orin Akúnlẹkọ</em>), revival songs (<em>Orin Ìsọjí</em>), Psalms, and 138 curated Hymn Histories—is bundled locally and functions 100% offline without requiring internet access.</p>
 
       <h2>2. Information We Do Not Collect</h2>
       <p>When you use C&amp;S Hymn Book, you remain entirely anonymous:</p>
@@ -183,40 +184,52 @@
         <li><strong>No Account Required:</strong> You do not need to register, log in, or provide any email address, phone number, name, or password.</li>
         <li><strong>No Location Data:</strong> The application does not access, monitor, or track your GPS or network location.</li>
         <li><strong>No Device Identifiers:</strong> We do not collect device IMEI, MAC address, Advertising IDs (GAID/IDFA), or serial numbers.</li>
-        <li><strong>No Access to Private Files:</strong> The app does not access your photos, camera, contacts, microphone, or external storage.</li>
-        <li><strong>No Payment Data:</strong> The app is free to use and does not process financial transactions.</li>
+        <li><strong>No Access to Private Files:</strong> The app does not access your photos, camera, contacts, or microphone.</li>
+        <li><strong>No Payment Data:</strong> The app is free to use and contains no in-app purchases or financial transaction processing.</li>
+        <li><strong>No Analytics or Telemetry:</strong> We do not track what hymns you read, searches you perform, or how long you use the app.</li>
       </ul>
 
       <h2>3. Data Stored Locally on Your Device</h2>
-      <p>The app stores non-identifiable user preferences strictly inside your device&rsquo;s internal application storage (<code>AsyncStorage</code>):</p>
+      <p>The app stores non-identifiable user preferences strictly inside your device&rsquo;s internal application storage:</p>
       <ul>
         <li><strong>Favorites:</strong> Bookmarked hymn numbers for fast access.</li>
         <li><strong>Service Setlists:</strong> Custom collections you create for Sunday Divine Service, Harvest, Vigils, or Choir rehearsals.</li>
         <li><strong>Recent Hymns:</strong> List of recently viewed hymns to simplify navigation during church services.</li>
-        <li><strong>Display Preferences:</strong> Your selected visual theme (<em>Sacred Light</em>, <em>Night Navy</em>, <em>Sepia Parchment</em>) and your preferred reading font size.</li>
+        <li><strong>Display &amp; Audio Preferences:</strong> Your selected visual theme (<em>Sacred Light</em>, <em>Night Navy</em>, <em>Sepia Parchment</em>), custom reading font size, playback speed, and default instrument.</li>
+        <li><strong>Offline Audio Cache:</strong> When you play or bulk-download hymn tunes (organ or piano accompaniments), the audio files are saved locally on your device in the app&rsquo;s sandboxed document directory (<code>Paths.document/tunes/</code>) for gapless offline playback. You can clear this offline audio cache at any time inside the app.</li>
       </ul>
       <p><strong>Important:</strong> This data never leaves your device. It is never transmitted to external cloud servers, and is erased if you uninstall the application or clear app data in your phone settings.</p>
 
-      <h2>4. Permissions</h2>
-      <p>The application requires <strong>zero sensitive device permissions</strong>. It works completely offline, eliminating risk of network eavesdropping or unauthorized data sharing.</p>
-
-      <h2>5. Third-Party Services &amp; Advertising</h2>
+      <h2>4. Network Connectivity &amp; Audio CDN</h2>
       <ul>
-        <li><strong>No Ads:</strong> The application contains no advertising SDKs or banner ads.</li>
-        <li><strong>No Analytics or Tracking:</strong> The application does not contain behavioral analytics tools, telemetry trackers, or crash reporting spyware.</li>
-        <li><strong>No Data Sales:</strong> We do not sell, rent, or trade any information to data brokers or third parties.</li>
+        <li><strong>Offline-First:</strong> All lyrics, liturgy, catechism, church seasons, and hymn histories require zero internet access and are permanently available offline.</li>
+        <li><strong>Optional Audio Playback:</strong> If you choose to stream or download hymn accompaniments, the app connects to our public Content Delivery Network (Cloudflare R2: <code>https://pub-b4f0c6d4ce79432b9b0d7d5417700a4b.r2.dev</code>) via standard HTTP GET requests to fetch static audio files.</li>
+        <li><strong>Zero Tracking:</strong> No personal identification, IP tracking records, user accounts, or listening habit profiles are gathered or stored by the developer.</li>
       </ul>
 
-      <h2>6. Children&rsquo;s Privacy (COPPA &amp; GDPR)</h2>
+      <h2>5. Native System Sharing</h2>
+      <p>When using the &ldquo;Share Hymn Story&rdquo; or lyric sharing features, the app invokes the operating system&rsquo;s standard native share sheet. The content is passed directly to the application you select (such as WhatsApp, Messages, or Email). We do not record, intercept, or transmit your shared messages or recipient details.</p>
+
+      <h2>6. Permissions</h2>
+      <p>The application requires <strong>zero sensitive device permissions</strong>. Standard internet access is utilized strictly for optional static audio tune streaming and caching. Standard background audio sessions allow choristers and worshipers to listen during church service without keeping the screen active.</p>
+
+      <h2>7. Third-Party Services &amp; Advertising</h2>
+      <ul>
+        <li><strong>No Ads:</strong> The application contains no advertising SDKs or banner ads.</li>
+        <li><strong>No Analytics or Tracking:</strong> The application contains no behavioral analytics tools, telemetry trackers, or third-party SDKs.</li>
+        <li><strong>No Data Sales:</strong> We do not sell, rent, or trade any user information to data brokers or third parties.</li>
+      </ul>
+
+      <h2>8. Children&rsquo;s Privacy (COPPA &amp; GDPR)</h2>
       <p>The application is designed for family, youth, and congregational worship. Because we collect zero personal data, C&amp;S Hymn Book complies fully with the <strong>Children&rsquo;s Online Privacy Protection Act (COPPA)</strong> and the European Union <strong>General Data Protection Regulation (GDPR)</strong>.</p>
 
-      <h2>7. Content &amp; Offline Security</h2>
-      <p>All 980 hymns, kneeling hymns (<em>Orin Akúnlẹkọ</em>), revival songs (<em>Orin Ìsọjí</em>), Psalms (<em>Orin Dáfídì</em>), and liturgical texts are bundled locally within the installation package (<code>cshymns.json</code>). You can worship anywhere without requiring an active cellular or Wi-Fi connection.</p>
+      <h2>9. App Store Privacy Nutrition Labels</h2>
+      <p>In accordance with Apple App Store Connect and Google Play Data Safety requirements, C&amp;S Hymn Book is classified under <strong>&ldquo;Data Not Collected&rdquo;</strong>. No data is collected or linked to you.</p>
 
-      <h2>8. Changes to This Policy</h2>
+      <h2>10. Changes to This Policy</h2>
       <p>We may update this Privacy Policy from time to time to maintain compliance with legal requirements or app store guidelines. Any revisions will be published on this page and in the GitHub repository.</p>
 
-      <h2>9. Contact Us</h2>
+      <h2>11. Contact Us</h2>
       <p>If you have any questions or feedback regarding this Privacy Policy, please contact us:</p>
       <ul>
         <li><strong>Developer:</strong> Fajostech / Femi Adeyemi</li>

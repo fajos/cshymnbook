@@ -1,8 +1,9 @@
 # Terms of Use for C&S Hymn Book
 
-**Last Updated:** November 3, 2026  
-**Effective Date:** November 3, 2026  
+**Last Updated:** November 16, 2026  
+**Effective Date:** November 16, 2026  
 **Application:** C&S Hymn Book (*Orin Mímọ́ Kérúbù àti Séráfù*)  
+**Version:** 2.0.0  
 **Package Name:** `com.fajostech.cshymnbook`  
 **Developer:** Fajostech / Femi Adeyemi ([fajostech@gmail.com](mailto:fajostech@gmail.com))  
 **Repository:** [https://github.com/fajos/cshymnbook](https://github.com/fajos/cshymnbook)
@@ -20,14 +21,14 @@ These Terms constitute a legally binding agreement between you ("User" or "you")
 ## 2. Purpose and License Grant
 
 ### 2.1 Intended Purpose
-The C&S Hymn Book is an electronic spiritual hymnal designed to facilitate worship, singing, meditation, prayer, and Christian devotion within the **Cherubim and Seraphim Church worldwide**, the broader Aladura movement, and the global Body of Christ.
+The C&S Hymn Book is an electronic spiritual hymnal and liturgical study companion designed to facilitate worship, singing, musical accompaniment, meditation, prayer, and Christian education within the **Cherubim and Seraphim Church worldwide**, the broader Aladura movement, and the global Christian community.
 
 ### 2.2 License Grant
-Subject to your compliance with these Terms, Fajostech / Femi Adeyemi grants you a personal, non-exclusive, non-transferable, revocable, and royalty-free license to download, install, and use the App on mobile, tablet, and desktop devices solely for your personal, educational, devotional, and church congregational use.
+Subject to your compliance with these Terms, Fajostech / Femi Adeyemi grants you a personal, non-exclusive, non-transferable, revocable, and royalty-free license to download, install, and use the App on mobile, tablet, and desktop devices solely for your personal, educational, devotional, choir rehearsal, and church congregational use.
 
 ---
 
-## 3. Liturgical Heritage & Textual Integrity
+## 3. Liturgical Heritage, Histories & Musical Content
 
 ### 3.1 Sacred Heritage
 The Cherubim and Seraphim sacred hymnal (*Iwe Orin Mimo ti Egbe Kerubu ati Serafu*), comprising Kneeling Hymns (*Orin Akúnlẹkọ*), General Hymns (K&S 1–865), Revival Songs (*Orin Ìsọjí*), Psalms (*Orin Dáfídì*), the Lord's Prayer (*Àdúrà Olúwa*), and the Creeds & Catechism (*Ìgbàgbọ́ àti Kátíkísmù*), represents sacred heritage founded under the inspiration of Saint Moses Orimolade Tunolase.
@@ -35,13 +36,20 @@ The Cherubim and Seraphim sacred hymnal (*Iwe Orin Mimo ti Egbe Kerubu ati Seraf
 ### 3.2 Authentic Text Restoration
 This App is dedicated to preserving the original, unaltered language of the sacred hymns—specifically restoring authentic references to **Ẹgbẹ́ Kérúbù**, **Ẹgbẹ́ Séráfù**, and **Ẹgbẹ́ Alàdúrà**, whilst strictly preserving orthodox universal Christian creeds (such as the Apostles' Creed and Nicene Creed).
 
+### 3.3 Hymn Histories & Educational Research
+The curated library of **138 Hymn Histories**, divine origin accounts, author biographical sketches, and scripture references is compiled for historical education, theological study, and devotional appreciation. Users may freely share individual hymn stories for non-commercial ministry, fellowship, and personal encouragement.
+
+### 3.4 Musical Accompaniments & Tonic Sol-fa Notations
+The bundled tonic sol-fa notations and downloadable instrumental hymn accompaniments (organ and piano) are provided to support church choir masters, vocalists, instrumentalists, and congregants in reverent worship.
+
 ---
 
 ## 4. Prohibited Uses
 
 When using this application, you agree NOT to:
-- Sell, rent, lease, sub-license, or commercially monetize the compiled binary application or its bundled assets without prior written consent from the developer.
-- Modify, reverse-engineer, or distribute malicious, corrupted, or altered copies of the software intended to mislead worshipers or distribute malware.
+- Sell, rent, lease, sub-license, or commercially monetize the compiled binary application or its bundled assets (including hymn lyrics, solfa notes, and history archives) without prior written consent from the developer.
+- Scrape, harvest, or bulk-extract the curated database of hymn stories, solfa notations, or liturgical texts for inclusion in commercial databases or competing paid products.
+- Modify, reverse-engineer, or distribute corrupted or altered copies of the software intended to mislead worshipers or distribute malware.
 - Remove, alter, or obscure any copyright, trademark, or legal notices displayed in the App or repository.
 - Use the App in any manner that violates applicable local, national, or international laws or regulations.
 
@@ -49,10 +57,10 @@ When using this application, you agree NOT to:
 
 ## 5. User-Generated Data & Device Content
 
-Any data you create within the App—including your marked **Favorites**, custom **Service Setlists**, and **Personal Notes**—is stored solely on your local device. 
+Any data you create within the App—including your marked **Favorites**, custom **Service Setlists**, **Personal Notes**, and **Downloaded Audio Tunes**—is stored solely on your local device. 
 
 - You are responsible for preserving your device data.
-- The Developer is not responsible for any loss of custom setlists or favorites resulting from device replacement, OS upgrades, app re-installation, or cache clearing.
+- The Developer is not responsible for any loss of custom setlists, favorites, or cached audio resulting from device replacement, OS upgrades, app re-installation, or cache clearing.
 
 ---
 
@@ -60,9 +68,9 @@ Any data you create within the App—including your marked **Favorites**, custom
 
 THE APPLICATION IS PROVIDED ON AN **"AS IS"** AND **"AS AVAILABLE"** BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
 
-While meticulous care has been taken to ensure liturgical accuracy, textual correctness, and authentic Yoruba tone markings across all 980 hymns:
+While meticulous care has been taken to ensure liturgical accuracy, textual correctness, authentic Yoruba tone markings, and faithful historical notes:
 - The Developer does not guarantee that the App will be entirely error-free or uninterrupted.
-- Users are invited and encouraged to submit typographical errata or liturgical suggestions to assist with continual improvement.
+- Users are invited and encouraged to submit typographical errata, solfa corrections, or liturgical suggestions to assist with continual improvement.
 
 ---
 
