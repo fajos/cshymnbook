@@ -72,7 +72,7 @@ export const HymnListScreen: React.FC<HymnListScreenProps> = React.memo(({
         <View style={[styles.searchInputWrapper, { backgroundColor: theme.background, borderColor: theme.border }]}>
           <Ionicons name="search" size={20} color={theme.textMuted} />
           <TextInput
-            placeholder="Search hymn number, title or lyrics..."
+            placeholder="Search number, title, lyrics (Yorùbá / English)..."
             placeholderTextColor={theme.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}

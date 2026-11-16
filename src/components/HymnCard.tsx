@@ -68,6 +68,12 @@ export const HymnCard: React.FC<HymnCardProps> = ({
         {hymn.title}
       </Text>
 
+      {hymn.english_title ? (
+        <Text style={[styles.englishTitle, { color: theme.textSecondary }]} numberOfLines={1}>
+          {hymn.english_title}
+        </Text>
+      ) : null}
+
       {hymn.scripture ? (
         <Text style={[styles.scripture, { color: theme.scriptureText }]} numberOfLines={1}>
           📖 {hymn.scripture}
@@ -137,6 +143,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     lineHeight: 22,
+    marginBottom: 4,
+  },
+  englishTitle: {
+    fontSize: 13,
+    fontWeight: '500',
+    fontStyle: 'italic',
+    lineHeight: 18,
     marginBottom: 6,
   },
   scripture: {

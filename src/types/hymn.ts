@@ -8,6 +8,8 @@ export interface Hymn {
   id: number;
   hymn_number: string;
   title: string;
+  english_title?: string;
+  english_author?: string;
   category_id: number;
   category_name: string;
   meter: string;

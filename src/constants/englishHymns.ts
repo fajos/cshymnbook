@@ -1,4 +1,4 @@
-import { cleanChorusText, cleanStanzaText } from '../services/hymnService';
+import { cleanChorusText, cleanStanzaText } from '../utils/textUtils';
 
 export interface EnglishStanza {
   number: string;

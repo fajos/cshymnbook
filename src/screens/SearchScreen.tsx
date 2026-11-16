@@ -51,7 +51,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({
         <View style={[styles.inputWrapper, { backgroundColor: theme.background, borderColor: theme.border }]}>
           <Ionicons name="search" size={20} color={theme.textMuted} />
           <TextInput
-            placeholder="Search number, title, lyrics or scripture..."
+            placeholder="Search number, title, lyrics (Yorùbá / English)..."
             placeholderTextColor={theme.textMuted}
             value={query}
             onChangeText={setQuery}
