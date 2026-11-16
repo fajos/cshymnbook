@@ -12,7 +12,7 @@ export function cleanChorusText(rawChorus?: string | null): string {
   if (!rawChorus) return '';
   let cleaned = rawChorus.trim();
   // Strip redundant leading "Egbe:" / "Refrain:" / "Chorus:" label and following delimiter
-  cleaned = cleaned.replace(/^(egbe|ẹgbẹ|chorus|refrain)\s*[:\-\—\t]\s*/i, '');
+  cleaned = cleaned.replace(/^(egbe|ẹgbẹ|chorus|refrain|chirus|chous)\s*[:\-\—\t]\s*/i, '');
   // Normalize lines: trim leading/trailing tabs and whitespace from every line, replace internal tabs with spaces
   const lines = cleaned
     .split('\n')

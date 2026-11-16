@@ -20405,35 +20405,43 @@
     "stanzas": [
       {
         "number": "1.",
-        "text": "BLESSED day of joy it is\nWe’re celebrating now\nCherub beckon on Seraph\nCome and behold it now.\nChous: Halleluyah, sing amplified chorus\nHalleluyah to our King and our God."
+        "text": "BLESSED day of joy it is\nWe’re celebrating now\nCherub beckon on Seraph\nCome and behold it now.",
+        "chorus": "Halleluyah, sing amplified chorus\nHalleluyah to our King and our God."
       },
       {
         "number": "2.",
-        "text": "Heavenly Hosts loudly hail us\nTo be swift on guard\nLittle or no time is left\nThe world shall pass away.\nChous: Halleluyah, sing..."
+        "text": "Heavenly Hosts loudly hail us\nTo be swift on guard\nLittle or no time is left\nThe world shall pass away.",
+        "chorus": "Halleluyah, sing..."
       },
       {
         "number": "3.",
-        "text": "Wonderful Phenomenon\nConcerning this our Band\nSince inception of Christiandom\nIt‘s unprecedented.\nChous: Halleluyah, sing..."
+        "text": "Wonderful Phenomenon\nConcerning this our Band\nSince inception of Christiandom\nIt‘s unprecedented.",
+        "chorus": "Halleluyah, sing..."
       },
       {
         "number": "4.",
-        "text": "All the unwhole and the sick\nAmidst this glorious Band\nThe malefolks and femalefolks\nWitnessing miracles.\nChous: Halleluyah, sing..."
+        "text": "All the unwhole and the sick\nAmidst this glorious Band\nThe malefolks and femalefolks\nWitnessing miracles.",
+        "chorus": "Halleluyah, sing..."
       },
       {
         "number": "5.",
-        "text": "Those in the rural cities\nWitnessing to the Truth\nThat witchcraft has no effect\nAmidst Seraphim Band.\nChous: Halleluyah, sing..."
+        "text": "Those in the rural cities\nWitnessing to the Truth\nThat witchcraft has no effect\nAmidst Seraphim Band.",
+        "chorus": "Halleluyah, sing..."
       },
       {
         "number": "6.",
-        "text": "All those in diaspora\nPraising and rejoicing\nDemons are of no effect\nAmidst the Cherubim.\nChous: Halleluyah, sing..."
+        "text": "All those in diaspora\nPraising and rejoicing\nDemons are of no effect\nAmidst the Cherubim.",
+        "chorus": "Halleluyah, sing..."
       },
       {
         "number": "7.",
-        "text": "Seraph is here manifest\nIt‘s unprecedented\nCherub is here manifest\nThe dead to life they raise.\nChous: Halleluyah, sing..."
+        "text": "Seraph is here manifest\nIt‘s unprecedented\nCherub is here manifest\nThe dead to life they raise.",
+        "chorus": "Halleluyah, sing..."
       },
       {
         "number": "8.",
-        "text": "Glory to Father above\nGlory to Holy Son\nGlory to Holy Spirit\nEternal Trinity.\nChous: Halleluyah, sing amplified chorus\nHalleluyah to our King and our God."
+        "text": "Glory to Father above\nGlory to Holy Son\nGlory to Holy Spirit\nEternal Trinity.",
+        "chorus": "Halleluyah, sing amplified chorus\nHalleluyah to our King and our God."
       }
     ]
   },
@@ -21985,23 +21993,27 @@
   },
   "819": {
     "hymnId": 819,
-    "englishTitle": "GOD be with you till we meet again",
+    "englishTitle": "God Be with You Till We Meet Again",
     "stanzas": [
       {
         "number": "1.",
-        "text": "GOD be with you till we meet again\nBy His counsels guide, uphold you\nWith His sheep securely fold you\nGod be with you till we meet again.\nChirus: Till we meet, till we meet\nTill we meet, ByJesus grace\nTill we meet, till we meet\nGod be with you till we meet again."
+        "text": "God be with you till we meet again;\nBy His counsels guide, uphold you,\nWith His sheep securely fold you;\nGod be with you till we meet again.",
+        "chorus": "Till we meet, till we meet,\nTill we meet at Jesus' feet;\nTill we meet, till we meet,\nGod be with you till we meet again."
       },
       {
         "number": "2.",
-        "text": "God be with you till meet again\n‘Neath His wings securely hide you\nDaily manna still provide you\nGod be with you till we meet again.\nChirus: Till we meet..."
+        "text": "God be with you till we meet again;\n'Neath His wings securely hide you,\nDaily manna still provide you;\nGod be with you till we meet again.",
+        "chorus": "Till we meet, till we meet..."
       },
       {
         "number": "3.",
-        "text": "God be with you till we meet again\nWhen life’s perils thick confound you\nPut His arms unfailing round you\nGod be with you till we meet again.\nChirus: Till we meet..."
+        "text": "God be with you till we meet again;\nWhen life's perils thick confound you,\nPut His arms unfailing round you;\nGod be with you till we meet again.",
+        "chorus": "Till we meet, till we meet..."
       },
       {
         "number": "4.",
-        "text": "God be with you till we meet again\nKeep love’s banner floating o’er you\nSmite death’s threaning wave before you\nGod will be with you till we meet again.\nChirus: Till we meet, till we meet\nTill we meet, ByJesus grace\nTill we meet, till we meet\nGod be with you till we meet again."
+        "text": "God be with you till we meet again;\nKeep love's banner floating o'er you,\nSmite death's threatening wave before you;\nGod be with you till we meet again.",
+        "chorus": "Till we meet, till we meet,\nTill we meet at Jesus' feet;\nTill we meet, till we meet,\nGod be with you till we meet again."
       }
     ]
   },

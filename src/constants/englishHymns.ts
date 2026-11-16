@@ -118,6 +118,10 @@ const CURATED_METADATA_OVERRIDES: Record<number, Partial<EnglishHymn>> = {
     englishTitle: 'All Ye the Holy Saints of God',
     author: 'Cherubim & Seraphim Traditional',
   },
+  767: {
+    englishTitle: 'Blessed Day of Joy It Is',
+    author: 'Cherubim & Seraphim Traditional Anniversary',
+  },
   819: {
     englishTitle: 'God Be with You Till We Meet Again',
     author: 'Jeremiah E. Rankin (1880)',
