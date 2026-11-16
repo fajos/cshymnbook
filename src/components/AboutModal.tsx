@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ThemeColors } from '../constants/theme';
 import { updateService } from '../services/updateService';
 import { versionService } from '../services/versionService';
+import { DownloadAllTunesModal } from './DownloadAllTunesModal';
 
 const APP_VERSION: string = require('../../app.json').expo?.version || '1.0.1';
 
@@ -35,6 +36,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('about');
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
 
   const handleCheckForUpdates = async () => {
     setIsCheckingUpdate(true);
@@ -236,6 +238,16 @@ export const AboutModal: React.FC<AboutModalProps> = ({
                   </Text>
                 </TouchableOpacity>
 
+                <TouchableOpacity
+                  style={[styles.linkButton, { backgroundColor: theme.surfaceCard, borderColor: theme.border, marginTop: 10 }]}
+                  onPress={() => setShowDownloadModal(true)}
+                >
+                  <Ionicons name="musical-notes" size={18} color={theme.accentGold} />
+                  <Text style={[styles.linkButtonText, { color: theme.text }]}>
+                    Download All Audio Tunes (Offline Pack)
+                  </Text>
+                </TouchableOpacity>
+
                 <Text style={[styles.sectionHeading, { color: theme.text }]}>Online Documentation &amp; Source</Text>
                 <TouchableOpacity
                   style={[styles.linkButton, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}
@@ -362,6 +374,12 @@ export const AboutModal: React.FC<AboutModalProps> = ({
           </ScrollView>
         </View>
       </View>
+
+      <DownloadAllTunesModal
+        visible={showDownloadModal}
+        theme={theme}
+        onClose={() => setShowDownloadModal(false)}
+      />
     </Modal>
   );
 };

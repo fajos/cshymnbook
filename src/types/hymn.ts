@@ -45,3 +45,20 @@ export interface Setlist {
   createdAt: number;
   hymnIds: number[];
 }
+
+export interface HymnNote {
+  hymnId: number;
+  text: string;
+  tags?: string[];
+  updatedAt: number;
+}
+
+export interface HymnStory {
+  hymnId: number;
+  title: string;
+  author: string;
+  year?: string;
+  originStory: string;
+  scriptureReference?: string;
+  spiritualTakeaway?: string;
+}

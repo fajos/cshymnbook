@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,8 +15,9 @@ import {
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
-import { Hymn, Setlist } from '../types/hymn';
+import { Hymn, Setlist, HymnNote } from '../types/hymn';
 import { ThemeColors } from '../constants/theme';
+import { storageService } from '../services/storageService';
 import { hymns, getHymnById, searchHymns } from '../services/hymnService';
 import { HymnCard } from '../components/HymnCard';
 import { LITURGICAL_PRESETS, LiturgicalPreset } from '../constants/liturgicalPresets';
@@ -46,8 +47,19 @@ export const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
   onRemoveHymnFromSet,
   onCreateSetlistWithHymns,
 }) => {
-  const [activeTab, setActiveTab] = useState<'favorites' | 'setlists'>('favorites');
+  const [activeTab, setActiveTab] = useState<'favorites' | 'setlists' | 'notes'>('favorites');
   const [selectedSetlistId, setSelectedSetlistId] = useState<string | null>(null);
+  const [notesList, setNotesList] = useState<HymnNote[]>([]);
+
+  // Load user's saved devotional notes
+  useEffect(() => {
+    const loadNotes = async () => {
+      const all = await storageService.getNotes();
+      const list = Object.values(all).sort((a, b) => b.updatedAt - a.updatedAt);
+      setNotesList(list);
+    };
+    loadNotes();
+  }, [activeTab]);
 
   // Create Modal state
   const [createModalVisible, setCreateModalVisible] = useState(false);
@@ -428,7 +440,7 @@ export const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
         >
           <Ionicons
             name={activeTab === 'setlists' ? 'albums' : 'albums-outline'}
-            size={18}
+            size={17}
             color={activeTab === 'setlists' ? theme.primary : theme.textMuted}
           />
           <Text
@@ -437,13 +449,35 @@ export const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
               { color: activeTab === 'setlists' ? theme.primary : theme.textMuted },
             ]}
           >
-            Service Sets ({setlists.length})
+            Sets ({setlists.length})
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => setActiveTab('notes')}
+          style={[
+            styles.tab,
+            activeTab === 'notes' && [styles.activeTab, { borderBottomColor: theme.primary }],
+          ]}
+        >
+          <Ionicons
+            name={activeTab === 'notes' ? 'journal' : 'journal-outline'}
+            size={17}
+            color={activeTab === 'notes' ? theme.primary : theme.textMuted}
+          />
+          <Text
+            style={[
+              styles.tabText,
+              { color: activeTab === 'notes' ? theme.primary : theme.textMuted },
+            ]}
+          >
+            Notes ({notesList.length})
           </Text>
         </TouchableOpacity>
       </View>
 
       {/* Tab 1: Bookmarked Favorites */}
-      {activeTab === 'favorites' ? (
+      {activeTab === 'favorites' && (
         <FlatList
           data={favoriteHymns}
           keyExtractor={(item) => item.id.toString()}
@@ -467,8 +501,10 @@ export const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
             </View>
           }
         />
-      ) : (
-        /* Tab 2: Service Sets with "+ Create New Set" */
+      )}
+
+      {/* Tab 2: Service Sets with "+ Create New Set" */}
+      {activeTab === 'setlists' && (
         <View style={{ flex: 1 }}>
           <View style={[styles.setlistActionBar, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
             <View style={{ flex: 1 }}>
@@ -591,6 +627,96 @@ export const FavoritesScreen: React.FC<FavoritesScreenProps> = ({
             }
           />
         </View>
+      )}
+
+      {/* Tab 3: Personal Devotional Notes */}
+      {activeTab === 'notes' && (
+        <FlatList
+          data={notesList}
+          keyExtractor={(item) => item.hymnId.toString()}
+          contentContainerStyle={styles.listContent}
+          renderItem={({ item }) => {
+            const hymn = getHymnById(item.hymnId);
+            if (!hymn) return null;
+            const updatedDate = new Date(item.updatedAt).toLocaleDateString(undefined, {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            });
+
+            return (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => onSelectHymn(item.hymnId)}
+                style={[
+                  styles.noteCard,
+                  { backgroundColor: theme.surfaceCard, borderColor: theme.border },
+                ]}
+              >
+                <View style={styles.noteCardHeader}>
+                  <View style={[styles.noteHymnBadge, { backgroundColor: theme.primary + '18' }]}>
+                    <Text style={[styles.noteHymnBadgeText, { color: theme.primary }]}>
+                      {hymn.hymn_number}
+                    </Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.noteHymnTitle, { color: theme.text }]} numberOfLines={1}>
+                      {hymn.title}
+                    </Text>
+                    {hymn.english_title ? (
+                      <Text style={[styles.noteHymnSub, { color: theme.accentGold }]} numberOfLines={1}>
+                        {hymn.english_title}
+                      </Text>
+                    ) : null}
+                  </View>
+                  <Text style={[styles.noteDateText, { color: theme.textMuted }]}>
+                    {updatedDate}
+                  </Text>
+                </View>
+
+                {item.tags && item.tags.length > 0 ? (
+                  <View style={styles.noteTagsRow}>
+                    {item.tags.map((tag) => (
+                      <View
+                        key={tag}
+                        style={[
+                          styles.noteTagChip,
+                          { backgroundColor: theme.accentGold + '20', borderColor: theme.accentGold + '40' },
+                        ]}
+                      >
+                        <Text style={[styles.noteTagText, { color: theme.accentGold }]}>
+                          #{tag}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                ) : null}
+
+                <View style={[styles.noteTextBox, { backgroundColor: theme.background, borderColor: theme.borderLight }]}>
+                  <Text style={[styles.noteTextContent, { color: theme.textSecondary }]} numberOfLines={3}>
+                    "{item.text}"
+                  </Text>
+                </View>
+
+                <View style={styles.noteCardFooter}>
+                  <Text style={[styles.noteTapActionText, { color: theme.primary }]}>
+                    Tap to open hymn & view note
+                  </Text>
+                  <Ionicons name="arrow-forward" size={14} color={theme.primary} />
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Ionicons name="journal-outline" size={54} color={theme.textMuted} />
+              <Text style={[styles.emptyTitle, { color: theme.text }]}>No Hymn Notes Yet</Text>
+              <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
+                Record personal devotional reflections, prayer intentions, or choir reminders on any hymn by tapping the journal icon in the hymn reader.
+              </Text>
+            </View>
+          }
+        />
       )}
 
       {/* Modal: Create New Service Set */}
@@ -1361,5 +1487,75 @@ const styles = StyleSheet.create({
   previewTagText: {
     fontSize: 11.5,
     fontWeight: '700',
+  },
+  noteCard: {
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 14,
+  },
+  noteCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
+  },
+  noteHymnBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  noteHymnBadgeText: {
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  noteHymnTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  noteHymnSub: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  noteDateText: {
+    fontSize: 11,
+    fontWeight: '500',
+  },
+  noteTagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: 8,
+  },
+  noteTagChip: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  noteTagText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  noteTextBox: {
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginBottom: 8,
+  },
+  noteTextContent: {
+    fontSize: 13,
+    lineHeight: 18,
+    fontStyle: 'italic',
+  },
+  noteCardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  noteTapActionText: {
+    fontSize: 12,
+    fontWeight: '600',
   },
 });

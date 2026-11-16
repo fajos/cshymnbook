@@ -95,3 +95,116 @@ export async function downloadAndCacheTune(
     return remoteUrl;
   }
 }
+
+export interface TuneDownloadProgress {
+  completed: number;
+  total: number;
+  currentTuneName: string;
+  isFinished: boolean;
+  errorCount: number;
+}
+
+/**
+ * Returns all unique tune files across the bundled 385 C&S hymns.
+ */
+export function getAllUniqueTuneFiles(): { fileName: string; tuneName: string; hymnNumber: string }[] {
+  const fileMap = new Map<string, { fileName: string; tuneName: string; hymnNumber: string }>();
+  for (const item of Object.values(hymnTunesData)) {
+    if (item.selectedFileName) {
+      fileMap.set(item.selectedFileName, {
+        fileName: item.selectedFileName,
+        tuneName: item.tuneName || 'Hymn Tune',
+        hymnNumber: item.hymnNumber,
+      });
+    }
+    if (item.allTunes) {
+      for (const t of item.allTunes) {
+        if (t.fileName && !fileMap.has(t.fileName)) {
+          fileMap.set(t.fileName, {
+            fileName: t.fileName,
+            tuneName: t.tuneName || item.tuneName || 'Hymn Tune',
+            hymnNumber: item.hymnNumber,
+          });
+        }
+      }
+    }
+  }
+  return Array.from(fileMap.values());
+}
+
+/**
+ * Counts how many unique tune files are already downloaded and cached locally.
+ */
+export function getOfflineTuneCount(instrument: 'organ' | 'piano' = 'organ'): number {
+  if (Platform.OS === 'web') return 0;
+  const tunes = getAllUniqueTuneFiles();
+  let count = 0;
+  for (const t of tunes) {
+    if (getLocalTuneUri(t.fileName, instrument)) {
+      count++;
+    }
+  }
+  return count;
+}
+
+/**
+ * Bulk downloads all available hymn tunes with real-time progress callbacks.
+ */
+export async function downloadAllTunes(
+  instrument: 'organ' | 'piano' = 'organ',
+  onProgress?: (progress: TuneDownloadProgress) => void,
+  shouldCancel?: () => boolean
+): Promise<void> {
+  const tunes = getAllUniqueTuneFiles();
+  const total = tunes.length;
+  let completed = 0;
+  let errorCount = 0;
+
+  for (let i = 0; i < tunes.length; i++) {
+    if (shouldCancel && shouldCancel()) {
+      break;
+    }
+
+    const t = tunes[i];
+    onProgress?.({
+      completed,
+      total,
+      currentTuneName: `${t.hymnNumber} (${t.tuneName})`,
+      isFinished: false,
+      errorCount,
+    });
+
+    try {
+      await downloadAndCacheTune(t.fileName, instrument);
+      completed++;
+    } catch {
+      errorCount++;
+    }
+  }
+
+  onProgress?.({
+    completed,
+    total,
+    currentTuneName: 'Done',
+    isFinished: true,
+    errorCount,
+  });
+}
+
+/**
+ * Clears the offline audio cache for the selected instrument or all instruments.
+ */
+export async function clearOfflineTunes(instrument?: 'organ' | 'piano'): Promise<void> {
+  if (Platform.OS === 'web') return;
+  try {
+    const targets = instrument ? [instrument] : (['organ', 'piano'] as const);
+    for (const inst of targets) {
+      const dir = new Directory(Paths.document, 'tunes', inst);
+      if (dir.exists) {
+        dir.delete();
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to clear tunes directory:', err);
+  }
+}

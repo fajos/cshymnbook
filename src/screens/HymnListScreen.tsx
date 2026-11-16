@@ -15,6 +15,7 @@ import { ThemeColors } from '../constants/theme';
 import { hymns, categories, searchHymns } from '../services/hymnService';
 import { HymnCard } from '../components/HymnCard';
 import { QuickNumberPad } from '../components/QuickNumberPad';
+import { DailyHymnCard } from '../components/DailyHymnCard';
 
 interface HymnListScreenProps {
   theme: ThemeColors;
@@ -74,6 +75,16 @@ export const HymnListScreen: React.FC<HymnListScreenProps> = React.memo(({
     flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
     setShowScrollTop(false);
   }, []);
+
+  // Hymn of the day banner shown when browsing all hymns
+  const listHeader = useMemo(() => {
+    if (searchQuery.trim().length > 0 || selectedCatId !== null) return undefined;
+    return (
+      <View style={{ marginBottom: 4 }}>
+        <DailyHymnCard theme={theme} onPressHymn={onSelectHymn} />
+      </View>
+    );
+  }, [searchQuery, selectedCatId, theme, onSelectHymn]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -166,6 +177,7 @@ export const HymnListScreen: React.FC<HymnListScreenProps> = React.memo(({
         ref={flatListRef}
         data={filteredHymns}
         keyExtractor={(item) => item.id.toString()}
+        ListHeaderComponent={listHeader}
         renderItem={({ item }) => (
           <HymnCard
             hymn={item}

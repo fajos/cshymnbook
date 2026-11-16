@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ThemeMode, Setlist } from '../types/hymn';
+import { ThemeMode, Setlist, HymnNote } from '../types/hymn';
 
 const KEYS = {
   FAVORITES: '@cshymnbook_favorites',
@@ -8,6 +8,7 @@ const KEYS = {
   RECENTS: '@cshymnbook_recents',
   SETLISTS: '@cshymnbook_setlists',
   ONBOARDING_DONE: '@cshymnbook_onboarding_v1',
+  HYMN_NOTES: '@cshymnbook_hymn_notes',
 };
 
 export const storageService = {
@@ -177,6 +178,46 @@ export const storageService = {
   async setOnboardingCompleted(): Promise<void> {
     try {
       await AsyncStorage.setItem(KEYS.ONBOARDING_DONE, 'true');
+    } catch {}
+  },
+
+  // Personal Devotional Notes & Remembrances
+  async getNotes(): Promise<Record<number, HymnNote>> {
+    try {
+      const data = await AsyncStorage.getItem(KEYS.HYMN_NOTES);
+      return data ? JSON.parse(data) : {};
+    } catch {
+      return {};
+    }
+  },
+
+  async getNoteForHymn(hymnId: number): Promise<HymnNote | null> {
+    try {
+      const allNotes = await this.getNotes();
+      return allNotes[hymnId] || null;
+    } catch {
+      return null;
+    }
+  },
+
+  async saveNote(hymnId: number, text: string, tags?: string[]): Promise<HymnNote> {
+    const allNotes = await this.getNotes();
+    const updatedNote: HymnNote = {
+      hymnId,
+      text: text.trim(),
+      tags: tags || allNotes[hymnId]?.tags || [],
+      updatedAt: Date.now(),
+    };
+    allNotes[hymnId] = updatedNote;
+    await AsyncStorage.setItem(KEYS.HYMN_NOTES, JSON.stringify(allNotes));
+    return updatedNote;
+  },
+
+  async deleteNote(hymnId: number): Promise<void> {
+    try {
+      const allNotes = await this.getNotes();
+      delete allNotes[hymnId];
+      await AsyncStorage.setItem(KEYS.HYMN_NOTES, JSON.stringify(allNotes));
     } catch {}
   },
 };

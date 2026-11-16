@@ -13,7 +13,15 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import { useAudioPlayer, useAudioPlayerStatus, AudioModule } from 'expo-audio';
-import { Hymn, ThemeMode, Setlist, Stanza } from '../types/hymn';
+import { AddToSetlistModal } from '../components/AddToSetlistModal';
+import { HymnNoteModal } from '../components/HymnNoteModal';
+import { HymnMetronomeModal } from '../components/HymnMetronomeModal';
+import { DownloadAllTunesModal } from '../components/DownloadAllTunesModal';
+import { parseMeterString, getVerifiedHymnSolfa } from '../services/musicService';
+import { getEnglishHymn } from '../constants/englishHymns';
+import { getHymnStory } from '../constants/hymnStories';
+import { storageService } from '../services/storageService';
+import { Hymn, ThemeMode, Setlist, Stanza, HymnNote, HymnStory } from '../types/hymn';
 import { ThemeColors } from '../constants/theme';
 import {
   getHymnById,
@@ -22,9 +30,6 @@ import {
   cleanStanzaText,
   cleanAmenText,
 } from '../services/hymnService';
-import { AddToSetlistModal } from '../components/AddToSetlistModal';
-import { parseMeterString, getVerifiedHymnSolfa } from '../services/musicService';
-import { getEnglishHymn } from '../constants/englishHymns';
 import {
   getHymnTune,
   getAudioStreamUrl,
@@ -89,6 +94,18 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   const [showFontControls, setShowFontControls] = useState(false);
   const [showSetlistModal, setShowSetlistModal] = useState(false);
   const [copiedStanza, setCopiedStanza] = useState<string | null>(null);
+  const [showNoteModal, setShowNoteModal] = useState(false);
+  const [hymnNote, setHymnNote] = useState<HymnNote | null>(null);
+  const [showMetronomeModal, setShowMetronomeModal] = useState(false);
+  const [showDownloadAllModal, setShowDownloadAllModal] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
+  const hymnStory = React.useMemo(() => getHymnStory(hymnId), [hymnId]);
+  const [showStory, setShowStory] = useState(false);
+
+  // Load user's personal devotional note for this hymn
+  useEffect(() => {
+    storageService.getNoteForHymn(hymnId).then(setHymnNote);
+  }, [hymnId]);
 
   // Hands-Free Auto-Scroll States & Refs
   const [isAutoScrollActive, setIsAutoScrollActive] = useState(false);
@@ -234,6 +251,18 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     }
 
     player.play();
+  };
+
+  const handleCycleSpeed = () => {
+    const speeds = [0.75, 0.9, 1.0, 1.1, 1.25];
+    const nextIdx = (speeds.indexOf(playbackSpeed) + 1) % speeds.length;
+    const nextSpeed = speeds[nextIdx];
+    setPlaybackSpeed(nextSpeed);
+    if (player) {
+      try {
+        player.playbackRate = nextSpeed;
+      } catch {}
+    }
   };
 
   const handleChangeInstrument = async (inst: 'organ' | 'piano') => {
@@ -485,6 +514,19 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
           {/* Favorite */}
           <TouchableOpacity onPress={() => onToggleFavorite(hymn.id)} style={styles.headerBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
             <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={22} color={isFavorite ? '#EF4444' : theme.text} />
+          </TouchableOpacity>
+
+          {/* Personal Note */}
+          <TouchableOpacity
+            onPress={() => setShowNoteModal(true)}
+            style={styles.headerBtn}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons
+              name={hymnNote ? 'journal' : 'journal-outline'}
+              size={21}
+              color={hymnNote ? theme.accentGold : theme.text}
+            />
           </TouchableOpacity>
 
           {/* Add to Service Set */}
@@ -831,6 +873,48 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                       />
                     </TouchableOpacity>
 
+                    {/* Playback Speed Cycle Button */}
+                    <TouchableOpacity
+                      onPress={handleCycleSpeed}
+                      style={[
+                        styles.audioLoopBtn,
+                        playbackSpeed !== 1.0
+                          ? { backgroundColor: theme.accentGold + '25', borderColor: theme.accentGold }
+                          : { borderColor: theme.border, backgroundColor: theme.background },
+                      ]}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          fontWeight: '800',
+                          color: playbackSpeed !== 1.0 ? theme.accentGold : theme.textSecondary,
+                        }}
+                      >
+                        {playbackSpeed}x
+                      </Text>
+                    </TouchableOpacity>
+
+                    {/* Metronome Tool */}
+                    <TouchableOpacity
+                      onPress={() => setShowMetronomeModal(true)}
+                      style={[styles.audioLoopBtn, { borderColor: theme.border, backgroundColor: theme.background }]}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      accessibilityLabel="Interactive Metronome"
+                    >
+                      <Ionicons name="speedometer-outline" size={15} color={theme.textSecondary} />
+                    </TouchableOpacity>
+
+                    {/* Bulk Offline Audio Downloader */}
+                    <TouchableOpacity
+                      onPress={() => setShowDownloadAllModal(true)}
+                      style={[styles.audioLoopBtn, { borderColor: theme.border, backgroundColor: theme.background }]}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      accessibilityLabel="Download All Offline Audio"
+                    >
+                      <Ionicons name="cloud-download-outline" size={15} color={theme.textSecondary} />
+                    </TouchableOpacity>
+
                     {/* Close / Collapse Player */}
                     <TouchableOpacity
                       onPress={() => {
@@ -933,6 +1017,87 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
             </View>
           ) : null}
         </View>
+
+        {/* User's Personal Devotional Note */}
+        {hymnNote && (
+          <TouchableOpacity
+            onPress={() => setShowNoteModal(true)}
+            style={[styles.personalNoteCard, { backgroundColor: theme.surfaceCard, borderColor: theme.accentGold }]}
+          >
+            <View style={styles.personalNoteHeader}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Ionicons name="journal" size={15} color={theme.accentGold} />
+                <Text style={[styles.personalNoteTitle, { color: theme.accentGold }]}>
+                  My Personal Note
+                </Text>
+              </View>
+              <Text style={[styles.personalNoteEdit, { color: theme.primary }]}>Edit</Text>
+            </View>
+            <Text style={[styles.personalNoteText, { color: theme.text }]} numberOfLines={3}>
+              {hymnNote.text}
+            </Text>
+            {hymnNote.tags && hymnNote.tags.length > 0 && (
+              <View style={styles.personalNoteTagsRow}>
+                {hymnNote.tags.map((t) => (
+                  <View key={t} style={[styles.personalNoteTag, { backgroundColor: theme.borderLight }]}>
+                    <Text style={[styles.personalNoteTagText, { color: theme.textSecondary }]}>#{t}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+          </TouchableOpacity>
+        )}
+
+        {/* Story Behind the Hymn Card */}
+        {hymnStory && (
+          <View style={[styles.hymnStoryCard, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}>
+            <TouchableOpacity
+              onPress={() => setShowStory(!showStory)}
+              style={styles.hymnStoryHeader}
+              activeOpacity={0.7}
+            >
+              <View style={styles.hymnStoryTitleRow}>
+                <Ionicons name="book-outline" size={16} color={theme.accentGold} />
+                <Text style={[styles.hymnStoryHeaderTitle, { color: theme.text }]}>
+                  Story Behind the Hymn
+                </Text>
+                <Text style={[styles.hymnStoryAuthor, { color: theme.textSecondary }]} numberOfLines={1}>
+                  • {hymnStory.author}
+                </Text>
+              </View>
+              <Ionicons
+                name={showStory ? 'chevron-up' : 'chevron-down'}
+                size={18}
+                color={theme.textMuted}
+              />
+            </TouchableOpacity>
+
+            {showStory && (
+              <View style={styles.hymnStoryBody}>
+                {hymnStory.scriptureReference ? (
+                  <Text style={[styles.hymnStoryScripture, { color: theme.accentGold }]}>
+                    📖 {hymnStory.scriptureReference}
+                  </Text>
+                ) : null}
+
+                <Text style={[styles.hymnStoryText, { color: theme.text }]}>
+                  {hymnStory.originStory}
+                </Text>
+
+                {hymnStory.spiritualTakeaway ? (
+                  <View style={[styles.hymnStoryTakeawayBox, { backgroundColor: theme.primary + '10', borderColor: theme.primary + '30' }]}>
+                    <Text style={[styles.hymnStoryTakeawayLabel, { color: theme.primary }]}>
+                      💡 Spiritual Takeaway
+                    </Text>
+                    <Text style={[styles.hymnStoryTakeawayText, { color: theme.textSecondary }]}>
+                      {hymnStory.spiritualTakeaway}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+            )}
+          </View>
+        )}
 
         {/* Language Selector Bar (Yorùbá | English | Dual View) */}
         <View style={[styles.langBarContainer, { backgroundColor: theme.surfaceCard, borderColor: theme.border }]}>
@@ -1320,6 +1485,30 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
           await onCreateAndAddSetlist(name, desc, hymn.id);
           Alert.alert('Created & Added', `Service set "${name}" created with ${hymn.hymn_number}!`);
         }}
+      />
+
+      {/* Personal Devotional Note Modal */}
+      <HymnNoteModal
+        visible={showNoteModal}
+        hymn={hymn}
+        theme={theme}
+        onClose={() => setShowNoteModal(false)}
+        onNoteUpdated={setHymnNote}
+      />
+
+      {/* Hymn Metronome Modal */}
+      <HymnMetronomeModal
+        visible={showMetronomeModal}
+        theme={theme}
+        hymnTitle={`${hymn.hymn_number} • ${hymn.title}`}
+        onClose={() => setShowMetronomeModal(false)}
+      />
+
+      {/* Bulk Offline Audio Downloader */}
+      <DownloadAllTunesModal
+        visible={showDownloadAllModal}
+        theme={theme}
+        onClose={() => setShowDownloadAllModal(false)}
       />
     </View>
   );
@@ -1961,5 +2150,106 @@ const styles = StyleSheet.create({
   },
   dualChorusText: {
     fontStyle: 'italic',
+  },
+  personalNoteCard: {
+    marginHorizontal: 16,
+    marginBottom: 12,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  personalNoteHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  personalNoteTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  personalNoteEdit: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  personalNoteText: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  personalNoteTagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 8,
+  },
+  personalNoteTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  personalNoteTagText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  hymnStoryCard: {
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  hymnStoryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 14,
+  },
+  hymnStoryTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flex: 1,
+    marginRight: 8,
+  },
+  hymnStoryHeaderTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  hymnStoryAuthor: {
+    fontSize: 12,
+    fontWeight: '500',
+    flex: 1,
+  },
+  hymnStoryBody: {
+    paddingHorizontal: 14,
+    paddingBottom: 14,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(150, 150, 150, 0.15)',
+    paddingTop: 10,
+  },
+  hymnStoryScripture: {
+    fontSize: 12,
+    fontWeight: '600',
+    fontStyle: 'italic',
+    marginBottom: 8,
+  },
+  hymnStoryText: {
+    fontSize: 13.5,
+    lineHeight: 21,
+    marginBottom: 10,
+  },
+  hymnStoryTakeawayBox: {
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  hymnStoryTakeawayLabel: {
+    fontSize: 12,
+    fontWeight: '800',
+    marginBottom: 2,
+  },
+  hymnStoryTakeawayText: {
+    fontSize: 12.5,
+    lineHeight: 18,
   },
 });
