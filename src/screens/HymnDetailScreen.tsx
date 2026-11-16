@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAudioPlayer, useAudioPlayerStatus, AudioModule } from 'expo-audio';
 import { AddToSetlistModal } from '../components/AddToSetlistModal';
 import { HymnNoteModal } from '../components/HymnNoteModal';
@@ -90,6 +91,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
 }) => {
   const hymn = getHymnById(hymnId);
   const { prev, next } = getSurroundingHymns(hymnId);
+  const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<any>(null);
   const [showFontControls, setShowFontControls] = useState(false);
   const [showSetlistModal, setShowSetlistModal] = useState(false);
@@ -499,63 +501,74 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Top Header */}
-      <View style={[styles.header, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
-        <TouchableOpacity onPress={onBack} style={styles.headerBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Ionicons name="arrow-back" size={24} color={theme.text} />
-        </TouchableOpacity>
-
-        <View style={styles.headerTitleBox}>
-          <Text style={[styles.headerHymnNum, { color: theme.primary }]}>
-            {hymn.hymn_number}
-          </Text>
-        </View>
-
-        <View style={styles.headerActions}>
-          {/* Favorite */}
-          <TouchableOpacity onPress={() => onToggleFavorite(hymn.id)} style={styles.headerBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={22} color={isFavorite ? '#EF4444' : theme.text} />
+      <View
+        style={[
+          styles.headerWrapper,
+          {
+            backgroundColor: theme.surface,
+            borderBottomColor: theme.border,
+            paddingTop: insets.top,
+          },
+        ]}
+      >
+        <View style={styles.headerContent}>
+          <TouchableOpacity onPress={onBack} style={styles.headerBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <Ionicons name="arrow-back" size={24} color={theme.text} />
           </TouchableOpacity>
 
-          {/* Personal Note */}
-          <TouchableOpacity
-            onPress={() => setShowNoteModal(true)}
-            style={styles.headerBtn}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Ionicons
-              name={hymnNote ? 'journal' : 'journal-outline'}
-              size={21}
-              color={hymnNote ? theme.accentGold : theme.text}
-            />
-          </TouchableOpacity>
+          <View style={styles.headerTitleBox}>
+            <Text style={[styles.headerHymnNum, { color: theme.primary }]}>
+              {hymn.hymn_number}
+            </Text>
+          </View>
 
-          {/* Add to Service Set */}
-          <TouchableOpacity
-            onPress={() => setShowSetlistModal(true)}
-            style={styles.headerBtn}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Ionicons name="albums-outline" size={22} color={theme.text} />
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            {/* Favorite */}
+            <TouchableOpacity onPress={() => onToggleFavorite(hymn.id)} style={styles.headerBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={22} color={isFavorite ? '#EF4444' : theme.text} />
+            </TouchableOpacity>
 
-          {/* Font Controls Toggle */}
-          <TouchableOpacity onPress={() => setShowFontControls(!showFontControls)} style={styles.headerBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Ionicons name="text-outline" size={22} color={showFontControls ? theme.primary : theme.text} />
-          </TouchableOpacity>
+            {/* Personal Note */}
+            <TouchableOpacity
+              onPress={() => setShowNoteModal(true)}
+              style={styles.headerBtn}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons
+                name={hymnNote ? 'journal' : 'journal-outline'}
+                size={21}
+                color={hymnNote ? theme.accentGold : theme.text}
+              />
+            </TouchableOpacity>
 
-          {/* Theme Toggle */}
-          <TouchableOpacity onPress={handleCycleTheme} style={styles.headerBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Ionicons
-              name={themeMode === 'dark' ? 'moon' : themeMode === 'sepia' ? 'book' : 'sunny'}
-              size={22}
-              color={theme.accentGold}
-            />
-          </TouchableOpacity>
+            {/* Add to Service Set */}
+            <TouchableOpacity
+              onPress={() => setShowSetlistModal(true)}
+              style={styles.headerBtn}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons name="albums-outline" size={22} color={theme.text} />
+            </TouchableOpacity>
 
-          {/* Share */}
-          <TouchableOpacity onPress={handleShare} style={styles.headerBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Ionicons name="share-social-outline" size={22} color={theme.text} />
-          </TouchableOpacity>
+            {/* Font Controls Toggle */}
+            <TouchableOpacity onPress={() => setShowFontControls(!showFontControls)} style={styles.headerBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <Ionicons name="text-outline" size={22} color={showFontControls ? theme.primary : theme.text} />
+            </TouchableOpacity>
+
+            {/* Theme Toggle */}
+            <TouchableOpacity onPress={handleCycleTheme} style={styles.headerBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <Ionicons
+                name={themeMode === 'dark' ? 'moon' : themeMode === 'sepia' ? 'book' : 'sunny'}
+                size={22}
+                color={theme.accentGold}
+              />
+            </TouchableOpacity>
+
+            {/* Share */}
+            <TouchableOpacity onPress={handleShare} style={styles.headerBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <Ionicons name="share-social-outline" size={22} color={theme.text} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
@@ -1359,7 +1372,16 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
       </ScrollView>
 
       {/* Bottom Prev / Next Bar */}
-      <View style={[styles.bottomBar, { backgroundColor: theme.surface, borderTopColor: theme.border }]}>
+      <View
+        style={[
+          styles.bottomBar,
+          {
+            backgroundColor: theme.surface,
+            borderTopColor: theme.border,
+            paddingBottom: Math.max(insets.bottom, 10),
+          },
+        ]}
+      >
         {prev ? (
           <TouchableOpacity
             style={[styles.navButton, { borderColor: theme.border }]}
@@ -1518,14 +1540,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
+  headerWrapper: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    elevation: 2,
+    zIndex: 10,
+  },
+  headerContent: {
     height: Platform.OS === 'ios' ? 56 : 60,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    elevation: 2,
   },
   headerBtn: {
     padding: 6,

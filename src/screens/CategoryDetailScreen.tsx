@@ -53,6 +53,7 @@ export const CategoryDetailScreen: React.FC<CategoryDetailScreenProps> = ({
         theme={theme}
         showBack
         onBack={onBack}
+        safeAreaTop
       />
 
       {/* Banner */}

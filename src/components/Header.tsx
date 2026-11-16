@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemeColors } from '../constants/theme';
 
 interface HeaderProps {
@@ -9,6 +10,7 @@ interface HeaderProps {
   theme: ThemeColors;
   showBack?: boolean;
   onBack?: () => void;
+  safeAreaTop?: boolean;
   rightActions?: {
     icon: keyof typeof Ionicons.glyphMap;
     onPress: () => void;
@@ -22,10 +24,24 @@ export const Header: React.FC<HeaderProps> = ({
   theme,
   showBack,
   onBack,
+  safeAreaTop = false,
   rightActions,
 }) => {
+  const insets = useSafeAreaInsets();
+  const topInset = safeAreaTop ? insets.top : 0;
+
   return (
-    <View style={[styles.container, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.surface,
+          borderBottomColor: theme.border,
+          paddingTop: topInset,
+          height: (Platform.OS === 'ios' ? 56 : 60) + topInset,
+        },
+      ]}
+    >
       <View style={styles.leftContainer}>
         {showBack && (
           <TouchableOpacity onPress={onBack} style={styles.iconButton} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
