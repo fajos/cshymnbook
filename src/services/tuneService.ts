@@ -66,6 +66,9 @@ export function getLocalTuneUri(fileName: string, instrument: 'organ' | 'piano' 
   return null;
 }
 
+// In-flight download promises deduplication map to prevent concurrent download collisions
+const inFlightDownloads = new Map<string, Promise<string>>();
+
 /**
  * Downloads and caches a hymn tune permanently to local storage (Paths.document/tunes/<instrument>/<fileName>).
  * Subsequent visits will load directly from the local file without touching the network.
@@ -74,26 +77,39 @@ export async function downloadAndCacheTune(
   fileName: string,
   instrument: 'organ' | 'piano' = 'organ'
 ): Promise<string> {
-  const remoteUrl = getAudioStreamUrl(fileName, instrument);
-  if (Platform.OS === 'web') return remoteUrl;
-
-  try {
-    const cleanName = fileName.replace(/\.ogg$/i, '.mp3');
-    const dir = new Directory(Paths.document, 'tunes', instrument);
-    if (!dir.exists) {
-      dir.create({ intermediates: true, idempotent: true });
-    }
-    const localFile = new File(dir, cleanName);
-    if (localFile.exists) {
-      return localFile.uri;
-    }
-
-    await File.downloadFileAsync(remoteUrl, localFile, { idempotent: true });
-    return localFile.uri;
-  } catch (err) {
-    console.warn(`Failed to cache tune ${fileName} locally:`, err);
-    return remoteUrl;
+  const cacheKey = `${instrument}_${fileName}`;
+  const existing = inFlightDownloads.get(cacheKey);
+  if (existing) {
+    return existing;
   }
+
+  const downloadTask = (async () => {
+    const remoteUrl = getAudioStreamUrl(fileName, instrument);
+    if (Platform.OS === 'web') return remoteUrl;
+
+    try {
+      const cleanName = fileName.replace(/\.ogg$/i, '.mp3');
+      const dir = new Directory(Paths.document, 'tunes', instrument);
+      if (!dir.exists) {
+        dir.create({ intermediates: true, idempotent: true });
+      }
+      const localFile = new File(dir, cleanName);
+      if (localFile.exists) {
+        return localFile.uri;
+      }
+
+      await File.downloadFileAsync(remoteUrl, localFile, { idempotent: true });
+      return localFile.uri;
+    } catch (err) {
+      console.warn(`Failed to cache tune ${fileName} locally:`, err);
+      return remoteUrl;
+    } finally {
+      inFlightDownloads.delete(cacheKey);
+    }
+  })();
+
+  inFlightDownloads.set(cacheKey, downloadTask);
+  return downloadTask;
 }
 
 export interface TuneDownloadProgress {

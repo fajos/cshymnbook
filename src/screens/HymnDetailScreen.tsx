@@ -166,7 +166,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     const localUri = getLocalTuneUri(currentTuneFile, selectedInstrument);
     if (localUri) return localUri;
     return getAudioStreamUrl(currentTuneFile, selectedInstrument);
-  }, [currentTuneFile, selectedInstrument]);
+  }, [currentTuneFile, selectedInstrument, isLocallySaved]);
 
   const player = useAudioPlayer(activeAudioUri ? { uri: activeAudioUri } : null, {
     updateInterval: 250,
@@ -207,6 +207,14 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     }
   }, [player, isLoopingAudio]);
 
+  // When track finishes playing, pause and auto-seek back to start for instant replay
+  useEffect(() => {
+    if (audioStatus.didJustFinish && player && !isLoopingAudio) {
+      player.pause();
+      player.seekTo(0).catch(() => {});
+    }
+  }, [audioStatus.didJustFinish, isLoopingAudio, player]);
+
   // Reset audio when switching hymns
   useEffect(() => {
     if (player && audioStatus.playing) {
@@ -225,6 +233,9 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
     return `${min}:${sec < 10 ? '0' : ''}${sec}`;
   };
 
+  // Only consider audio as actively buffering when preparing or when actively playing and awaiting buffer data
+  const isAudioBuffering = isPreparingAudio || (audioStatus.isBuffering && audioStatus.playing);
+
   const handleTogglePlayTune = async () => {
     if (!hymnTune || !player) return;
 
@@ -237,18 +248,46 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
       return;
     }
 
-    // If not yet cached on disk, download before playing so audio NEVER cuts off mid-song
+    // Check if the track has finished or is near the end, and rewind before playing
+    const isAtEnd =
+      audioStatus.didJustFinish ||
+      (audioStatus.duration > 0 && audioStatus.currentTime >= audioStatus.duration - 0.5);
+
+    if (isAtEnd) {
+      try {
+        await player.seekTo(0);
+      } catch {}
+    }
+
+    // Ensure audio is cached locally for reliable offline & gapless playback
     if (!isLocallySaved && currentTuneFile) {
       try {
         setIsPreparingAudio(true);
         const localUri = await downloadAndCacheTune(currentTuneFile, selectedInstrument);
-        setIsPreparingAudio(false);
         setIsLocallySaved(true);
         player.replace({ uri: localUri });
+        if (playbackSpeed !== 1.0) {
+          player.playbackRate = playbackSpeed;
+        }
         player.play();
         return;
       } catch (err) {
+        console.warn('Failed to load tune:', err);
+      } finally {
         setIsPreparingAudio(false);
+      }
+    }
+
+    // If track was at end or needs fresh start, make sure local source is attached
+    if (currentTuneFile && isAtEnd) {
+      const localUri = getLocalTuneUri(currentTuneFile, selectedInstrument);
+      if (localUri) {
+        try {
+          player.replace({ uri: localUri });
+          if (playbackSpeed !== 1.0) {
+            player.playbackRate = playbackSpeed;
+          }
+        } catch {}
       }
     }
 
@@ -275,11 +314,17 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
       let local = getLocalTuneUri(currentTuneFile, inst);
       if (!local) {
         setIsPreparingAudio(true);
-        local = await downloadAndCacheTune(currentTuneFile, inst);
-        setIsPreparingAudio(false);
+        try {
+          local = await downloadAndCacheTune(currentTuneFile, inst);
+        } finally {
+          setIsPreparingAudio(false);
+        }
       }
       setIsLocallySaved(true);
       player.replace({ uri: local });
+      if (playbackSpeed !== 1.0) {
+        player.playbackRate = playbackSpeed;
+      }
       if (wasPlaying) {
         player.play();
       }
@@ -295,11 +340,17 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
       let local = getLocalTuneUri(newFile, selectedInstrument);
       if (!local) {
         setIsPreparingAudio(true);
-        local = await downloadAndCacheTune(newFile, selectedInstrument);
-        setIsPreparingAudio(false);
+        try {
+          local = await downloadAndCacheTune(newFile, selectedInstrument);
+        } finally {
+          setIsPreparingAudio(false);
+        }
       }
       setIsLocallySaved(true);
       player.replace({ uri: local });
+      if (playbackSpeed !== 1.0) {
+        player.playbackRate = playbackSpeed;
+      }
       if (wasPlaying) {
         player.play();
       }
@@ -698,7 +749,7 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                         },
                       ]}
                     >
-                      {audioStatus.isBuffering || isPreparingAudio ? (
+                      {isAudioBuffering ? (
                         <ActivityIndicator size="small" color={audioStatus.playing ? '#000000' : theme.accentGold} />
                       ) : (
                         <Ionicons
@@ -851,9 +902,9 @@ export const HymnDetailScreen: React.FC<HymnDetailScreenProps> = ({
                     <TouchableOpacity
                       onPress={handleTogglePlayTune}
                       style={[styles.audioPlayBtn, { backgroundColor: theme.accentGold }]}
-                      disabled={audioStatus.isBuffering || isPreparingAudio}
+                      disabled={isPreparingAudio}
                     >
-                      {audioStatus.isBuffering || isPreparingAudio ? (
+                      {isAudioBuffering ? (
                         <ActivityIndicator size="small" color="#000000" />
                       ) : (
                         <Ionicons
