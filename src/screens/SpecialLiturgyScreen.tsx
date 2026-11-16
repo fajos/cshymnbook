@@ -87,7 +87,12 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Top Segmented Mode Selector */}
       <View style={[styles.mainSegmentRow, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
-        <View style={styles.tabButtonsGroup}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.tabScrollView}
+          contentContainerStyle={styles.tabButtonsScroll}
+        >
           <TouchableOpacity
             onPress={() => setMode('orders')}
             style={[
@@ -153,7 +158,9 @@ export const SpecialLiturgyScreen: React.FC<SpecialLiturgyScreenProps> = ({
               Hymn Histories
             </Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
+
+        <View style={[styles.audioPackDivider, { backgroundColor: theme.border }]} />
 
         {/* Offline Audio Downloader Launcher */}
         <TouchableOpacity
@@ -585,19 +592,25 @@ const styles = StyleSheet.create({
   mainSegmentRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingLeft: 12,
+    paddingRight: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
+    height: 48,
   },
-  tabButtonsGroup: {
-    flexDirection: 'row',
+  tabScrollView: {
     flex: 1,
+  },
+  tabButtonsScroll: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 8,
   },
   segmentBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    marginRight: 18,
+    height: 48,
+    paddingHorizontal: 8,
+    marginRight: 12,
     gap: 6,
   },
   activeSegmentBtn: {
@@ -607,17 +620,23 @@ const styles = StyleSheet.create({
     fontSize: 13.5,
     fontWeight: '700',
   },
+  audioPackDivider: {
+    width: 1,
+    height: 22,
+    marginHorizontal: 8,
+  },
   audioPackBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 14,
+    paddingHorizontal: 9,
+    paddingVertical: 6,
+    borderRadius: 12,
     borderWidth: 1,
     gap: 4,
+    flexShrink: 0,
   },
   audioPackBtnText: {
-    fontSize: 11.5,
+    fontSize: 11,
     fontWeight: '700',
   },
   tabsWrapper: {
