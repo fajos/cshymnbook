@@ -16,7 +16,7 @@ Welcome to **C&S Hymn Book**, developed by **Fajostech / Femi Adeyemi** ("we", "
 
 This Privacy Policy explains how our mobile and web applications handle user information. **In short: We do not collect, store, transmit, track, or share any of your personal data.** The app is designed for spiritual devotion, choir rehearsal, and congregational worship.
 
-All core devotional content—including 980 hymns, Yoruba and English translations, liturgical orders, kneeling prayers (*Orin Akúnlẹkọ*), revival songs (*Orin Ìsọjí*), Psalms, and 138 curated Hymn Histories—is bundled locally and functions 100% offline without requiring internet access.
+All core devotional content—including 980 hymns, Yoruba and English translations, liturgical orders, kneeling prayers (*Orin Akúnlẹkọ*), revival songs (*Orin Ìsọjí*), Psalms, and 250 curated Hymn Histories—is bundled locally and functions 100% offline without requiring internet access.
 
 ---
 

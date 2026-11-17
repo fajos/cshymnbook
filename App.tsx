@@ -22,6 +22,7 @@ import { HymnDetailScreen } from './src/screens/HymnDetailScreen';
 import { FavoritesScreen } from './src/screens/FavoritesScreen';
 import { SpecialLiturgyScreen } from './src/screens/SpecialLiturgyScreen';
 import { HymnHistoriesScreen } from './src/screens/HymnHistoriesScreen';
+import { getAllHymnStories } from './src/constants/hymnStories';
 import { AboutModal } from './src/components/AboutModal';
 import { OnboardingModal } from './src/components/OnboardingModal';
 import { ForceUpdateModal } from './src/components/ForceUpdateModal';
@@ -30,6 +31,7 @@ import { versionService, VersionCheckResult } from './src/services/versionServic
 type Tab = 'hymns' | 'categories' | 'histories' | 'liturgy' | 'favorites';
 
 export default function App() {
+  const totalHymnStories = getAllHymnStories().length;
   const [activeTab, setActiveTab] = useState<Tab>('hymns');
   const [themeMode, setThemeMode] = useState<ThemeMode>('light');
   const [fontSize, setFontSize] = useState<number>(18);
@@ -203,7 +205,7 @@ export default function App() {
       case 'categories':
         return '58 Liturgical Sections';
       case 'histories':
-        return '138 Stories & Seraphic Heritage';
+        return `${totalHymnStories} Stories & Seraphic Heritage`;
       case 'liturgy':
         return 'Akunleko, Isoji, Psalms & Creeds';
       case 'favorites':
@@ -392,7 +394,7 @@ export default function App() {
                   borderRadius: 4,
                 }}
               >
-                <Text style={{ fontSize: 7.5, fontWeight: '900', color: '#000000' }}>138</Text>
+                <Text style={{ fontSize: 7.5, fontWeight: '900', color: '#000000' }}>{totalHymnStories}</Text>
               </View>
             </View>
             <Text
