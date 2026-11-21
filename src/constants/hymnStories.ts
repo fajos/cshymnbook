@@ -935,20 +935,19 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "In our final earthly hour, the Cross of Christ illuminates the shadows of death and escorts us safely into eternal day.",
   },
-
-  // K&S 20 (id: 66): Ọse ọsẹ rere (Holy, Holy Sabbath)
+  // K&S 20 (id: 66): Ọse ọsẹ rere (Hallowed Day and Holy)
   66: {
     hymnId: 66,
     hymnNumber: "K&S 20",
-    category: "general_classic",
-    title: "Ọse ọsẹ rere (Holy, Holy Sabbath)",
-    author: "Seraphic Sabbath Liturgy",
-    year: "c. 1928",
+    category: "cs_heritage",
+    title: "Ọse ọsẹ rere (Hallowed Day and Holy)",
+    author: "Rev. Robert Arungbamolu Coker (\"Mozart of Africa\", 1832–1920)",
+    year: "c. 1870",
     scriptureReference: "Exodus 20:8 — \"Remember the sabbath day, to keep it holy.\"",
     originStory:
-      "Composed for early Lord's Day morning services across Western Nigeria. It welcomes the blessed Sabbath day as the pearl of days, commanding believers to lay aside worldly business and commercial toil to delight in the courts of the Lord.",
+      "Composed in the 19th century by Rev. Robert Arungbamolu Coker (widely celebrated as the 'Mozart of Africa'), the first indigenous Nigerian to study formal music at the Royal Academy of Music in London and organist of Cathedral Church of Christ, Marina, Lagos. Adopted into the CMS Yoruba hymnal (CMS 15/488) and embraced by the Cherubim & Seraphim Church, this beloved Sabbath chant personifies Sunday as a welcoming day of heavenly rest that wipes away the tears and labours of the six worldly working days.",
     spiritualTakeaway:
-      "The Sabbath is not a burden; it is a divine gift of rest, spiritual renewal, and fellowship in God's presence.",
+      "The Sabbath is God's divine provision for human renewal; set apart holy time to lay aside secular cares and enter God's rest.",
   },
 
   // K&S 21 (id: 67): Ọjo isinmi ati ayọ (O Day of Rest and Gladness)
@@ -1205,20 +1204,19 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "True spiritual victory begins in deepest humility; bowing before the Almighty prepares our hearts to receive His heavenly power.",
   },
-
-  // K&S 64 (id: 110): A de o Baba Mimọ (Blessed Are the Pure in Heart)
+  // K&S 64 (id: 110): A de o, Baba Mimọ (Trinitarian Mercy Invocation)
   110: {
     hymnId: 110,
     hymnNumber: "K&S 64",
-    category: "general_classic",
-    title: "A de o Baba Mimọ (Blessed Are the Pure in Heart)",
-    author: "John Keble (1792–1866)",
-    year: "1819",
-    scriptureReference: "Matthew 5:8 — \"Blessed are the pure in heart: for they shall see God.\"",
+    category: "cs_heritage",
+    title: "A de o, Baba Mimọ (Trinitarian Mercy Invocation)",
+    author: "Early Seraphic Liturgical Tradition",
+    year: "c. 1926",
+    scriptureReference: "2 Corinthians 13:14 — \"The grace of the Lord Jesus Christ, and the love of God, and the communion of the Holy Ghost, be with you all.\"",
     originStory:
-      "Written by John Keble for the Feast of the Purification and published in his acclaimed collection 'The Christian Year' (1827). Keble teaches that the secret of spiritual vision is not intellectual brilliance but purity of motive, holiness of life, and childlike simplicity of heart.",
+      "An indigenous Cherubim & Seraphim Trinitarian gathering chant sung upon approaching the mercy seat. As the congregation enters the prayer sanctuary, each stanza invokes a person of the Godhead in order—Holy Father ('Baba Mimọ'), Holy Son ('Ọmọ Mimọ'), and Holy Spirit ('Ẹmi Mimọ')—culminating in an earnest plea for the Holy Trinity ('Mẹtalọkan') to receive their worship.",
     spiritualTakeaway:
-      "God reveals His secrets not to the worldly wise, but to those whose hearts are clean, humble, and consecrated to Him.",
+      "Approach the mercy seat with reverent awareness of the triune God, seeking Fatherly love, Christ-centered salvation, and Holy Spirit guidance.",
   },
 
   // K&S 68 (id: 114): Ngo kọrin ti Oludande mi (I Will Sing of My Redeemer)
@@ -1505,20 +1503,19 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "Praise clears the spiritual atmosphere; when believers lift their voices together, divine joy displaces sorrow.",
   },
-
-  // K&S 100 (id: 146): Ni toto ara ni tootọ o (Spirit of the Living God, Fall Fresh on Us)
+  // K&S 100 (id: 146): Ni toto, ara ni tootọ o (Ayisa-Osu: Royal Adoration Anthem)
   146: {
     hymnId: 146,
     hymnNumber: "K&S 100",
-    category: "general_classic",
-    title: "Ni toto ara ni tootọ o (Spirit of the Living God, Fall Fresh on Us)",
-    author: "Daniel Iverson",
-    year: "1926",
-    scriptureReference: "Acts 1:8 — \"But ye shall receive power, after that the Holy Ghost is come upon you.\"",
+    category: "cs_heritage",
+    title: "Ni toto, ara ni tootọ o (Ayisa-Osu: Royal Adoration Anthem)",
+    author: "Early Seraphic Band & Elders",
+    year: "c. 1927",
+    scriptureReference: "Psalm 91:7 — \"A thousand shall fall at thy side, and ten thousand at thy right hand; but it shall not come nigh thee.\"",
     originStory:
-      "Written by evangelist Daniel Iverson in 1926 during the George T. Stephens evangelistic campaign in Orlando, Florida. After hearing a sermon on the Holy Spirit, Iverson went to the piano and wrote this tender prayer: \"Melt me, mold me, fill me, use me.\"",
+      "One of the most regal indigenous praise anthems in Cherubim & Seraphim worship, addressing God with majestic ancient Yoruba royal salutations ('Ọba toto! Kabiyesi! Ayisa-Osu'). Composed during the early years of the Praying Band in Lagos, the anthem celebrates divine preservation during pestilence and persecution, testifying that though thousands fell on the right and left, the Lord preserved His praying saints.",
     spiritualTakeaway:
-      "Surrendering to the Holy Spirit is not passive; it invites God to mold our lives into vessels of honor fit for the Master's use.",
+      "When you reflect upon God's miraculous preservation amidst worldly danger, royal adoration and heartfelt prostration are the only worthy responses.",
   },
 
   // K&S 103 (id: 149): Oluwa lo Olusoaguntan mi (The Lord Is My Shepherd, I Shall Not Want)
@@ -1655,20 +1652,19 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "Music in the church is not a performance for applause; it is an angelic offering consecrated for the throne of God.",
   },
-
-  // K&S 143 (id: 189): Ẹ yo, Oluwa ni Ọba (Rejoice, the Lord Is King)
+  // K&S 143 (id: 189): Gbogbo Ijọ Onigbagbọ (Procession of the Heavenly Host)
   189: {
     hymnId: 189,
     hymnNumber: "K&S 143",
-    category: "general_classic",
-    title: "Ẹ yo, Oluwa ni Ọba (Rejoice, the Lord Is King)",
-    author: "Charles Wesley",
-    year: "1744",
-    scriptureReference: "Philippians 4:4 — \"Rejoice in the Lord alway: and again I say, Rejoice.\"",
+    category: "cs_heritage",
+    title: "Gbogbo Ijọ Onigbagbọ (Procession of the Heavenly Host)",
+    author: "Early Seraphic Apostles",
+    year: "c. 1928",
+    scriptureReference: "Revelation 12:7 — \"And there was war in heaven: Michael and his angels fought against the dragon.\"",
     originStory:
-      "Published in 1744 in Wesley's Resurrection Hymns. Written during a period of fierce anti-Methodist riots in England, Wesley reminded persecuted believers that Christ holds the keys of death and hell, and reigns supreme over all temporal rulers.",
+      "A distinctive Cherubim & Seraphim processional anthem sung during public evangelical walks and anniversary processions through the streets of Lagos and Western Nigeria. It summons Christian churches everywhere to witness the unique spiritual order where Archangel Michael ('Maikẹl') is recognized as the celestial Captain (Balogun) leading the army of salvation against dark spiritual forces.",
     spiritualTakeaway:
-      "Whatever earthly turmoil threatens the Church, Christ sits on the throne: lift up your heart, lift up your voice, and rejoice!",
+      "Believers do not march in their own earthly might; celestial angelic defense surrounds the church of God in every spiritual campaign.",
   },
 
   // K&S 151 (id: 197): Ji Kọ orin Mose (Awake, and Sing the Song of Moses and the Lamb)
@@ -1745,20 +1741,19 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "The heavenly Father delights to bestow the Holy Spirit upon all who ask Him with sincere, thirsty hearts.",
   },
-
-  // K&S 159 (id: 205): Iye Rẹ ti tobi to (Great Is Thy Faithfulness)
+  // K&S 159 (id: 205): Alejo kan ń kan lẹkun (There's a Stranger at the Door)
   205: {
     hymnId: 205,
     hymnNumber: "K&S 159",
     category: "general_classic",
-    title: "Iye Rẹ ti tobi to (Great Is Thy Faithfulness)",
-    author: "Thomas O. Chisholm & William M. Runyan",
-    year: "1923",
-    scriptureReference: "Lamentations 3:22–23 — \"It is of the LORD'S mercies that we are not consumed, because his compassions fail not. They are new every morning: great is thy faithfulness.\"",
+    title: "Alejo kan ń kan lẹkun (There's a Stranger at the Door)",
+    author: "J. B. Mackay",
+    year: "1881",
+    scriptureReference: "Revelation 3:20 — \"Behold, I stand at the door, and knock: if any man hear my voice, and open the door, I will come in to him.\"",
     originStory:
-      "Written in Vineland, New Jersey, in 1923 by Thomas Obadiah Chisholm, who suffered fragile health throughout his life and worked modest clerical jobs. Chisholm later wrote that this hymn was not birthed out of any singular dramatic crisis, but out of meditating day after day on the ordinary, steadfast providences of God who provides morning by morning all that His children need.",
+      "Composed in 1881 by J. B. Mackay, this urgent evangelistic hymn paints Christ as the divine Visitor standing patiently at the portal of the human soul. Translated into Yoruba ('Alejo kan ń kan lẹkun, Pe wọle...'), it became a standard altar-call hymn across Nigerian mission churches and Seraphic revival meetings, pleading with the sinner to open their heart before the Holy Spirit departs.",
     spiritualTakeaway:
-      "God's faithfulness is not fickle like human promises; every sunrise is a fresh testament to His unchanging mercy.",
+      "Christ will not force the latch of your heart; open the door willingly today while His gracious voice calls.",
   },
 
   // K&S 160 (id: 206): Ẹmi Ọlọrun mi (Lord God the Holy Ghost)
@@ -1835,20 +1830,19 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "Life is a sowing season; let us bear fruit of righteousness for God's eternal harvest.",
   },
-
-  // K&S 174 (id: 220): A funrugbin sori ilẹ (We Plough the Fields and Scatter)
+  // K&S 174 (id: 220): Ojo ibukun y'o si rọ! (There Shall Be Showers of Blessing)
   220: {
     hymnId: 220,
     hymnNumber: "K&S 174",
     category: "general_classic",
-    title: "A funrugbin sori ilẹ (We Plough the Fields and Scatter)",
-    author: "Matthias Claudius",
-    year: "1782",
-    scriptureReference: "James 1:17 — \"Every good gift and every perfect gift is from above, and cometh down from the Father of lights.\"",
+    title: "Ojo ibukun y'o si rọ! (There Shall Be Showers of Blessing)",
+    author: "Daniel Webster Whittle (\"El Nathan\", 1840–1901) & James McGranahan (1840–1907)",
+    year: "1883",
+    scriptureReference: "Ezekiel 34:26 — \"I will cause the shower to come down in his season; there shall be showers of blessing.\"",
     originStory:
-      "Written in Germany by Matthias Claudius as part of a harvest festival play in 1782 (\"Wir pflügen und wir streuen\"). Claudius celebrated that while human hands plow the soil and scatter the seed, only God can send the rain, sunshine, and life that produces the harvest.",
+      "Written in 1883 by American evangelist Major Daniel Webster Whittle under the pen name 'El Nathan' with music by James McGranahan, inspired by Ezekiel's prophetic promise of seasonal refreshing. Its Yoruba translation ('Ojo ibukun y'o si rọ! Ileri ifẹ l'eyi...') became one of the most widely sung revival hymns across West Africa, expressing unshakeable faith that God will send torrents of revival rain.",
     spiritualTakeaway:
-      "Human labor is fruitless without God's blessing; acknowledge the Creator as the source of all your provision.",
+      "Do not be satisfied with scattered mercy-drops; plead in persistent prayer for the fullness of God's reviving showers upon your life and church.",
   },
 
   // K&S 176 (id: 222): A ke Halleluyah soke (We Shout Hallelujah on High: Harvest Jubilation)
@@ -2000,20 +1994,19 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "In the gift of Jesus, God gave everything heaven had; our only worthy response is overflowing praise and lifelong devotion.",
   },
-
-  // K&S 199 (id: 245): Ẹ kọrin ayọ pẹlu wa (Sing We with Joy Today)
+  // K&S 199 (id: 245): Ji, 'wọ Kristian, k'o ki orọ ayọ (Christians, Awake! Salute the Happy Morn)
   245: {
     hymnId: 245,
     hymnNumber: "K&S 199",
     category: "general_classic",
-    title: "Ẹ kọrin ayọ pẹlu wa (Sing We with Joy Today)",
-    author: "Seraphic Nativity Carol Tradition",
-    year: "c. 1928",
-    scriptureReference: "Luke 2:10 — \"Fear not: for, behold, I bring you good tidings of great joy, which shall be to all people.\"",
+    title: "Ji, 'wọ Kristian, k'o ki orọ ayọ (Christians, Awake! Salute the Happy Morn)",
+    author: "John Byrom (1692–1763)",
+    year: "1749",
+    scriptureReference: "Luke 2:10–11 — \"Behold, I bring you good tidings of great joy... For unto you is born this day in the city of David a Saviour, which is Christ the Lord.\"",
     originStory:
-      "Composed for early Seraphic Christmas celebrations, inviting all saints to put on festive spirit and join the angels in celebrating the birth of the Christ child who brings light into dark places.",
+      "Penned as a Christmas gift for his daughter Dorothy in 1749 by English poet and shorthand inventor John Byrom, and set to music ('Yorkshire') by John Wainwright. Translated into Yoruba as CMS 59, it became the traditional dawn awakening hymn sung by church choirs and Seraphic carol bands on Christmas morning to celebrate the Saviour's birth.",
     spiritualTakeaway:
-      "The incarnation is the dawn of divine peace on earth; let holy joy fill every home.",
+      "Awaken your spirit with joyful gratitude; the incarnation of Jesus Christ has dispelled the darkness of the world forever.",
   },
 
   // K&S 201 (id: 247): Wa ẹyin olotọ (O Come, All Ye Faithful / Adeste Fideles)
@@ -2405,20 +2398,19 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "Love so amazing, so divine, demands my soul, my life, my all; the cross dismantles every shred of human pride.",
   },
-
-  // K&S 302 (id: 348): Lori oke kan jinjin rere (The Old Rugged Cross)
+  // K&S 302 (id: 348): Ẹyin ti n kọja, ya sọdọ Jesu (All Ye That Pass By, To Jesus Draw Nigh)
   348: {
     hymnId: 348,
     hymnNumber: "K&S 302",
     category: "general_classic",
-    title: "Lori oke kan jinjin rere (The Old Rugged Cross)",
-    author: "George Bennard (1873–1958)",
-    year: "1913",
-    scriptureReference: "Galatians 6:14 — \"God forbid that I should glory, save in the cross of our Lord Jesus Christ, by whom the world is crucified unto me, and I unto the world.\"",
+    title: "Ẹyin ti n kọja, ya sọdọ Jesu (All Ye That Pass By, To Jesus Draw Nigh)",
+    author: "Charles Wesley (1707–1788)",
+    year: "1741",
+    scriptureReference: "Lamentations 1:12 — \"Is it nothing to you, all ye that pass by? behold, and see if there be any sorrow like unto my sorrow.\"",
     originStory:
-      "Methodist evangelist George Bennard underwent severe spiritual trials and ridicule during revival meetings in Michigan. Meditating intensely on Galatians 6:14 and the cost of redemption, the theme of the rugged cross took hold of his soul. In 1913, he completed this beloved hymn, which has resonated with millions across the globe as the definitive emblem of Christ's sacrificial love.",
+      "Written by Charles Wesley and published in 'Hymns on God's Everlasting Love' (1741), this dramatic Good Friday hymn directly challenges careless onlookers passing by Calvary. Translated into Yoruba ('Ẹyin ti n kọja, ya sọdọ Jesu, O sa san fun yin bi, pe ki Jesu ku?'), it serves as a solemn passion chant during Passion Week in Anglican and Seraphic worship.",
     spiritualTakeaway:
-      "The Cross may be despised by the world, but to the believer it is the wondrous emblem of eternal redemption and glory.",
+      "Never gaze indifferently upon Christ's sacrifice; Calvary was endured specifically for your pardon and reconciliation.",
   },
 
   // K&S 303 (id: 349): Jesu t'o f'ara Rẹ rubọ (Alas! and Did My Saviour Bleed)
@@ -3425,20 +3417,19 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "When the fiercest storms of life rage around us, God Himself is our impenetrable hiding place and peace.",
   },
-
-  // K&S 481 (id: 527): Kerubu pẹlu Séráfù (Standing on the Promises of God)
+  // K&S 481 (id: 527): Kerubu pẹlu Séráfù (O God Who Answered Moses on Sinai)
   527: {
     hymnId: 527,
     hymnNumber: "K&S 481",
-    category: "general_classic",
-    title: "Kerubu pẹlu Séráfù (Standing on the Promises of God)",
-    author: "Russell Kelso Carter",
-    year: "1886",
-    scriptureReference: "2 Peter 1:4 — \"Whereby are given unto us exceeding great and precious promises: that by these ye might be partakers of the divine nature.\"",
+    category: "cs_heritage",
+    title: "Kerubu pẹlu Séráfù (O God Who Answered Moses on Sinai)",
+    author: "Early Seraphic Prayer Sanctuary Tradition",
+    year: "c. 1928",
+    scriptureReference: "Exodus 19:18–19 — \"The LORD descended upon it in fire... and God answered him by a voice.\"",
     originStory:
-      "Russell Kelso Carter was a professor and athlete who was diagnosed with a critical heart condition at age 30 and given only days to live. Desperate, he fell on his face and committed his life wholly to the biblical promises of healing and divine power. God miraculously healed him, and he served thirty more vigorous years as an evangelist and medical doctor, penning this triumphant anthem of unbending trust.",
+      "A foundational indigenous Seraphic petition chant recited during intensive prayer vigils. The verses invoke the historic God of answered prayer—recalling how God answered Moses upon Mount Sinai, answered Elijah at the Jordan, and delivered Daniel from the lions' den—imploring the same covenant God to hear the prayers of His Seraphic children today.",
     spiritualTakeaway:
-      "God's covenant promises are yes and amen in Christ; when we stand upon them, defeat is impossible.",
+      "The God who worked miracles in scripture is unchanged; approach Him with bold faith knowing He still hears and answers prayer.",
   },
 
   // K&S 482 (id: 528): Ogo fun Jesu fun anu Rẹ lọfẹ (Praise Be to Jesus, His Mercy Is Free)
@@ -3455,20 +3446,19 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "Salvation is a free gift of God's boundless grace; boast not in human merit, but in Christ alone.",
   },
-
-  // K&S 487 (id: 533): O ti wu mi pupọ (Out of My Bondage, Sorrow, and Night - Jesus, I Come)
+  // K&S 487 (id: 533): O ti wu mi pupọ (Seraphic Mercy and Perseverance Chant)
   533: {
     hymnId: 533,
     hymnNumber: "K&S 487",
-    category: "general_classic",
-    title: "O ti wu mi pupọ (Out of My Bondage, Sorrow, and Night - Jesus, I Come)",
-    author: "William True Sleeper (1819–1904) & George C. Stebbins (1846–1945)",
-    year: "1887",
-    scriptureReference: "Colossians 1:13 — \"Who hath delivered us from the power of darkness, and hath translated us into the kingdom of his dear Son.\"",
+    category: "cs_heritage",
+    title: "O ti wu mi pupọ (Seraphic Mercy and Perseverance Chant)",
+    author: "Saint Moses Orimolade Tunolase & Early Elders",
+    year: "c. 1927",
+    scriptureReference: "Hebrews 12:1 — \"Let us run with patience the race that is set before us.\"",
     originStory:
-      "Rev. William T. Sleeper, a Congregational pastor in Massachusetts, wrote this hymn at the request of gospel musician George C. Stebbins. Structured in four antithetical stanzas, each line moves from the darkness of human ruin into the glorious light of Christ: out of bondage into freedom, out of sickness into health, out of sin into righteousness, and out of grief into joyful communion.",
+      "An intimate spiritual dialogue chant composed in early Seraphic assemblies. In the opening verses, God addresses the believer tenderly ('O ti wu mi pupọ, Ọmọ mi wa'), while the chorus breaks into an earnest, continuous plea for mercy ('Ọlọrun saanu mi, Jọwọ saanu mi'). Stanza 3 specifically encourages Baba Aladura and church leaders to persevere in spiritual work to win the crown of life.",
     spiritualTakeaway:
-      "Coming to Jesus is the great transfer of our lives: leaving behind bondage, sorrow, and darkness to inherit His light and peace.",
+      "Earthly spiritual ministry requires unwavering perseverance; cast yourself daily upon divine mercy to endure to the end.",
   },
 
   // K&S 497 (id: 543): Ẹgbẹ Aladura mura (Praying Band, Gird Up for Spiritual Battle)
@@ -3515,35 +3505,33 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "When the Church unites in desperate prayer, God's right hand breaks the chains of darkness.",
   },
-
-  // K&S 502 (id: 548): Ẹyin ara wa ẹ ku ijoko (Will Your Anchor Hold in the Storms of Life?)
+  // K&S 502 (id: 548): Ẹyin ara wa, ẹ ku ijoko (Michael Has Prevailed: The Seraphic Victory Anthem)
   548: {
     hymnId: 548,
     hymnNumber: "K&S 502",
-    category: "general_classic",
-    title: "Ẹyin ara wa ẹ ku ijoko (Will Your Anchor Hold in the Storms of Life?)",
-    author: "Priscilla Jane Owens (1829–1907)",
-    year: "1882",
-    scriptureReference: "Hebrews 6:19 — \"Which hope we have as an anchor of the soul, both sure and stedfast, and which entereth into that within the veil.\"",
+    category: "cs_heritage",
+    title: "Ẹyin ara wa, ẹ ku ijoko (Michael Has Prevailed: The Seraphic Victory Anthem)",
+    author: "Cherubim & Seraphim Founding Generation",
+    year: "c. 1928",
+    scriptureReference: "Revelation 12:11 — \"And they overcame him by the blood of the Lamb, and by the word of their testimony.\"",
     originStory:
-      "Priscilla Owens, a dedicated Sunday school teacher in Baltimore, Maryland, wrote this stirring nautical anthem for her boys' class. Inspired by Hebrews 6:19, the hymn poses the searching question of whether our spiritual anchor will hold when the billows roll and earthly foundations tremble, answering with the triumphant refrain: 'We have an anchor that keeps the soul!'",
+      "One of the most celebrated and historic victory anthems in the Cherubim & Seraphim Church worldwide, sung to the tune of SS&S 684 ('Simply trusting every day'). The 10 stanzas speak prophetically into every condition of life—comforting the childless that they shall embrace children, the sick that the Physician of Jerusalem will heal them, the debtor that Jah will provide, and declaring triumph over demonic opposition because Archangel Michael has prevailed.",
     spiritualTakeaway:
-      "When our soul is anchored into the Rock of Ages, no worldly tempest or demonic storm can wash us away.",
+      "No matter how fierce earthly trials or spiritual battles appear, trust steadfastly in Jesus; divine victory is guaranteed to the faithful.",
   },
-
-  // K&S 503 (id: 549): Ise wa gbogbo ti awa n se (What a Friend We Have in Jesus)
+  // K&S 503 (id: 549): Isẹ wa gbogbo ti awa n se (Arise and Gird Your Armor: Seraphic Warfare)
   549: {
     hymnId: 549,
     hymnNumber: "K&S 503",
-    category: "general_classic",
-    title: "Ise wa gbogbo ti awa n se (What a Friend We Have in Jesus)",
-    author: "Joseph Medlicott Scriven",
-    year: "1855",
-    scriptureReference: "John 15:15 — \"Henceforth I call you not servants; for the servant knoweth not what his lord doeth: but I have called you friends.\"",
+    category: "cs_heritage",
+    title: "Isẹ wa gbogbo ti awa n se (Arise and Gird Your Armor: Seraphic Warfare)",
+    author: "Early Seraphic Apostles",
+    year: "c. 1928",
+    scriptureReference: "Ephesians 6:11 — \"Put on the whole armour of God, that ye may be able to stand against the wiles of the devil.\"",
     originStory:
-      "Written in 1855 in Port Hope, Canada, by Irish immigrant Joseph Scriven. Scriven had suffered unimaginable tragedy: his young fiancée drowned in a river the evening before their wedding day. Later in Canada, a second bride-to-be died of pneumonia shortly before their marriage. Instead of bitterness, Scriven dedicated the rest of his life to caring for the poor and widows. When his mother fell critically ill back in Ireland and he could not afford to travel to her bedside, he wrote this poem to comfort her: \"What a friend we have in Jesus, all our sins and griefs to bear! What a privilege to carry everything to God in prayer!\"",
+      "An indigenous Cherubim & Seraphim spiritual armor anthem that exhorts the congregation to put on their heavenly warfare garments ('Ka dide ka tun hamọra... Ẹgbẹ Kérúbù ati Séráfù'). Reminding believers that Christ sees all their secret sacrifices, it commands them to fight with integrity, truth, and love, never harming their neighbor, so that they may receive the eternal reward of victory.",
     spiritualTakeaway:
-      "Oh, what peace we often forfeit, oh, what needless pain we bear, all because we do not carry everything to God in prayer.",
+      "Spiritual warfare cannot be fought with carnality; put on the armor of righteousness, love, and truth to overcome the enemy.",
   },
 
   // K&S 505 (id: 551): Gbogbo Ẹgbẹ Séráfù to wa layé (All Ye Seraphim Across the Earth)
@@ -3695,35 +3683,33 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "The supreme victory of Christian sorrow is when grief is transformed into an overwhelming, passionate love for the Saviour.",
   },
-
-  // K&S 529 (id: 575): Alafia ni fun ọkan na (Happy the Heart Where Graces Reign)
+  // K&S 529 (id: 575): Alafia ni fun ọkan na (Peace and Celestial Love in the Holy Band)
   575: {
     hymnId: 575,
     hymnNumber: "K&S 529",
-    category: "general_classic",
-    title: "Alafia ni fun ọkan na (Happy the Heart Where Graces Reign)",
-    author: "Isaac Watts",
-    year: "1707",
-    scriptureReference: "1 Corinthians 13:13 — \"And now abideth faith, hope, charity, these three; but the greatest of these is charity.\"",
+    category: "cs_heritage",
+    title: "Alafia ni fun ọkan na (Peace and Celestial Love in the Holy Band)",
+    author: "Early Seraphic Liturgists",
+    year: "c. 1929",
+    scriptureReference: "1 John 4:7 — \"Beloved, let us love one another: for love is of God; and every one that loveth is born of God.\"",
     originStory:
-      "Published in 1707 in Watts' Hymns and Spiritual Songs. It celebrates brotherly love and Christian charity as the crowning grace of the Christian life, superior to human knowledge, eloquence, or prophecies.",
+      "Composed to foster profound brotherly love and unity within the newly expanding Seraphic societies in Western Nigeria. Drawing upon the celestial harmony of heaven, it declares that true peace reigns only where mutual love abides, admonishing earthly Cherubim and Seraphim to love one another just as the heavenly Cherubim and Seraphim encircle the divine throne in eternal harmony.",
     spiritualTakeaway:
-      "Without divine love, our highest religious rituals are hollow; love is the true badge of discipleship.",
+      "The true mark of celestial fellowship on earth is authentic Christian love; without mutual love, all external liturgy is vain.",
   },
-
-  // K&S 531 (id: 577): Ẹ Je ka bu sayọ (Deeper, Deeper in the Love of Jesus)
+  // K&S 531 (id: 577): Ẹ jẹ k'a bu s'ayọ: Àsè Ìfẹ́ (The Love Feast & Orimolade Memorial Hymn)
   577: {
     hymnId: 577,
     hymnNumber: "K&S 531",
-    category: "general_classic",
-    title: "Ẹ Je ka bu sayọ (Deeper, Deeper in the Love of Jesus)",
-    author: "Charles Price Jones (1865–1949)",
-    year: "1900",
-    scriptureReference: "Ephesians 3:18-19 — \"May be able to comprehend with all saints what is the breadth, and length, and depth, and height; And to know the love of Christ.\"",
+    category: "cs_heritage",
+    title: "Ẹ jẹ k'a bu s'ayọ: Àsè Ìfẹ́ (The Love Feast & Orimolade Memorial Hymn)",
+    author: "Cherubim & Seraphim Elders & Choir Guild",
+    year: "1933",
+    scriptureReference: "Jude 1:12 / Psalm 116:15 — \"Precious in the sight of the LORD is the death of his saints.\"",
     originStory:
-      "Charles Price Jones, an African American holiness leader and founder of the Church of Christ (Holiness) U.S.A., composed this beloved hymn during the turn-of-the-century holiness revivals. Yearning for a deeper spiritual life beyond superficial emotionalism, Jones prayed to sink deeper into the love of Jesus, rise higher in the school of grace, and be rooted firmly in the Holy Spirit.",
+      "The historic Cherubim & Seraphim Love Feast (Àsè Ìfẹ́) and memorial hymn. Composed following the glorious transition of the founder, Baba Aladura Saint Moses Orimolade Tunolase, who entered into rest at Ojokoro on October 19, 1933. Stanza 9 triumphantly proclaims: 'A dupẹ f'Ọlọrun, Baba wa lọ sinmi, O sinmi laya Jesu Olugbala' ('We thank God, our Father has gone to rest in the bosom of Jesus the Saviour'), while the chorus welcomes all into the banquet of love.",
     spiritualTakeaway:
-      "Spiritual growth is an endless adventure into the boundless ocean of Christ's love, grace, and holiness.",
+      "Celebrate the faithful departures of the saints with resurrection joy; their legacy continues as we abide in mutual love and service.",
   },
 
   // K&S 539 (id: 585): Ore Ofe bi o ti dun to (Amazing Grace! How Sweet the Sound)
@@ -4010,20 +3996,19 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "This present world is only the battlefield; our eternal rest and homecoming are prepared and waiting in heaven.",
   },
-
-  // K&S 599 (id: 645): Sise rẹ o ara mi o (When We Walk with the Lord / Trust and Obey)
+  // K&S 599 (id: 645): Sisẹ rẹ o ara mi o: Àná kì í ṣe tìrẹ (The Yoruba Pilgrim Philosophy of Time)
   645: {
     hymnId: 645,
     hymnNumber: "K&S 599",
-    category: "general_classic",
-    title: "Sise rẹ o ara mi o (When We Walk with the Lord / Trust and Obey)",
-    author: "John H. Sammis",
-    year: "1887",
-    scriptureReference: "1 John 1:7 — \"But if we walk in the light, as he is in the light, we have fellowship one with another, and the blood of Jesus Christ his Son cleanseth us from all sin.\"",
+    category: "cs_heritage",
+    title: "Sisẹ rẹ o ara mi o: Àná kì í ṣe tìrẹ (The Yoruba Pilgrim Philosophy of Time)",
+    author: "Rev. Canon J. J. Ransome-Kuti (1855–1930) / Yoruba CMS Indigenous Heritage",
+    year: "c. 1895",
+    scriptureReference: "James 4:14 — \"Whereas ye know not what shall be on the morrow. For what is your life? It is even a vapour.\"",
     originStory:
-      "During an 1886 evangelistic campaign in Brockton, Massachusetts with D. L. Moody, a young Christian man stood up to testify: \"I am not quite sure, but I'm going to trust, and I'm going to obey.\" Song leader Daniel Towner jotted the sentence down and sent it to Rev. Sammis, who quickly drafted the beloved five stanzas.",
+      "One of the most monumental and celebrated indigenous Yoruba Christian hymns ever composed, attributed to the legendary Rev. Canon Josiah Jesse Ransome-Kuti ('The Singing Minister of Egbaland'). Its immortal chorus ('Àná kì í ṣe tìrẹ, ọ̀la kì í ṣe tìrẹ, òní nìkan ni tìrẹ...') teaches the sacred stewardship of time. Adopted into CMS and C&S hymnody, it enumerates the six stages of a fulfilled life in Yoruba thought: not dying young (ẹni), not dying in hardship (èjì), not being humiliated by the world (ẹ̀ta), having a noble end (ẹ̀rin), leaving worthy children behind (àrún), and sleeping peacefully in old age (ẹ̀fà).",
     spiritualTakeaway:
-      "There is no other way to be happy in Jesus than simple daily trust and faithful obedience.",
+      "Yesterday is gone and tomorrow is not promised; redeem the present moment to serve God faithfully and leave a righteous legacy.",
   },
 
   // K&S 600 (id: 646): Ẹyin eniyan Ọlọrun / Mura s'iṣẹ rẹ, Séráfù (Seraphic Call to Service)
@@ -4265,20 +4250,19 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "Above the clamor and sorrow of earth, faith hears the gentle songs of heaven reminding us that our true home awaits.",
   },
-
-  // K&S 701 (id: 748): Aye ẹ ba wa yọ (To Thee, O Lord, Our Hearts We Raise: Harvest and Anniversary)
+  // K&S 701 (id: 748): Aye, ẹ ba wa yọ: Captain Abiọdun (The Triumph over Occultism)
   748: {
     hymnId: 748,
     hymnNumber: "K&S 701",
-    category: "general_classic",
-    title: "Aye ẹ ba wa yọ (To Thee, O Lord, Our Hearts We Raise: Harvest and Anniversary)",
-    author: "William Chatterton Dix (1837–1898)",
-    year: "1864",
-    scriptureReference: "Psalm 126:6 — \"He that goeth forth and weepeth, bearing precious seed, shall doubtless come again with rejoicing, bringing his sheaves with him.\"",
+    category: "cs_heritage",
+    title: "Aye, ẹ ba wa yọ: Captain Abiọdun (The Triumph over Occultism)",
+    author: "Capt. Christiana Abiodun Emmanuel & Early Seraphic Society",
+    year: "c. 1928",
+    scriptureReference: "Luke 10:19 — \"Behold, I give unto you power to tread on serpents and scorpions, and over all the power of the enemy.\"",
     originStory:
-      "Composed by William Chatterton Dix for harvest thanksgiving festivals in Bristol, England. Translated into Yoruba, it has become an indispensable anthem for annual church anniversaries and harvest services, calling the congregation to bring their offerings of praise to the Lord of the harvest who has spared them through another year.",
+      "The historic anniversary anthem of the Cherubim & Seraphim Society celebrating the ministry of co-founder Captain Christiana Abiodun Akinsowon (Emmanuel) and the societal bands (Moses, Aaron, Twelve Apostles, Esther, Mary, Martha). Stanza 5 explicitly records the spiritual triumph of Christ's cross over native witchcraft and occultism ('Gbogbo Irunmọlẹ ti subu, Ajẹ, oso at'alawirin, Igunnu at'Ologun ika, Di itẹmọlẹ loni'), commemorating how thousands renounced idols to follow Jesus.",
     spiritualTakeaway:
-      "Every harvest and anniversary milestone is an altar of remembrance celebrating God's continuous preservation and bountiful mercy.",
+      "Through the name of Jesus and the power of the Holy Spirit, every demonic stronghold and indigenous fear has been trampled underfoot.",
   },
 
   // K&S 702 (id: 749): Ajodun wa la n se (Happy Anniversary: The Annual Ingathering)
@@ -4355,20 +4339,19 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "Honoring one another in Christian love and mutual respect reflects the gentle and loving character of Jesus Christ.",
   },
-
-  // K&S 717 (id: 764): Kérúbù Séráfù ẹ ho (Saviour, Like a Shepherd Lead Us: Seraphic Jubilation)
+  // K&S 717 (id: 764): Kérúbù Séráfù ẹ ho (Jubilee of the Heavenly Order)
   764: {
     hymnId: 764,
     hymnNumber: "K&S 717",
     category: "cs_heritage",
-    title: "Kérúbù Séráfù ẹ ho (Saviour, Like a Shepherd Lead Us: Seraphic Jubilation)",
-    author: "Dorothy Ann Thrupp (1779–1847) / Seraphic Jubilee Adaptation",
-    year: "1836 / c. 1929",
-    scriptureReference: "John 10:11 — \"I am the good shepherd: the good shepherd giveth his life for the sheep.\"",
+    title: "Kérúbù Séráfù ẹ ho (Jubilee of the Heavenly Order)",
+    author: "Early Seraphic Anniversary Council",
+    year: "c. 1929",
+    scriptureReference: "Psalm 47:1 — \"O clap your hands, all ye people; shout unto God with the voice of triumph.\"",
     originStory:
-      "An exuberant Seraphic anniversary anthem adapted from Dorothy Thrupp's classic pastoral hymn. Chanted during joyful church processions and anniversary milestones, it blends pastoral trust in the Good Shepherd with the characteristic Aladura shouts of victory and holy dancing, celebrating God's continuous preservation of the fold.",
+      "A joyful indigenous anniversary anthem sung across Cherubim & Seraphim parishes on annual founders' day and thanksgiving celebrations. It summons all members of the Cherubim and Seraphim band to clap their hands, lift their voices in triumphant praise, and give glory to the God of grace who preserved the society through perilous trials and brought them to another joyous year.",
     spiritualTakeaway:
-      "Following our Good Shepherd turns the most perilous journey into a joyous march of thanksgiving and triumph.",
+      "Never let church anniversaries become empty routine; celebrate God's enduring covenant faithfulness with heartfelt jubilation and handclapping.",
   },
 
   // K&S 727 (id: 774): Okunkun su imọlẹ kan si n tan (Amidst Dense Darkness, Light Shines: Michaelmas Victory)
@@ -4850,20 +4833,19 @@ export const HYMN_STORIES: Record<number, HymnStory> = {
     spiritualTakeaway:
       "Every Sunday is an opportunity to let the radiant light of Christ dispel the gloom of worldly weariness and doubt.",
   },
-
-  // K&S 801 (id: 848): Ẹ je ka si ohun ti Oluwa palasẹ (I Need Thee Every Hour)
+  // K&S 801 (id: 848): Ẹ jẹ k'a s'ohun t'Oluwa palasẹ (Prophetic Warning Against Disobedience)
   848: {
     hymnId: 848,
     hymnNumber: "K&S 801",
-    category: "general_classic",
-    title: "Ẹ je ka si ohun ti Oluwa palasẹ (I Need Thee Every Hour)",
-    author: "Annie Sherwood Hawks (1835–1918) & Robert Lowry (1826–1899)",
-    year: "1872",
-    scriptureReference: "John 15:5 — \"Without me ye can do nothing.\"",
+    category: "cs_heritage",
+    title: "Ẹ jẹ k'a s'ohun t'Oluwa palasẹ (Prophetic Warning Against Disobedience)",
+    author: "Early Seraphic Prophets & Elders",
+    year: "c. 1929",
+    scriptureReference: "1 Samuel 15:22 — \"Behold, to obey is better than sacrifice, and to hearken than the fat of rams.\"",
     originStory:
-      "Annie Hawks, a 37-year-old mother in Brooklyn, New York, was busy with ordinary household chores on a bright June morning in 1872 when an overwhelming sense of the nearness of Christ filled her heart. Wondering how anyone could endure joy or sorrow without the Lord, the words 'I need Thee every hour' poured into her soul. Her pastor, Robert Lowry, composed the memorable tune and refrain.",
+      "A solemn prophetic warning chant received during early Aladura revival gatherings in Lagos and Ebute Metta. The chant admonishes human beings that evil and epidemics multiply in the world because of disobedience to God's commandments. It explicitly commands practitioners of occultism, witchcraft, and wickedness to repent immediately, so that the precious blood of Jesus will not have been shed in vain.",
     spiritualTakeaway:
-      "Our need for Jesus is not an occasional emergency measure, but a constant, hourly breath of life.",
+      "God demands sincere, wholehearted obedience; turn away from hidden sins and follow the divine commandments in spirit and truth.",
   },
 
   // K&S 818 (id: 866): Alafia ni fun ẹgbẹ mimọ (Peace, Perfect Peace to Cherub & Seraph)
