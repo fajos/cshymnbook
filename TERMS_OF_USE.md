@@ -37,7 +37,7 @@ The Cherubim and Seraphim sacred hymnal (*Iwe Orin Mimo ti Egbe Kerubu ati Seraf
 This App is dedicated to preserving the original, unaltered language of the sacred hymns—specifically restoring authentic references to **Ẹgbẹ́ Kérúbù**, **Ẹgbẹ́ Séráfù**, and **Ẹgbẹ́ Alàdúrà**, whilst strictly preserving orthodox universal Christian creeds (such as the Apostles' Creed and Nicene Creed).
 
 ### 3.3 Hymn Histories & Educational Research
-The curated library of **250 Hymn Histories**, divine origin accounts, author biographical sketches, and scripture references is compiled for historical education, theological study, and devotional appreciation. Users may freely share individual hymn stories for non-commercial ministry, fellowship, and personal encouragement.
+The curated library of **350 Hymn Histories**, divine origin accounts, author biographical sketches, and scripture references is compiled for historical education, theological study, and devotional appreciation. Users may freely share individual hymn stories for non-commercial ministry, fellowship, and personal encouragement.
 
 ### 3.4 Musical Accompaniments & Tonic Sol-fa Notations
 The bundled tonic sol-fa notations and downloadable instrumental hymn accompaniments (organ and piano) are provided to support church choir masters, vocalists, instrumentalists, and congregants in reverent worship.

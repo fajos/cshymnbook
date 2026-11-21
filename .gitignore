@@ -43,3 +43,5 @@ yarn-error.*
 # local audio recordings & scratch data
 tune_recordings/
 scratch_*.json
+__pycache__/
+*.pyc
